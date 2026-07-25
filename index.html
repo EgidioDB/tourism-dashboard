@@ -2288,13 +2288,19 @@ const INFO = {
 
         seasonCard.style.display = 'block';
         const scEl = document.getElementById('seasonChart');
+        const scWrapper = scEl.parentElement;
         scEl.style.height = layout.height + 'px';
+        scWrapper.style.paddingTop = '0';
         if (seasonInst) {
-            Plotly.react('seasonChart', traces, layout, { displayModeBar: false, responsive: true });
+            Plotly.react('seasonChart', traces, layout, { displayModeBar: false, responsive: false });
         } else {
-            Plotly.newPlot('seasonChart', traces, layout, { displayModeBar: false, responsive: true });
+            Plotly.newPlot('seasonChart', traces, layout, { displayModeBar: false, responsive: false });
             seasonInst = true;
         }
+        requestAnimationFrame(() => {
+            const gap = scWrapper.clientHeight - scEl.clientHeight;
+            if (gap > 0) scWrapper.style.paddingTop = Math.floor(gap / 2) + 'px';
+        });
     }
 
     document.querySelectorAll('[data-yr]').forEach(btn => {
