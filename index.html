@@ -572,7 +572,7 @@
         </div>
     </div>
     <div id="seasonRow" style="display:none; margin-top:16px; flex-wrap:wrap; gap:16px;">
-        <div id="seasonCard" class="viz-card" style="flex:1; min-width:300px; display:flex; flex-direction:column;">
+        <div id="seasonCard" class="viz-card" style="flex:1; min-width:300px; align-self:flex-start;">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:24px; flex-wrap:wrap;">
                 <span class="viz-card-title" style="margin-bottom:0;">Stagionalità — presenze mensili <button class="info-btn" onclick="event.stopPropagation();showInfo('cmp_season')">i</button></span>
                 <div style="margin-left:auto; display:flex; gap:6px;">
@@ -581,9 +581,7 @@
                     <button class="season-yr-btn" data-yr="2022">2022</button>
                 </div>
             </div>
-            <div style="flex:1;"></div>
-            <div id="seasonChart" style="width:100%;"></div>
-            <div style="flex:1;"></div>
+            <div id="seasonChart" style="height:260px; width:100%;"></div>
         </div>
         <div id="pressureCompareCard" class="viz-card" style="flex:1; min-width:300px;">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
@@ -2289,8 +2287,6 @@ const INFO = {
         seasonCard.style.display = 'block';
         const scEl = document.getElementById('seasonChart');
         scEl.style.height = layout.height + 'px';
-        scEl.style.marginTop = 'auto';
-        scEl.style.marginBottom = 'auto';
         if (seasonInst) {
             Plotly.react('seasonChart', traces, layout, { displayModeBar: false, responsive: true });
         } else {
