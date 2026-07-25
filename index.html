@@ -1710,6 +1710,19 @@ const INFO = {
         });
     };
 
+    window.heatTip = function(e, text) {
+        document.querySelectorAll('.heat-tip').forEach(el => el.remove());
+        const tip = document.createElement('div');
+        tip.className = 'heat-tip';
+        tip.textContent = text;
+        tip.style.cssText = 'position:fixed;background:#1d3557;color:#fff;padding:5px 10px;border-radius:6px;font-size:12px;font-weight:600;pointer-events:none;z-index:9999;white-space:nowrap;';
+        document.body.appendChild(tip);
+        const r = e.target.getBoundingClientRect();
+        tip.style.left = Math.min(r.left + r.width/2 - tip.offsetWidth/2, window.innerWidth - tip.offsetWidth - 8) + 'px';
+        tip.style.top = (r.top - tip.offsetHeight - 6 + window.scrollY) + 'px';
+        setTimeout(() => tip.remove(), 2000);
+    };
+
     window.shareConfronti = function() {
         const codici = Object.keys(selected);
         const params = new URLSearchParams();
@@ -1986,7 +1999,7 @@ const INFO = {
                 zData[i].forEach((v, j) => {
                     const bg = v != null ? heatColor(v) : '#f0f4f8';
                     const label = v != null ? v.toLocaleString('it-IT') : '—';
-                    html += `<div title="${MESI[j]}: ${label}" style="background:${bg};height:38px;border-radius:3px;"></div>`;
+                    html += `<div onclick="heatTip(event,'${MESI[j]}: ${label}')" style="background:${bg};height:38px;border-radius:3px;"></div>`;
                 });
                 html += '</div>';
             });
