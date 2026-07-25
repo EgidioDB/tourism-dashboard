@@ -581,7 +581,7 @@
                     <button class="season-yr-btn" data-yr="2022">2022</button>
                 </div>
             </div>
-            <div style="flex:1; display:flex; align-items:center;">
+            <div id="seasonChartWrap" style="flex:1;">
                 <div id="seasonChart" style="width:100%;"></div>
             </div>
         </div>
@@ -2288,18 +2288,14 @@ const INFO = {
 
         seasonCard.style.display = 'block';
         const scEl = document.getElementById('seasonChart');
-        const scWrapper = scEl.parentElement;
+        const scWrap = document.getElementById('seasonChartWrap');
         scEl.style.height = layout.height + 'px';
-        scWrapper.style.paddingTop = '0';
-        if (seasonInst) {
-            Plotly.react('seasonChart', traces, layout, { displayModeBar: false, responsive: false });
-        } else {
-            Plotly.newPlot('seasonChart', traces, layout, { displayModeBar: false, responsive: false });
-            seasonInst = true;
-        }
-        requestAnimationFrame(() => {
-            const gap = scWrapper.clientHeight - scEl.clientHeight;
-            if (gap > 0) scWrapper.style.paddingTop = Math.floor(gap / 2) + 'px';
+        scWrap.style.paddingTop = '0';
+        const plotFn = seasonInst ? Plotly.react : Plotly.newPlot;
+        if (!seasonInst) seasonInst = true;
+        plotFn('seasonChart', traces, layout, { displayModeBar: false, responsive: false }).then(() => {
+            const gap = scWrap.clientHeight - scEl.clientHeight;
+            if (gap > 0) scWrap.style.paddingTop = Math.floor(gap / 2) + 'px';
         });
     }
 
