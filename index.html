@@ -1960,29 +1960,47 @@ const INFO = {
         }];
 
         const mobile = window.innerWidth <= 768;
-        const MESI_SHORT = mobile ? ['G','F','M','A','M','G','L','A','S','O','N','D'] : MESI;
-        traces[0].x = MESI_SHORT;
+        const MESI_2 = ['Ge','Fe','Ma','Ap','Mg','Gi','Lu','Ag','Se','Ot','No','Di'];
+        traces[0].x = mobile ? MESI_2 : MESI;
         traces[0].text = zData.map((row, i) =>
             row.map((v, j) => v != null ? nomi[i] + '<br>' + MESI[j] + ': ' + v.toLocaleString('it-IT') : '')
         );
         if (mobile) traces[0].showscale = false;
 
         const rowH = Math.max(34, Math.floor(140 / entries.length));
+
+        // Su mobile: nomi comuni come annotazioni sopra ogni riga, y-axis nascosta
+        const annotations = mobile ? nomi.map(nome => ({
+            text: '<b>' + nome + '</b>',
+            xref: 'paper', x: 0,
+            yref: 'y', y: nome,
+            xanchor: 'left', yanchor: 'bottom',
+            yshift: 2,
+            showarrow: false,
+            font: { size: 10, color: '#334455' },
+        })) : [];
+
         const layout = {
             margin: mobile
-                ? { l: 65, r: 8, t: 10, b: 28 }
+                ? { l: 8, r: 8, t: 10, b: 28 }
                 : { l: 90, r: 60, t: 10, b: 40 },
-            height: entries.length * rowH + 60,
+            height: entries.length * (rowH + (mobile ? 16 : 0)) + 60,
             plot_bgcolor: '#ffffff',
             paper_bgcolor: 'rgba(0,0,0,0)',
+            annotations,
             xaxis: {
                 fixedrange: true,
                 tickmode: 'array',
-                tickvals: MESI_SHORT,
-                ticktext: MESI_SHORT,
+                tickvals: mobile ? MESI_2 : MESI,
+                ticktext: mobile ? MESI_2 : MESI,
                 tickfont: { size: mobile ? 9 : 11 },
             },
-            yaxis: { fixedrange: true, tickfont: { size: mobile ? 10 : 12 }, autorange: 'reversed' },
+            yaxis: {
+                fixedrange: true,
+                tickfont: { size: 12 },
+                autorange: 'reversed',
+                showticklabels: !mobile,
+            },
         };
 
         seasonCard.style.display = 'block';
