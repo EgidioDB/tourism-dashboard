@@ -2287,7 +2287,10 @@ const INFO = {
         };
 
         seasonCard.style.display = 'block';
-        document.getElementById('seasonChart').style.height = layout.height + 'px';
+        const scEl = document.getElementById('seasonChart');
+        scEl.style.height = layout.height + 'px';
+        scEl.style.marginTop = 'auto';
+        scEl.style.marginBottom = 'auto';
         if (seasonInst) {
             Plotly.react('seasonChart', traces, layout, { displayModeBar: false, responsive: true });
         } else {
