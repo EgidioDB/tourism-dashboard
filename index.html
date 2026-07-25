@@ -1965,21 +1965,25 @@ const INFO = {
         traces[0].text = zData.map((row, i) =>
             row.map((v, j) => v != null ? nomi[i] + '<br>' + MESI[j] + ': ' + v.toLocaleString('it-IT') : '')
         );
+        if (mobile) traces[0].showscale = false;
 
         const rowH = Math.max(34, Math.floor(140 / entries.length));
         const layout = {
             margin: mobile
-                ? { l: 70, r: 20, t: 10, b: 30 }
+                ? { l: 65, r: 8, t: 10, b: 28 }
                 : { l: 90, r: 60, t: 10, b: 40 },
             height: entries.length * rowH + 60,
             plot_bgcolor: '#ffffff',
             paper_bgcolor: 'rgba(0,0,0,0)',
-            xaxis: { fixedrange: true, tickfont: { size: mobile ? 10 : 11 } },
+            xaxis: {
+                fixedrange: true,
+                tickmode: 'array',
+                tickvals: MESI_SHORT,
+                ticktext: MESI_SHORT,
+                tickfont: { size: mobile ? 9 : 11 },
+            },
             yaxis: { fixedrange: true, tickfont: { size: mobile ? 10 : 12 }, autorange: 'reversed' },
         };
-        if (mobile) {
-            traces[0].colorbar = { ...traces[0].colorbar, thickness: 8, len: 0.7 };
-        }
 
         seasonCard.style.display = 'block';
         document.getElementById('seasonChart').style.height = layout.height + 'px';
