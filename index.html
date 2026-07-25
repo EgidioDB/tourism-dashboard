@@ -572,8 +572,8 @@
         </div>
     </div>
     <div id="seasonRow" style="display:none; margin-top:16px; flex-wrap:wrap; gap:16px;">
-        <div id="seasonCard" class="viz-card" style="flex:1; min-width:300px; display:flex; flex-direction:column;">
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:24px; flex-wrap:wrap;">
+        <div id="seasonCard" class="viz-card" style="flex:1; min-width:300px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
                 <span class="viz-card-title" style="margin-bottom:0;">Stagionalità — presenze mensili <button class="info-btn" onclick="event.stopPropagation();showInfo('cmp_season')">i</button></span>
                 <div style="margin-left:auto; display:flex; gap:6px;">
                     <button class="season-yr-btn active" data-yr="2024">2024</button>
@@ -581,14 +581,12 @@
                     <button class="season-yr-btn" data-yr="2022">2022</button>
                 </div>
             </div>
-            <div id="seasonChartWrap" style="flex:1;">
-                <div id="seasonChart" style="width:100%;"></div>
-            </div>
+            <div id="seasonChart" style="height:260px;"></div>
         </div>
         <div id="pressureCompareCard" class="viz-card" style="flex:1; min-width:300px;">
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
                 <span class="viz-card-title" style="margin-bottom:0;">Indice di pressione turistica <button class="info-btn" onclick="event.stopPropagation();showInfo('cmp_pressure')">i</button></span>
-                <div style="margin-left:auto; display:flex; gap:4px; flex-wrap:wrap; justify-content:flex-end;">
+                <div style="margin-left:auto; display:grid; grid-template-columns:repeat(6,auto); gap:4px;">
                     <button class="season-yr-btn" data-pressure-yr="2014">2014</button>
                     <button class="season-yr-btn" data-pressure-yr="2015">2015</button>
                     <button class="season-yr-btn" data-pressure-yr="2016">2016</button>
@@ -2287,16 +2285,13 @@ const INFO = {
         };
 
         seasonCard.style.display = 'block';
-        const scEl = document.getElementById('seasonChart');
-        const scWrap = document.getElementById('seasonChartWrap');
-        scEl.style.height = layout.height + 'px';
-        scWrap.style.paddingTop = '0';
-        const plotFn = seasonInst ? Plotly.react : Plotly.newPlot;
-        if (!seasonInst) seasonInst = true;
-        plotFn('seasonChart', traces, layout, { displayModeBar: false, responsive: false }).then(() => {
-            const gap = scWrap.clientHeight - scEl.clientHeight;
-            if (gap > 0) scWrap.style.paddingTop = Math.floor(gap / 2) + 'px';
-        });
+        document.getElementById('seasonChart').style.height = layout.height + 'px';
+        if (seasonInst) {
+            Plotly.react('seasonChart', traces, layout, { displayModeBar: false, responsive: true });
+        } else {
+            Plotly.newPlot('seasonChart', traces, layout, { displayModeBar: false, responsive: true });
+            seasonInst = true;
+        }
     }
 
     document.querySelectorAll('[data-yr]').forEach(btn => {
