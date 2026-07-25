@@ -573,9 +573,9 @@
     </div>
     <div id="seasonRow" style="display:none; margin-top:16px; flex-wrap:wrap; gap:16px;">
         <div id="seasonCard" class="viz-card" style="flex:1; min-width:300px;">
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
-                <span class="viz-card-title" style="margin-bottom:0;">Stagionalità — presenze mensili <button class="info-btn" onclick="event.stopPropagation();showInfo('cmp_season')">i</button></span>
-                <div style="margin-left:auto; display:flex; gap:6px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+                <span class="viz-card-title" style="margin-bottom:0; flex:1; min-width:160px;">Stagionalità — presenze mensili <button class="info-btn" onclick="event.stopPropagation();showInfo('cmp_season')">i</button></span>
+                <div style="display:flex; gap:6px;">
                     <button class="season-yr-btn active" data-yr="2024">2024</button>
                     <button class="season-yr-btn" data-yr="2023">2023</button>
                     <button class="season-yr-btn" data-yr="2022">2022</button>
@@ -584,9 +584,9 @@
             <div id="seasonChart" style="height:260px;"></div>
         </div>
         <div id="pressureCompareCard" class="viz-card" style="flex:1; min-width:300px;">
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
-                <span class="viz-card-title" style="margin-bottom:0;">Indice di pressione turistica <button class="info-btn" onclick="event.stopPropagation();showInfo('cmp_pressure')">i</button></span>
-                <div style="margin-left:auto; display:grid; grid-template-columns:repeat(6,auto); gap:4px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+                <span class="viz-card-title" style="margin-bottom:0; flex:1; min-width:160px;">Indice di pressione turistica <button class="info-btn" onclick="event.stopPropagation();showInfo('cmp_pressure')">i</button></span>
+                <div style="display:grid; grid-template-columns:repeat(6,auto); gap:4px;">
                     <button class="season-yr-btn" data-pressure-yr="2014">2014</button>
                     <button class="season-yr-btn" data-pressure-yr="2015">2015</button>
                     <button class="season-yr-btn" data-pressure-yr="2016">2016</button>
