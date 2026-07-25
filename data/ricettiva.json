@@ -1,0 +1,135 @@
+{
+  "anni": [
+    "2010",
+    "2011",
+    "2012",
+    "2013",
+    "2014",
+    "2015",
+    "2016",
+    "2017",
+    "2018",
+    "2019",
+    "2020",
+    "2021",
+    "2022",
+    "2023",
+    "2024"
+  ],
+  "dati": {
+    "2010": {
+      "posti_letto_tot": 6395,
+      "posti_letto_alb": 3687,
+      "esercizi_tot": 65,
+      "esercizi_alb": 20
+    },
+    "2011": {
+      "posti_letto_tot": 6657,
+      "posti_letto_alb": 3884,
+      "esercizi_tot": 72,
+      "esercizi_alb": 22
+    },
+    "2012": {
+      "posti_letto_tot": 6686,
+      "posti_letto_alb": 3880,
+      "esercizi_tot": 72,
+      "esercizi_alb": 22
+    },
+    "2013": {
+      "posti_letto_tot": 6693,
+      "posti_letto_bnb": 219,
+      "posti_letto_case": 108,
+      "esercizi_tot": 78,
+      "esercizi_bnb": 39,
+      "esercizi_case": 9
+    },
+    "2014": {
+      "posti_letto_tot": 6740,
+      "posti_letto_bnb": 246,
+      "posti_letto_case": 108,
+      "esercizi_tot": 82,
+      "esercizi_bnb": 43,
+      "esercizi_case": 9
+    },
+    "2015": {
+      "posti_letto_tot": 5557,
+      "posti_letto_bnb": 252,
+      "posti_letto_case": 167,
+      "esercizi_tot": 81,
+      "esercizi_bnb": 44,
+      "esercizi_case": 10
+    },
+    "2016": {
+      "posti_letto_tot": 5766,
+      "posti_letto_bnb": 298,
+      "posti_letto_case": 217,
+      "esercizi_tot": 93,
+      "esercizi_bnb": 52,
+      "esercizi_case": 14
+    },
+    "2017": {
+      "posti_letto_tot": 6024,
+      "posti_letto_bnb": 359,
+      "posti_letto_case": 325,
+      "esercizi_tot": 109,
+      "esercizi_bnb": 62,
+      "esercizi_case": 19
+    },
+    "2018": {
+      "posti_letto_tot": 6805,
+      "posti_letto_bnb": 384,
+      "posti_letto_case": 417,
+      "esercizi_tot": 126,
+      "esercizi_bnb": 69,
+      "esercizi_case": 27
+    },
+    "2019": {
+      "posti_letto_tot": 6869,
+      "posti_letto_bnb": 412,
+      "posti_letto_case": 417,
+      "esercizi_tot": 132,
+      "esercizi_bnb": 74,
+      "esercizi_case": 28
+    },
+    "2020": {
+      "posti_letto_tot": 7214,
+      "posti_letto_bnb": 409,
+      "posti_letto_case": 461,
+      "esercizi_tot": 145,
+      "esercizi_bnb": 74,
+      "esercizi_case": 39
+    },
+    "2021": {
+      "posti_letto_tot": 6765,
+      "posti_letto_bnb": 395,
+      "posti_letto_case": 470,
+      "esercizi_tot": 144,
+      "esercizi_bnb": 70,
+      "esercizi_case": 42
+    },
+    "2022": {
+      "posti_letto_tot": 6758,
+      "posti_letto_bnb": 408,
+      "posti_letto_case": 525,
+      "esercizi_tot": 153,
+      "esercizi_bnb": 69,
+      "esercizi_case": 52
+    },
+    "2023": {
+      "posti_letto_tot": 6841,
+      "posti_letto_bnb": 373,
+      "posti_letto_case": 608,
+      "esercizi_tot": 160,
+      "esercizi_bnb": 65,
+      "esercizi_case": 62
+    },
+    "2024": {
+      "posti_letto_tot": 6450,
+      "posti_letto_bnb": 376,
+      "posti_letto_case": 750,
+      "esercizi_tot": 181,
+      "esercizi_bnb": 63,
+      "esercizi_case": 83
+    }
+  }
+}

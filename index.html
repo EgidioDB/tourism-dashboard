@@ -346,9 +346,14 @@
             background:var(--card-bg); border-radius:10px;
             box-shadow:0 4px 20px rgba(0,0,0,0.05); padding:14px 16px;
         }
+        #rcYearSlider { -webkit-appearance:none; appearance:none; height:4px; border-radius:2px; outline:none; cursor:pointer; width:100%; }
+        #rcYearSlider::-webkit-slider-thumb { -webkit-appearance:none; width:16px; height:16px; border-radius:50%; background:var(--accent); cursor:pointer; box-shadow:0 1px 6px rgba(0,0,0,.25); }
+        #rcYearSlider::-moz-range-thumb { width:16px; height:16px; border-radius:50%; background:var(--accent); cursor:pointer; border:none; box-shadow:0 1px 6px rgba(0,0,0,.25); }
         .viz-card-title {
-            font-size:0.72em; font-weight:700; text-transform:uppercase;
-            letter-spacing:.05em; color:var(--text-sub); margin-bottom:12px;
+            font-size:1.1em; font-weight:700; text-transform:uppercase;
+            color:var(--text-main); margin-bottom:12px;
+            border-left:4px solid var(--accent); padding-left:12px;
+            margin-bottom:30px;
         }
         #radarChart { width:100%; height:280px; }
         /* ── RANKING STRIP ── */
@@ -505,6 +510,27 @@
             <div id="leaderboard-content" style="margin-top: 20px;"></div>
         </div>
     </div>
+
+    <div class="dashboard-row" style="height: auto;">
+        <div class="main-panel" style="flex: 1;">
+            <div class="header-box"><h1>Indice di Pressione Turistica <button class="info-btn" onclick="showInfo('chart_pressure')">i</button></h1></div>
+            <div id="chart-pressure" style="height: 320px;"></div>
+        </div>
+        <div class="main-panel" style="flex: 1; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:12px;">
+            <div id="pressure-stat" style="text-align:center;"></div>
+        </div>
+    </div>
+
+    <div class="dashboard-row" style="height: auto;">
+        <div class="main-panel" style="flex: 1;">
+            <div class="header-box"><h1>Capacità Ricettiva — Esercizi <button class="info-btn" onclick="showInfo('chart_ricettiva_est')">i</button></h1></div>
+            <div id="chart-ricettiva-est" style="height: 320px;"></div>
+        </div>
+        <div class="main-panel" style="flex: 1;">
+            <div class="header-box"><h1>Capacità Ricettiva — Posti Letto <button class="info-btn" onclick="showInfo('chart_ricettiva_pl')">i</button></h1></div>
+            <div id="chart-ricettiva-pl" style="height: 320px;"></div>
+        </div>
+    </div>
     </div><!-- /cefalu-section -->
 
     <!-- ── ESPLORA E CONFRONTA COMUNI ── -->
@@ -545,17 +571,41 @@
             <div id="rankingList" class="rank-blocks"></div>
         </div>
     </div>
-    <div id="seasonCard" class="viz-card" style="display:none; margin-top:16px;">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
-            <span class="viz-card-title" style="margin-bottom:0;">Stagionalità — presenze mensili <button class="info-btn" onclick="event.stopPropagation();showInfo('cmp_season')">i</button></span>
-            <div style="margin-left:auto; display:flex; gap:6px;">
-                <button class="season-yr-btn active" data-yr="2024">2024</button>
-                <button class="season-yr-btn" data-yr="2023">2023</button>
-                <button class="season-yr-btn" data-yr="2022">2022</button>
+    <div id="seasonRow" style="display:none; margin-top:16px; flex-wrap:wrap; gap:16px;">
+        <div id="seasonCard" class="viz-card" style="flex:1; min-width:300px; display:flex; flex-direction:column;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:24px; flex-wrap:wrap;">
+                <span class="viz-card-title" style="margin-bottom:0;">Stagionalità — presenze mensili <button class="info-btn" onclick="event.stopPropagation();showInfo('cmp_season')">i</button></span>
+                <div style="margin-left:auto; display:flex; gap:6px;">
+                    <button class="season-yr-btn active" data-yr="2024">2024</button>
+                    <button class="season-yr-btn" data-yr="2023">2023</button>
+                    <button class="season-yr-btn" data-yr="2022">2022</button>
+                </div>
             </div>
+            <div style="flex:1;"></div>
+            <div id="seasonChart" style="width:100%;"></div>
+            <div style="flex:1;"></div>
         </div>
-        <div id="seasonChart" style="height:260px;"></div>
+        <div id="pressureCompareCard" class="viz-card" style="flex:1; min-width:300px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+                <span class="viz-card-title" style="margin-bottom:0;">Indice di pressione turistica <button class="info-btn" onclick="event.stopPropagation();showInfo('cmp_pressure')">i</button></span>
+                <div style="margin-left:auto; display:flex; gap:4px; flex-wrap:wrap; justify-content:flex-end;">
+                    <button class="season-yr-btn" data-pressure-yr="2014">2014</button>
+                    <button class="season-yr-btn" data-pressure-yr="2015">2015</button>
+                    <button class="season-yr-btn" data-pressure-yr="2016">2016</button>
+                    <button class="season-yr-btn" data-pressure-yr="2017">2017</button>
+                    <button class="season-yr-btn" data-pressure-yr="2018">2018</button>
+                    <button class="season-yr-btn" data-pressure-yr="2019">2019</button>
+                    <button class="season-yr-btn" data-pressure-yr="2020">2020</button>
+                    <button class="season-yr-btn" data-pressure-yr="2021">2021</button>
+                    <button class="season-yr-btn" data-pressure-yr="2022">2022</button>
+                    <button class="season-yr-btn" data-pressure-yr="2023">2023</button>
+                    <button class="season-yr-btn active" data-pressure-yr="2024">2024</button>
+                </div>
+            </div>
+            <div id="pressureCompareChart" style="height:260px;"></div>
+        </div>
     </div>
+    <div id="ricettivaCompareRow" style="display:none; margin-top:16px;"></div>
     </div><!-- /confronta-section -->
 </div>
 
@@ -1370,6 +1420,8 @@
         }], { ...baseLayout, xaxis: { fixedrange: true, dtick: 2, tickpad: 8 }, yaxis: { fixedrange: true, range: [2, 5] } }, { responsive: true, displayModeBar: false });
     }
 
+
+
     // D. Leaderboard Top Cities (Con salto di posizione)
     let lbHtml = '';
     leaderboardData.forEach((row, index) => {
@@ -1510,16 +1562,22 @@ const INFO = {
 
     chart_origin: "<strong>Origine Turisti — Evoluzione 2014–2024</strong>Composizione delle presenze per provenienza (italiani vs stranieri) anno per anno. Un aumento della quota stranieri indica crescente attrattività internazionale di Cefalù. <em class='info-fonte'>Fonte: ISTAT dati comunali Cefalù 2014-2024.</em>",
 
+    chart_pressure: "<strong>Indice di Pressione Turistica</strong>Rapporto tra le presenze turistiche annuali (notti) e la popolazione residente al 1° gennaio: quante notti di turismo si generano per ogni abitante. Un valore di 90 significa che ogni residente 'ospita' in media 90 notti di turisti nel corso dell'anno. Indicatore chiave per misurare il carico turistico su una comunità locale: valori oltre 50 indicano alta pressione, oltre 100 pressione molto elevata (tipica di Venezia, Rimini, mete balneari di punta). <em class='info-fonte'>Fonte: ISTAT dati comunali Cefalù 2014-2024 + ISTAT Anagrafe comunale POSAS (dati reali 2019-2024; 2014-2018 estrapolati dalla trend 2019-2024).</em>",
     chart_alos: "<strong>Permanenza Media (ALOS — Average Length of Stay)</strong>Rapporto presenze/arrivi per ogni anno: quante notti trascorre in media ogni visitatore a Cefalù. Un calo indica soggiorni più brevi (tendenza nazionale legata a mobilità e multi-destinazione); un aumento indica maggiore fidelizzazione o turismo di lunga permanenza. <em class='info-fonte'>Fonte: ISTAT dati comunali Cefalù 2014-2024.</em>",
+    chart_ricettiva_est: "<strong>Capacità Ricettiva — Numero Esercizi</strong>Numero totale di strutture ricettive registrate nel comune di Cefalù per anno. La linea verde mostra il totale; le barre mostrano la composizione per B&B e case vacanza in affitto gestite in forma imprenditoriale. Non include locazioni brevi occasionali (es. Airbnb non registrati). <em class='info-fonte'>Fonte: ISTAT — Rilevazione sulla Capacità degli Esercizi Ricettivi, 2010-2024.</em>",
+    chart_ricettiva_pl: "<strong>Capacità Ricettiva — Posti Letto</strong>Numero totale di posti letto disponibili nelle strutture ricettive registrate a Cefalù. La linea verde indica il totale complessivo; le barre la composizione tra B&B e case vacanza. La crescita delle case vacanza riflette in parte l'espansione del mercato short-term rental. <em class='info-fonte'>Fonte: ISTAT — Rilevazione sulla Capacità degli Esercizi Ricettivi, 2010-2024.</em>",
 
     chart_ranking: "<strong>Classifica di Crescita Nazionale</strong>Graduatoria dei comuni italiani per crescita delle presenze 2024 vs 2014 (base 2014=100). Cefalù è evidenziata. La posizione in classifica indica se la crescita locale sia eccezionale o in linea con tendenze diffuse nel panorama turistico nazionale. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
     cbox_crescita: "<strong>Crescita complessiva 2014→2024</strong>Variazione percentuale di arrivi e presenze tra il primo e l'ultimo anno disponibile. Gli <em>arrivi</em> contano i visitatori, le <em>presenze</em> le notti trascorse. Tocca un valore per vedere i numeri assoluti di partenza e arrivo. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
     cbox_precovid: "<strong>Pre-COVID 2014→2019</strong>Crescita del periodo pre-pandemia, che rappresenta il trend strutturale del turismo locale al netto degli shock esterni. Confrontare questo dato con il Post-COVID rivela se il comune ha recuperato o superato il ritmo precedente. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
     cbox_postcovid: "<strong>Post-COVID 2019→2024</strong>Variazione dal picco pre-pandemico al 2024. Un valore positivo indica che il comune ha non solo recuperato le perdite del 2020-2021 ma ha superato i livelli pre-COVID. Un valore negativo segnala una ripresa ancora incompleta. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
     cbox_dettaglio: "<strong>Dettaglio 2024</strong>Dati strutturali dell'anno più recente. <em>Permanenza media</em> (ALOS): rapporto presenze/arrivi — quante notti rimane mediamente ogni visitatore. <em>Quota stranieri</em>: percentuale di arrivi non residenti sul totale, indicatore di attrattività internazionale. <em class='info-fonte'>Fonte: ISTAT dati comunali 2024.</em>",
+    cmp_pressure: "<strong>Indice di pressione turistica 2024</strong>Rapporto tra le presenze turistiche 2024 (notti) e la popolazione residente al 1° gennaio 2024: quante notti di turismo si generano per ogni abitante. Consente di confrontare la pressione turistica tra comuni di dimensioni diverse indipendentemente dai volumi assoluti. Valori oltre 50 indicano alta pressione, oltre 100 pressione molto elevata. <em class='info-fonte'>Fonte: ISTAT dati comunali 2024 + ISTAT Anagrafe comunale (POSAS 2019-2024; 2014-2018 estrapolati).</em>",
     cmp_season: "<strong>Stagionalità — presenze mensili</strong>Distribuzione delle presenze (notti) mese per mese per ogni comune selezionato. Il colore va dal bianco (nessuna presenza) al blu scuro (picco massimo), normalizzato su ogni comune separatamente: consente di confrontare il <em>profilo stagionale</em> indipendentemente dai volumi assoluti. Seleziona l'anno (2022, 2023, 2024) per osservare variazioni interannuali. <em class='info-fonte'>Fonte: ISTAT dati mensili comunali 2022-2024.</em>",
     cmp_radar: "<strong>Radar — Profilo destinazione</strong>Confronto multidimensionale su 5 assi: <em>Crescita totale</em> (presenze 2014→2024), <em>Pre-COVID</em> (2014→2019), <em>Post-COVID</em> (2019→2024), <em>Permanenza media</em> (notti/arrivo 2024), <em>Stranieri%</em> (quota arrivi non residenti 2024). I valori sono normalizzati sul massimo tra i comuni selezionati: il radar mostra differenze relative, non assolute. Aggiungere o rimuovere comuni cambia la scala. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
     cmp_ranking: "<strong>Posizione nel ranking nazionale</strong>Graduatoria dei comuni italiani (solo quelli con dati disponibili per entrambi gli anni) ordinata per crescita delle presenze 2014→2024. Per ogni comune selezionato vengono mostrati i comuni immediatamente vicini in classifica (2 sopra e sotto con 1 comune selezionato, 1 sopra e sotto con 2 o più). Il badge <em>Top X%</em> indica il percentile nella distribuzione nazionale. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
+    cmp_ricettiva_est: "<strong>Capacità ricettiva — Numero esercizi</strong>Evoluzione del numero totale di strutture ricettive registrate (alberghi, B&amp;B, case vacanza, campeggi, ostelli ecc.) nei comuni selezionati dal 2010 al 2024. Permette di confrontare la crescita o contrazione dell'offerta ricettiva nel tempo tra destinazioni diverse. <em class='info-fonte'>Fonte: ISTAT — Rilevazione sulla Capacità degli Esercizi Ricettivi, 2010-2024.</em>",
+    cmp_ricettiva_pl: "<strong>Capacità ricettiva — Posti letto</strong>Evoluzione del totale posti letto disponibili nei comuni selezionati dal 2010 al 2024, comprensivi di strutture alberghiere, B&amp;B, case vacanza e ogni altra tipologia ricettiva registrata. Permette di confrontare l'offerta ricettiva e la sua dinamica nel tempo tra destinazioni diverse. <em class='info-fonte'>Fonte: ISTAT — Rilevazione sulla Capacità degli Esercizi Ricettivi, 2010-2024.</em>",
 
     postCovid_nat: "<strong>Post-COVID — Italia (2024 vs 2019)</strong>Recupero e crescita del turismo italiano dal 2019 al 2024. Benchmark per contestualizzare il rimbalzo di Cefalù: se l'Italia complessiva è già sopra il 2019, la barra è alta per valutare l'eccezionalità locale. Formula: (val_2024/val_2019 − 1)×100. Alb derivato. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
@@ -1548,11 +1606,117 @@ const INFO = {
 
     // Carica serie Cefalù + stagionalità in parallelo
     let stagionalitaData = null;
+    let popolazioneData = null;
+    let ricettivaIndexData = null;
+    let currentPressureYear = 2024;
+
+    function renderPressure(serie) {
+        const ANNI = [2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024];
+        const preTot = serie.pre_tot;
+        const popArr = popolazioneData?.comuni?.['082027'] || [];
+        const index = ANNI.map((y, i) => {
+            const pop = popArr[i];
+            const pre = preTot[i];
+            return (pop && pre) ? Math.round(pre / pop * 10) / 10 : null;
+        });
+
+        const valid = index.filter(Boolean);
+        if (!valid.length) return;
+
+        const latest = index[index.length - 1];
+        const latestYear = ANNI[ANNI.length - 1];
+        const maxVal = Math.max(...valid);
+        const colors = index.map(v => {
+            if (!v) return '#ccc';
+            const t = v / maxVal;
+            const r = Math.round(168 + t * (230 - 168));
+            const g = Math.round(218 + t * (57 - 218));
+            const b = Math.round(220 + t * (70 - 220));
+            return `rgb(${r},${g},${b})`;
+        });
+
+        Plotly.newPlot('chart-pressure', [{
+            x: ANNI, y: index, type: 'bar',
+            marker: { color: colors },
+            hovertemplate: '<b>%{x}</b><br>%{y:.1f} notti/abitante<extra></extra>',
+            text: index.map(v => v ? v.toFixed(1) : ''),
+            textposition: 'outside',
+            textfont: { size: 11 }
+        }], {
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            font: { family: 'inherit' },
+            xaxis: { fixedrange: true, dtick: 1, tickangle: -45 },
+            yaxis: { fixedrange: true, range: [0, maxVal * 1.18], title: { text: 'notti/abitante', font: { size: 11 } } },
+            margin: { t: 36, r: 16, b: 60, l: 50 }
+        }, { responsive: true, displayModeBar: false });
+
+        document.getElementById('pressure-stat').innerHTML = `
+            <div style="font-size:3rem; font-weight:700; color:#e63946; line-height:1;">${latest.toFixed(1)}</div>
+            <div style="font-size:0.85rem; color:var(--text-sub); margin-top:4px;">notti di turismo per abitante</div>
+            <div style="font-size:0.75rem; color:var(--text-sub);">(${latestYear})</div>
+            <div style="font-size:0.78rem; margin-top:16px; color:var(--text-main); max-width:200px; text-align:center; line-height:1.5;">
+                Ogni residente ha "ospitato" in media <strong>${Math.round(latest)} notti</strong> di turisti nell'anno.
+            </div>`;
+    }
+
+    function renderRicettiva(data) {
+        const anni = data.anni;
+        const dati = data.dati;
+
+        // Esercizi: altri = tot - bnb - case (hotel, campeggi, ecc.)
+        const estTot   = anni.map(y => dati[y]?.esercizi_tot ?? null);
+        const estBnb   = anni.map(y => dati[y]?.esercizi_bnb ?? null);
+        const estCase  = anni.map(y => dati[y]?.esercizi_case ?? null);
+        const estAltri = anni.map((y, i) => {
+            const tot = dati[y]?.esercizi_tot, bnb = dati[y]?.esercizi_bnb ?? 0, cas = dati[y]?.esercizi_case ?? 0;
+            return tot != null ? Math.max(0, tot - bnb - cas) : null;
+        });
+
+        // Posti letto: altri = tot - bnb - case
+        const plTot   = anni.map(y => dati[y]?.posti_letto_tot ?? null);
+        const plBnb   = anni.map(y => dati[y]?.posti_letto_bnb ?? null);
+        const plCase  = anni.map(y => dati[y]?.posti_letto_case ?? null);
+        const plAltri = anni.map((y, i) => {
+            const tot = dati[y]?.posti_letto_tot, bnb = dati[y]?.posti_letto_bnb ?? 0, cas = dati[y]?.posti_letto_case ?? 0;
+            return tot != null ? Math.max(0, tot - bnb - cas) : null;
+        });
+
+        const layout = {
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            font: { family: 'inherit', size: 11 },
+            legend: { orientation: 'h', y: -0.22, x: 0 },
+            margin: { t: 20, r: 20, b: 80, l: 55 },
+            xaxis: { fixedrange: true, dtick: 2, tickangle: -45 },
+            yaxis: { fixedrange: true },
+            barmode: 'stack',
+            hovermode: 'x unified',
+        };
+        const cfg = { responsive: true, displayModeBar: false };
+
+        Plotly.newPlot('chart-ricettiva-est', [
+            { x: anni, y: estAltri, name: 'Hotel/altri', type: 'bar', marker: { color: '#adb5bd' } },
+            { x: anni, y: estBnb,   name: 'B&B',         type: 'bar', marker: { color: '#457b9d' } },
+            { x: anni, y: estCase,  name: 'Case vacanza', type: 'bar', marker: { color: '#e9c46a' } },
+        ], { ...layout, yaxis: { ...layout.yaxis, title: { text: 'n. esercizi', font: { size: 11 } } } }, cfg);
+
+        Plotly.newPlot('chart-ricettiva-pl', [
+            { x: anni, y: plAltri, name: 'Hotel/altri', type: 'bar', marker: { color: '#adb5bd' } },
+            { x: anni, y: plBnb,   name: 'B&B',         type: 'bar', marker: { color: '#457b9d' } },
+            { x: anni, y: plCase,  name: 'Case vacanza', type: 'bar', marker: { color: '#e9c46a' } },
+        ], { ...layout, yaxis: { ...layout.yaxis, title: { text: 'posti letto', font: { size: 11 } } } }, cfg);
+    }
+
+    fetch(DATA_PATH + 'ricettiva_index.json').then(r => r.json()).then(d => { ricettivaIndexData = d; }).catch(() => {});
 
     Promise.all([
         fetch(DATA_PATH + 'serie/082027.json').then(r => r.json()),
         fetch(DATA_PATH + 'stagionalita.json').then(r => r.json()),
-    ]).then(([serie, stagData]) => {
+        fetch(DATA_PATH + 'popolazione.json').then(r => r.json()).catch(() => null),
+        fetch(DATA_PATH + 'ricettiva.json').then(r => r.json()).catch(() => null),
+    ]).then(([serie, stagData, popData, ricettivaData]) => {
+        popolazioneData = popData;
         // Popola advancedData da JSON
         advancedData.residenti  = serie.pre_tot_res;
         advancedData.stranieri  = serie.pre_tot_nres;
@@ -1569,6 +1733,8 @@ const INFO = {
         renderSeasonality();
         renderOrigin();
         renderAlos();
+        renderPressure(serie);
+        if (ricettivaData) renderRicettiva(ricettivaData);
     });
 
     // Carica indice comuni
@@ -1920,19 +2086,116 @@ const INFO = {
 
     let currentSeasonYear = '2024';
     const seasonCard = document.getElementById('seasonCard');
+    const seasonRow  = document.getElementById('seasonRow');
     let seasonInst = false;
+
+    const ricettivaCompareRow = document.getElementById('ricettivaCompareRow');
 
     function renderViz() {
         const entries = Object.values(selected).filter(d => d.serie);
         if (!entries.length) {
             vizRow.style.display = 'none';
-            seasonCard.style.display = 'none';
+            seasonRow.style.display = 'none';
+            ricettivaCompareRow.style.display = 'none';
             return;
         }
         vizRow.style.display = 'grid';
+        seasonRow.style.display = 'flex';
         renderRadar(entries);
         renderRanking(entries);
         renderSeasonChart(entries);
+        renderPressureCompare(entries);
+        renderRicettivaCompare(entries);
+    }
+
+    let _rcEntries = [];
+
+    function renderRicettivaCompare(entries) {
+        if (!ricettivaIndexData) { ricettivaCompareRow.style.display = 'none'; return; }
+        _rcEntries = entries;
+        const anni = ricettivaIndexData.anni;
+        const nomi = entries.map(d => d.meta.nome);
+        const cfg = { responsive: true, displayModeBar: false };
+        const baseLayout = {
+            paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+            font: { family: 'inherit', size: 11 },
+            legend: { orientation: 'h', y: -0.18, x: 0 },
+            margin: { t: 10, r: 10, b: 70, l: 55 },
+            xaxis: { fixedrange: true },
+            yaxis: { fixedrange: true },
+            barmode: 'stack', hovermode: 'closest',
+        };
+
+        ricettivaCompareRow.innerHTML = `
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+                <span style="font-size:0.78em;font-weight:600;color:var(--text-sub);">${anni[0]}</span>
+                <input type="range" id="rcYearSlider" min="0" max="${anni.length-1}" value="${anni.length-1}" style="flex:1;">
+                <span style="font-size:0.78em;font-weight:600;color:var(--text-sub);">${anni[anni.length-1]}</span>
+                <span id="rcYearLabel" style="font-size:1.3em;font-weight:900;color:var(--accent);min-width:48px;text-align:right;letter-spacing:-.02em;">${anni[anni.length-1]}</span>
+            </div>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;">
+                <div class="viz-card" style="flex:1;min-width:260px;">
+                    <div class="viz-card-title">Capacità Ricettiva — Esercizi <button class="info-btn" onclick="event.stopPropagation();showInfo('cmp_ricettiva_est')">i</button></div>
+                    <div id="rc_est_chart" style="height:280px;"></div>
+                </div>
+                <div class="viz-card" style="flex:1;min-width:260px;">
+                    <div class="viz-card-title">Capacità Ricettiva — Posti Letto <button class="info-btn" onclick="event.stopPropagation();showInfo('cmp_ricettiva_pl')">i</button></div>
+                    <div id="rc_pl_chart" style="height:280px;"></div>
+                </div>
+            </div>`;
+        ricettivaCompareRow.style.display = 'block';
+
+        function getIdx() { return parseInt(document.getElementById('rcYearSlider').value); }
+
+        function dataForIdx(idx) {
+            const ebY     = entries.map(d => ricettivaIndexData.comuni[d.meta.cod]?.eb[idx] ?? null);
+            const ecY     = entries.map(d => ricettivaIndexData.comuni[d.meta.cod]?.ec[idx] ?? null);
+            const eAltriY = entries.map(d => {
+                const c = ricettivaIndexData.comuni[d.meta.cod];
+                if (!c) return null;
+                const e = c.e[idx] ?? null;
+                return e != null ? Math.max(0, e - (c.eb[idx] ?? 0) - (c.ec[idx] ?? 0)) : null;
+            });
+            const pbY     = entries.map(d => ricettivaIndexData.comuni[d.meta.cod]?.pb[idx] ?? null);
+            const pcY     = entries.map(d => ricettivaIndexData.comuni[d.meta.cod]?.pc[idx] ?? null);
+            const pAltriY = entries.map(d => {
+                const c = ricettivaIndexData.comuni[d.meta.cod];
+                if (!c) return null;
+                const p = c.p[idx] ?? null;
+                return p != null ? Math.max(0, p - (c.pb[idx] ?? 0) - (c.pc[idx] ?? 0)) : null;
+            });
+            return { ebY, ecY, eAltriY, pbY, pcY, pAltriY };
+        }
+
+        const idx0 = anni.length - 1;
+        const { ebY, ecY, eAltriY, pbY, pcY, pAltriY } = dataForIdx(idx0);
+
+        Plotly.newPlot('rc_est_chart', [
+            { x: nomi, y: eAltriY, name: 'Hotel/altri',  type: 'bar', marker: { color: '#adb5bd' } },
+            { x: nomi, y: ebY,     name: 'B&B',           type: 'bar', marker: { color: '#457b9d' } },
+            { x: nomi, y: ecY,     name: 'Case vacanza',   type: 'bar', marker: { color: '#e9c46a' } },
+        ], { ...baseLayout, yaxis: { ...baseLayout.yaxis, title: { text: 'n. esercizi', font: { size: 10 } } } }, cfg);
+
+        Plotly.newPlot('rc_pl_chart', [
+            { x: nomi, y: pAltriY, name: 'Hotel/altri', type: 'bar', marker: { color: '#adb5bd' } },
+            { x: nomi, y: pbY,     name: 'B&B',          type: 'bar', marker: { color: '#457b9d' } },
+            { x: nomi, y: pcY,     name: 'Case vacanza',  type: 'bar', marker: { color: '#e9c46a' } },
+        ], { ...baseLayout, yaxis: { ...baseLayout.yaxis, title: { text: 'posti letto', font: { size: 10 } } } }, cfg);
+
+        function sliderFill(sl) {
+            const pct = sl.value / sl.max * 100;
+            sl.style.background = `linear-gradient(to right,var(--accent) ${pct}%,var(--border) ${pct}%)`;
+        }
+        const sl = document.getElementById('rcYearSlider');
+        sliderFill(sl);
+        sl.addEventListener('input', function() {
+            sliderFill(this);
+            const idx = parseInt(this.value);
+            document.getElementById('rcYearLabel').textContent = anni[idx];
+            const { ebY, ecY, eAltriY, pbY, pcY, pAltriY } = dataForIdx(idx);
+            Plotly.restyle('rc_est_chart', { y: [eAltriY, ebY, ecY] }, [0, 1, 2]);
+            Plotly.restyle('rc_pl_chart',  { y: [pAltriY, pbY, pcY] }, [0, 1, 2]);
+        });
     }
 
     function renderSeasonChart(entries) {
@@ -2009,13 +2272,13 @@ const INFO = {
             html += '</div></div>';
             document.getElementById('seasonChart').innerHTML = html;
             document.getElementById('seasonChart').style.height = 'auto';
-            seasonCard.style.display = 'block';
+            seasonRow.style.display = 'flex';
             return;
         }
 
         const rowH = Math.max(34, Math.floor(140 / entries.length));
         const layout = {
-            margin: { l: 90, r: 60, t: 10, b: 40 },
+            margin: { l: 65, r: 65, t: 10, b: 40 },
             height: entries.length * rowH + 60,
             plot_bgcolor: '#ffffff',
             paper_bgcolor: 'rgba(0,0,0,0)',
@@ -2033,13 +2296,23 @@ const INFO = {
         }
     }
 
-    document.querySelectorAll('.season-yr-btn').forEach(btn => {
+    document.querySelectorAll('[data-yr]').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.season-yr-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('[data-yr]').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentSeasonYear = btn.dataset.yr;
             const entries = Object.values(selected).filter(d => d.serie);
             if (entries.length) renderSeasonChart(entries);
+        });
+    });
+
+    document.querySelectorAll('[data-pressure-yr]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-pressure-yr]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentPressureYear = parseInt(btn.dataset.pressureYr);
+            const entries = Object.values(selected).filter(d => d.serie);
+            if (entries.length) renderPressureCompare(entries);
         });
     });
 
@@ -2201,6 +2474,42 @@ const INFO = {
             }
             return `<div class="rank-block">${rows.join('')}</div>`;
         }).join('');
+    }
+
+    function renderPressureCompare(entries) {
+        const ANNI_SERIE = [2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024];
+        const idx2024 = ANNI_SERIE.indexOf(currentPressureYear);
+        const popCom = popolazioneData?.comuni || {};
+
+        const nomi   = entries.map(d => d.meta.nome);
+        const colors = entries.map((_, i) => COLORS[i % COLORS.length]);
+
+        // Calcola indice presenze/abitante per il 2024
+        const valori = entries.map(d => {
+            const pre = d.serie.pre_tot[idx2024];
+            const popArr = popCom[d.meta.cod];
+            const pop = popArr ? popArr[idx2024] : null;
+            return (pre && pop) ? Math.round(pre / pop * 10) / 10 : null;
+        });
+
+        const hasData = valori.some(Boolean);
+        const maxVal2 = hasData ? Math.max(...valori.filter(Boolean)) : 1;
+
+        Plotly.newPlot('pressureCompareChart', [{
+            x: nomi, y: valori, type: 'bar',
+            marker: { color: colors },
+            hovertemplate: '<b>%{x}</b><br>%{y:.1f} notti/abitante<extra></extra>',
+            text: valori.map(v => v ? v.toFixed(1) : 'n.d.'),
+            textposition: 'outside',
+            textfont: { size: 11 }
+        }], {
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            font: { family: 'inherit' },
+            margin: { t: 36, r: 16, b: 60, l: 50 },
+            xaxis: { fixedrange: true },
+            yaxis: { fixedrange: true, range: [0, maxVal2 * 1.2], title: { text: 'notti/abitante', font: { size: 11 } } },
+        }, { responsive: true, displayModeBar: false });
     }
 
     window.explorerRemove = removeComune;
