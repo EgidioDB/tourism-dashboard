@@ -1864,7 +1864,7 @@ const INFO = {
             function row(label, val, note) {
                 if (!val) return `<div class="data-row"><span>${label}</span><span class="value cbox-na">n.d.</span></div>`;
                 const style = colorPct(parseFloat(val));
-                const nom = note ? `data-nominal="<div class='nom-r'><span>${note}</span></div>"
+                const nom = note ? `data-nominal="<div class='nom-r'><span>${note.replace(/(\d[\d.,]*)/g, '<b>$1</b>')}</span></div>"
                     onclick="toggleNominal(this)"` : '';
                 return `<div class="data-row" ${nom}><span>${label}</span><span class="value" style="${style}">${val}</span></div>`;
             }
