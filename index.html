@@ -2285,13 +2285,21 @@ const INFO = {
         };
 
         seasonCard.style.display = 'block';
-        document.getElementById('seasonChart').style.height = layout.height + 'px';
-        if (seasonInst) {
-            Plotly.react('seasonChart', traces, layout, { displayModeBar: false, responsive: true });
-        } else {
-            Plotly.newPlot('seasonChart', traces, layout, { displayModeBar: false, responsive: true });
-            seasonInst = true;
-        }
+        const scEl = document.getElementById('seasonChart');
+        scEl.style.height = layout.height + 'px';
+        scEl.style.marginTop = '0';
+        const plotPromise = seasonInst
+            ? Plotly.react('seasonChart', traces, layout, { displayModeBar: false, responsive: true })
+            : Plotly.newPlot('seasonChart', traces, layout, { displayModeBar: false, responsive: true });
+        if (!seasonInst) seasonInst = true;
+        plotPromise.then(() => setTimeout(() => {
+            const headerEl = seasonCard.querySelector('div');
+            const available = seasonCard.offsetHeight
+                - (headerEl ? headerEl.offsetHeight + 12 : 0)
+                - 28; // viz-card padding 14*2
+            const mt = Math.max(0, Math.floor((available - scEl.offsetHeight) / 2));
+            if (mt > 0) scEl.style.marginTop = mt + 'px';
+        }, 0));
     }
 
     document.querySelectorAll('[data-yr]').forEach(btn => {
