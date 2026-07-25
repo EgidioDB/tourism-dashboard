@@ -1864,7 +1864,7 @@ const INFO = {
             function row(label, val, note) {
                 if (!val) return `<div class="data-row"><span>${label}</span><span class="value cbox-na">n.d.</span></div>`;
                 const style = colorPct(parseFloat(val));
-                const nom = note ? `data-nominal="<div class='nom-r'><span>${note.replace(/(\d[\d.,]*)/g, '<b>$1</b>')}</span></div>"
+                const nom = note ? `data-nominal="<div class='nom-r'><span>${note}</span></div>"
                     onclick="toggleNominal(this)"` : '';
                 return `<div class="data-row" ${nom}><span>${label}</span><span class="value" style="${style}">${val}</span></div>`;
             }
@@ -1878,16 +1878,16 @@ const INFO = {
                 </div>
 
                 <div class="cbox-section">Crescita complessiva 2014 → 2024 <button class="info-btn" onclick="event.stopPropagation();showInfo('cbox_crescita')">i</button></div>
-                ${row('Arrivi', growArr, a14 && a24 ? `2014: ${fmtN(a14)} · 2024: ${fmtN(a24)}` : null)}
-                ${row('Presenze', growPre, p14 && p24 ? `2014: ${fmtN(p14)} · 2024: ${fmtN(p24)}` : null)}
+                ${row('Arrivi', growArr, a14 && a24 ? `2014: <b>${fmtN(a14)}</b> · 2024: <b>${fmtN(a24)}</b>` : null)}
+                ${row('Presenze', growPre, p14 && p24 ? `2014: <b>${fmtN(p14)}</b> · 2024: <b>${fmtN(p24)}</b>` : null)}
 
                 <div class="cbox-section">Pre-COVID 2014 → 2019 <button class="info-btn" onclick="event.stopPropagation();showInfo('cbox_precovid')">i</button></div>
-                ${row('Arrivi', preArr, a14 && a19 ? `2014: ${fmtN(a14)} · 2019: ${fmtN(a19)}` : null)}
-                ${row('Presenze', prePre, p14 && p19 ? `2014: ${fmtN(p14)} · 2019: ${fmtN(p19)}` : null)}
+                ${row('Arrivi', preArr, a14 && a19 ? `2014: <b>${fmtN(a14)}</b> · 2019: <b>${fmtN(a19)}</b>` : null)}
+                ${row('Presenze', prePre, p14 && p19 ? `2014: <b>${fmtN(p14)}</b> · 2019: <b>${fmtN(p19)}</b>` : null)}
 
                 <div class="cbox-section">Post-COVID 2019 → 2024 <button class="info-btn" onclick="event.stopPropagation();showInfo('cbox_postcovid')">i</button></div>
-                ${row('Arrivi', pcArr, a19 && a24 ? `2019: ${fmtN(a19)} · 2024: ${fmtN(a24)}` : null)}
-                ${row('Presenze', pcPre, p19 && p24 ? `2019: ${fmtN(p19)} · 2024: ${fmtN(p24)}` : null)}
+                ${row('Arrivi', pcArr, a19 && a24 ? `2019: <b>${fmtN(a19)}</b> · 2024: <b>${fmtN(a24)}</b>` : null)}
+                ${row('Presenze', pcPre, p19 && p24 ? `2019: <b>${fmtN(p19)}</b> · 2024: <b>${fmtN(p24)}</b>` : null)}
 
                 <div class="cbox-section">2024 — dettaglio <button class="info-btn" onclick="event.stopPropagation();showInfo('cbox_dettaglio')">i</button></div>
                 ${aAlb24 ? `<div class="data-row"><span>Alb. arrivi</span><span class="value">${fmtN(aAlb24)}</span></div>` : ''}
