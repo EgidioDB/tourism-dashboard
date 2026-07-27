@@ -1582,6 +1582,88 @@
         var ov = _revealOverlay(el);
         _revealGo(el, ov);
     }
+    // Animazione mista barre + linea: barre crescono dal basso, linea si disegna L→R
+    // barTraceIdx: indici delle trace da animare come barre (default: tutte le trace 'bar')
+    // lineDelay: ms di ritardo prima di avviare l'animazione linea (default 120)
+    function cefaluAnimMixed(elId, traces, layout, cfg, lineDelay) {
+        var el = document.getElementById(elId);
+        if (!el) return;
+        lineDelay = lineDelay != null ? lineDelay : 120;
+
+        var allVals = [];
+        traces.forEach(function(t) {
+            (t.y || []).forEach(function(v) { if (v != null) allVals.push(v); });
+        });
+        var maxY = allVals.length ? Math.max.apply(null, allVals) : 1;
+
+        var fixedLayout = Object.assign({}, layout, {
+            yaxis: Object.assign({}, layout.yaxis, { range: [0, maxY * 1.18], fixedrange: true })
+        });
+        if (layout.yaxis2) {
+            fixedLayout.yaxis2 = Object.assign({}, layout.yaxis2, { fixedrange: true });
+        }
+
+        var zeroTraces = traces.map(function(t) {
+            if (t.type === 'bar') {
+                return Object.assign({}, t, {
+                    y: (t.y || []).map(function() { return 0; }),
+                    text: undefined, textposition: undefined
+                });
+            }
+            return t;
+        });
+
+        function hideLines() {
+            el.querySelectorAll('.scatterlayer .trace .lines path').forEach(function(path) {
+                var len = path.getTotalLength();
+                path.style.transition = 'none';
+                path.style.strokeDasharray = len;
+                path.style.strokeDashoffset = len;
+            });
+        }
+
+        // Dopo il newPlot, nascondi subito le linee prima che siano visibili
+        Plotly.newPlot(elId, zeroTraces, fixedLayout, cfg).then(function() {
+            hideLines();
+
+            _cefObs(el, function() {
+                // Re-nascondi le linee (Plotly potrebbe averle re-renderizzate)
+                hideLines();
+
+                // Anima le barre dal basso (ease-out cubic, 780ms)
+                var start = null, DUR = 780;
+                function fr(ts) {
+                    if (!start) start = ts;
+                    var p = Math.min(1, (ts - start) / DUR);
+                    var e = 1 - Math.pow(1 - p, 3);
+                    var isLast = p >= 1;
+                    Plotly.react(elId, traces.map(function(t) {
+                        if (t.type !== 'bar') return t;
+                        return Object.assign({}, t, {
+                            y: (t.y || []).map(function(v) { return v != null ? v * e : null; }),
+                            text: isLast ? t.text : undefined,
+                            textposition: isLast ? t.textposition : undefined
+                        });
+                    }), fixedLayout, cfg);
+                    if (!isLast) requestAnimationFrame(fr);
+                }
+                requestAnimationFrame(fr);
+
+                // Disegna le linee L→R dopo lineDelay
+                setTimeout(function() {
+                    el.querySelectorAll('.scatterlayer .trace .lines path').forEach(function(path, i) {
+                        var len = path.getTotalLength();
+                        path.style.strokeDasharray = len;
+                        path.style.strokeDashoffset = len;
+                        path.style.transition = 'none';
+                        path.getBoundingClientRect(); // force reflow
+                        path.style.transition = 'stroke-dashoffset 1.1s cubic-bezier(0.4,0,0.2,1) ' + (i * 60) + 'ms';
+                        path.style.strokeDashoffset = '0';
+                    });
+                }, lineDelay);
+            });
+        });
+    }
     function cefaluCountup(el, target, dec, dur) {
         if (!el) return;
         dur = dur || 1000;
@@ -1664,8 +1746,7 @@
         const cfg = { responsive: true, displayModeBar: false };
         if (!el.__plotlyInstalled) {
             el.__plotlyInstalled = true;
-            Plotly.newPlot('chart-soggiorno', traces, layout, cfg);
-            cefaluRevealNow('chart-soggiorno');
+            cefaluAnimMixed('chart-soggiorno', traces, layout, cfg, 200);
         } else {
             Plotly.react('chart-soggiorno', traces, layout, cfg);
         }
@@ -1789,8 +1870,7 @@
         const cfg = { responsive: true, displayModeBar: false };
         if (!el.__plotlyInstalled) {
             el.__plotlyInstalled = true;
-            Plotly.newPlot('chart-spesa-sog', traces, layout, cfg);
-            cefaluRevealNow('chart-spesa-sog');
+            cefaluAnimMixed('chart-spesa-sog', traces, layout, cfg, 200);
         } else {
             Plotly.react('chart-spesa-sog', traces, layout, cfg);
         }
