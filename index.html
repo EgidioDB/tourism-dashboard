@@ -540,7 +540,7 @@
         <div class="main-panel" style="flex: 1;">
             <div class="header-box">
                 <h1>Classifica di Crescita Nazionale <button class="info-btn" onclick="showInfo('chart_ranking')">i</button></h1>
-                <p style="font-size:0.75em; margin:0; color: var(--text-sub);">Comuni con presenze >500k (Confronto 2014 vs 2024)</p>
+                <p style="font-size:0.75em; margin:0; color: var(--text-sub);">Comuni con >30k arrivi/anno (Confronto 2014 vs 2024)</p>
             </div>
             <div id="leaderboard-content" style="margin-top: 20px;"></div>
         </div>
@@ -961,16 +961,42 @@
         permanenza: null   // da serie/082027.json
     };
 
-    const leaderboardData = [
-        { rank: 1, citta: "Vimercate", growth: "+893%" },
-        { rank: 2, citta: "Tirano", growth: "+836%" },
-        { rank: 3, citta: "Vizzola Ticino", growth: "+694%" },
-        { rank: 4, citta: "Santa Marinella", growth: "+586%" },
-        { rank: 5, citta: "San Dorligo d.V.", growth: "+457%" },
-        { rank: 6, citta: "Gioiosa Marea", growth: "+372%" },
-        // Salto in classifica...
-        { rank: 117, citta: "Cefalù", growth: "+50%" }
-    ];
+    function buildLeaderboard(index) {
+        const MIN_ARR = 30000;
+        const sorted = index
+            .filter(c => typeof c.growth_pre === 'number' && (c.max_arr || 0) >= MIN_ARR)
+            .sort((a, b) => b.growth_pre - a.growth_pre);
+        const cefPos = sorted.findIndex(c => c.nome.toLowerCase().includes('cefal') && !c.nome.toLowerCase().includes('diana'));
+        const top6 = sorted.slice(0, 6);
+        const cefEntry = cefPos >= 0 ? sorted[cefPos] : null;
+        const fmtG = g => (g >= 0 ? '+' : '') + g.toFixed(0) + '%';
+        const shortName = n => n.length > 18 ? n.replace('della Valle-Dolina','d.V.').replace('in Campania','').trim() : n;
+
+        let html = '';
+        top6.forEach((c, i) => {
+            html += `<div class="data-row lb-anim" style="font-size:1.05em;margin-bottom:6px;animation-delay:${i*60}ms;padding:6px 8px;border-bottom:1px solid var(--border);">
+                <span>${i+1}. ${shortName(c.nome)}</span>
+                <span class="value" style="color:var(--text-sub);">${fmtG(c.growth_pre)}</span>
+            </div>`;
+        });
+        if (cefEntry && cefPos >= 6) {
+            html += `<div style="text-align:center;color:#aab7c4;margin:4px 0;font-size:1.2em;">...</div>`;
+            html += `<div class="data-row lb-anim" style="font-size:1.05em;margin-bottom:6px;animation-delay:${6*60}ms;background:rgba(36,178,126,0.1);padding:8px;border-radius:4px;border-left:4px solid var(--accent);font-weight:bold;">
+                <span>${cefPos+1}. Cefalù</span>
+                <span class="value" style="color:var(--accent);">${fmtG(cefEntry.growth_pre)}</span>
+            </div>`;
+        }
+        document.getElementById('leaderboard-content').innerHTML = html;
+        var rows = document.querySelectorAll('#leaderboard-content .lb-anim');
+        rows.forEach(r => r.style.animationPlayState = 'paused');
+        var obs = new IntersectionObserver(function(e) {
+            if (!e[0].isIntersecting) return;
+            obs.disconnect();
+            rows.forEach(r => r.style.animationPlayState = 'running');
+        }, { threshold: 0.15 });
+        var lbEl = document.getElementById('leaderboard-content');
+        if (lbEl) obs.observe(lbEl);
+    }
 
     const fmt = (v) => (v - 100) > 0 ? '+' + (v - 100).toFixed(1) : (v - 100).toFixed(1);
 
@@ -2016,35 +2042,6 @@
 
 
 
-    // D. Leaderboard Top Cities (Con salto di posizione)
-    let lbHtml = '';
-    leaderboardData.forEach((row, index) => {
-        const isCef = row.citta === 'Cefalù';
-        
-        // Se è Cefalù, aggiungiamo dei puntini di sospensione per far capire il salto in classifica
-        if (isCef) {
-            lbHtml += `<div style="text-align: center; color: #aab7c4; margin: 4px 0; font-size: 1.2em;">...</div>`;
-        }
-
-        lbHtml += `
-            <div class="data-row lb-anim" style="font-size: 1.05em; margin-bottom: 6px; animation-delay:${index * 60}ms; ${isCef ? 'background: rgba(36, 178, 126, 0.1); padding: 8px; border-radius: 4px; border-left: 4px solid var(--accent); font-weight: bold;' : 'padding: 6px 8px; border-bottom: 1px solid var(--border);'}">
-                <span>${row.rank}. ${row.citta}</span>
-                <span class="value" style="${isCef ? 'color: var(--accent);' : 'color: var(--text-sub);'}">${row.growth}</span>
-            </div>`;
-    });
-    document.getElementById('leaderboard-content').innerHTML = lbHtml;
-    // Triggera le animazioni solo quando entra nel viewport
-    (function() {
-        var lbEl = document.getElementById('leaderboard-content');
-        var rows = lbEl.querySelectorAll('.lb-anim');
-        rows.forEach(function(r) { r.style.animationPlayState = 'paused'; });
-        var obs = new IntersectionObserver(function(e) {
-            if (!e[0].isIntersecting) return;
-            obs.disconnect();
-            rows.forEach(function(r) { r.style.animationPlayState = 'running'; });
-        }, { threshold: 0.15 });
-        obs.observe(lbEl);
-    })();
 </script>
 
 <!-- Info popup overlay -->
@@ -2349,6 +2346,7 @@ const INFO = {
         .then(r => r.json())
         .then(data => {
             comuniIndex = data;
+            buildLeaderboard(data);
             const params = new URLSearchParams(location.search);
             const codici = (params.get('comuni') || '').split(',').filter(Boolean);
             codici.forEach(cod => {
