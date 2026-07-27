@@ -110,13 +110,25 @@
         #infoBox {
             position: relative; z-index: 1;
             background: #fff; border-radius: 12px;
-            padding: 20px 18px 16px;
+            padding: 0;
             box-shadow: 0 8px 32px rgba(0,0,0,0.22);
-            max-width: 340px; width: calc(100% - 80px);
+            max-width: 380px; width: calc(100% - 80px);
             font-size: 0.82em; line-height: 1.55; color: var(--text-main);
+            display: flex; flex-direction: column;
+            max-height: 75vh;
+        }
+        #infoBody {
+            overflow-y: auto; padding: 20px 18px 12px;
+            flex: 1; min-height: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        #infoFooter {
+            border-top: 1px solid rgba(0,0,0,0.08);
+            padding: 10px 18px 12px;
+            flex-shrink: 0;
         }
         #infoBox strong { display: block; margin-bottom: 8px; font-size: 1em; }
-        .info-fonte { display: block; margin-top: 13px; font-size: 0.82em; opacity: 0.55; font-style: italic; }
+        .info-fonte { display: block; font-size: 0.82em; opacity: 0.55; font-style: italic; }
         .data-row { cursor: pointer; border-radius: 3px; margin: 0 -4px; padding: 6px 4px; transition: background .1s; }
         .data-row:hover { background: rgba(0,0,0,0.04); }
         .data-row.dr-open { background: rgba(69,123,157,0.1); border-radius: 3px 3px 0 0; }
@@ -134,10 +146,12 @@
         }
         @media (max-width: 768px) {
             #infoBox {
-                max-width: 100%; width: calc(100% - 70px);
-                font-size: 0.95em; padding: 24px 20px 20px;
-                border-radius: 16px;
+                max-width: 100%; width: calc(100% - 36px);
+                font-size: 0.93em; border-radius: 16px;
+                max-height: 82vh;
             }
+            #infoBody { padding: 22px 18px 10px; }
+            #infoFooter { padding: 9px 18px 14px; }
             body { padding: 0 !important; }
             .main-layout { gap: 25px !important; padding: 0 !important; }
             .cefalu-section, .italia-section, .confronta-section {
@@ -556,6 +570,28 @@
         <div class="main-panel" style="flex: 1;">
             <div class="header-box"><h1>Tasso di Occupazione Ricettiva <button class="info-btn" onclick="showInfo('chart_occupancy')">i</button></h1></div>
             <div id="chart-occupancy" style="height: 320px;"></div>
+        </div>
+    </div>
+
+    <div class="dashboard-row" style="height: auto;">
+        <div class="main-panel" style="flex: 1;">
+            <div class="header-box" style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                <h1>Imposta di Soggiorno <button class="info-btn" onclick="showInfo('chart_soggiorno')">i</button></h1>
+                <div id="soggiorno-yr-btns" style="display:flex; gap:4px; flex-wrap:wrap; margin-top:2px;"></div>
+            </div>
+            <div id="chart-soggiorno" style="height: 320px;"></div>
+            <div id="soggiorno-kpi" style="display:flex; gap:16px; flex-wrap:wrap; padding:8px 4px 2px; font-size:0.78em; color:var(--text-sub);"></div>
+        </div>
+    </div>
+
+    <div class="dashboard-row" style="height: auto;">
+        <div class="main-panel" style="flex: 1;">
+            <div class="header-box" style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                <h1>Spesa Turismo vs Imposta di Soggiorno <button class="info-btn" onclick="showInfo('chart_spesa_vs_sog')">i</button></h1>
+                <div id="spesa-sog-yr-btns" style="display:flex; gap:4px; flex-wrap:wrap; margin-top:2px;"></div>
+            </div>
+            <div id="chart-spesa-sog" style="height: 340px;"></div>
+            <div id="spesa-sog-kpi" style="display:flex; gap:16px; flex-wrap:wrap; padding:8px 4px 2px; font-size:0.78em; color:var(--text-sub);"></div>
         </div>
     </div>
     </div><!-- /cefalu-section -->
@@ -1564,6 +1600,283 @@
     let currentCefSeasonYear = '2024';
 
     // A. Stagionalità (Bar Chart) — dati caricati da stagionalita.json
+    // ── IMPOSTA DI SOGGIORNO ────────────────────────────────────────
+    const SOGGIORNO_DATA = {
+        anni:  [2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024],
+        valori:[120927, 129052, 137627, 158011, 167073, 645948, 997826, 437925, 548268, 849631, 1249421, 1783223],
+        entrib:[10777268, 11021809, 10798262, 12484853, 14851635, 13523250, 15601468, 13003085, 13844658, 13738644, 13631199, 15340827]
+    };
+    let currentSoggiornoYear = null;
+
+    function renderSoggiorno(selYear) {
+        currentSoggiornoYear = selYear || currentSoggiornoYear;
+        const { anni, valori, entrib } = SOGGIORNO_DATA;
+        const pct = valori.map((v, i) => entrib[i] > 0 ? +(v / entrib[i] * 100).toFixed(2) : 0);
+
+        // colori barre: evidenzia anno selezionato
+        const barColors = anni.map(a =>
+            (!currentSoggiornoYear || a === currentSoggiornoYear) ? '#e07b39' : 'rgba(224,123,57,0.28)'
+        );
+
+        // Presenze turistiche (notti) da advancedData — anni 2014-2024, indice 0=2014
+        const adAnni = advancedData.anni || [];
+        const adPre  = advancedData.pre_tot || [];
+        const presenzeY = anni.map(a => {
+            const idx = adAnni.indexOf(a);
+            return idx >= 0 ? adPre[idx] : null;
+        });
+        const hasPre = presenzeY.some(v => v !== null);
+
+        const traces = [
+            {
+                x: anni, y: valori, type: 'bar', name: 'Imposta di soggiorno (€)',
+                marker: { color: barColors },
+                text: pct.map(p => p.toFixed(1) + '%'),
+                textposition: 'outside',
+                textfont: { size: 10, color: '#1d3557' },
+                cliponaxis: false,
+                yaxis: 'y',
+                hovertemplate: '<b>%{x}</b><br>€ %{y:,.0f}<br>%{text} ent. tributarie<extra></extra>'
+            },
+            ...(hasPre ? [{
+                x: anni, y: presenzeY, type: 'scatter', mode: 'lines+markers',
+                name: 'Presenze (notti)',
+                line: { color: '#24b27e', width: 2, dash: 'dot' },
+                marker: { size: 5, color: '#24b27e' },
+                yaxis: 'y2',
+                connectgaps: false,
+                hovertemplate: '<b>%{x}</b><br>%{y:,.0f} notti<extra></extra>'
+            }] : [])
+        ];
+
+        const layout = {
+            ...baseLayout,
+            xaxis: { fixedrange: true, tickmode: 'array', tickvals: anni, ticktext: anni.map(String) },
+            yaxis: { fixedrange: true, tickformat: ',.0f', tickprefix: '€ ', title: '' },
+            ...(hasPre ? { yaxis2: { fixedrange: true, overlaying: 'y', side: 'right', tickformat: ',.0f', showgrid: false, title: '' } } : {}),
+            showlegend: hasPre,
+            legend: { orientation: 'h', y: -0.18, x: 0.5, xanchor: 'center', font: { size: 11 } },
+            margin: { t: 28, r: hasPre ? 60 : 20, b: hasPre ? 55 : 50, l: 65 }
+        };
+
+        const el = document.getElementById('chart-soggiorno');
+        if (!el) return;
+        const cfg = { responsive: true, displayModeBar: false };
+        if (!el.__plotlyInstalled) {
+            el.__plotlyInstalled = true;
+            Plotly.newPlot('chart-soggiorno', traces, layout, cfg);
+            cefaluRevealNow('chart-soggiorno');
+        } else {
+            Plotly.react('chart-soggiorno', traces, layout, cfg);
+        }
+
+        // KPI strip
+        const kpiEl = document.getElementById('soggiorno-kpi');
+        if (kpiEl) {
+            if (!currentSoggiornoYear) {
+                // Vista panoramica: riepilogo periodo
+                const totale = valori.reduce((s, v) => s + v, 0);
+                const crescita = +((valori[valori.length-1] / valori[0] - 1) * 100).toFixed(0);
+                const peakIdx = valori.indexOf(Math.max(...valori));
+                const media = Math.round(totale / valori.length);
+                kpiEl.innerHTML = `
+                    <span>2013–2022 &nbsp;crescita: <b style="color:#24b27e">+${crescita}%</b></span>
+                    <span>record: <b style="color:#e07b39">${anni[peakIdx]}</b> &nbsp;€ ${valori[peakIdx].toLocaleString('it-IT')}</span>
+                    <span>media annua: € <b style="color:var(--text)">${media.toLocaleString('it-IT')}</b></span>
+                    <span style="margin-left:auto;color:var(--text-sub)">Fonte: Relazioni Giunta Municipale</span>
+                `;
+            } else {
+                const sel = anni.indexOf(currentSoggiornoYear);
+                const v = valori[sel], p = pct[sel];
+                const prev = sel > 0 ? valori[sel - 1] : null;
+                const delta = prev ? ((v - prev) / prev * 100).toFixed(1) : null;
+                const sign = delta !== null ? (parseFloat(delta) >= 0 ? '+' : '') : '';
+                kpiEl.innerHTML = `
+                    <span><b style="color:var(--text)">${currentSoggiornoYear}</b> &nbsp;€ <b style="color:#e07b39">${v.toLocaleString('it-IT')}</b></span>
+                    ${delta !== null ? `<span>vs ${currentSoggiornoYear-1}: <b style="color:${parseFloat(delta)>=0?'#24b27e':'#e63946'}">${sign}${delta}%</b></span>` : ''}
+                    <span>% su ent. tributarie: <b style="color:#1d3557">${p.toFixed(2)}%</b></span>
+                    <span style="margin-left:auto;color:var(--text-sub)">Fonte: Relazioni Giunta Municipale</span>
+                `;
+            }
+        }
+
+        // Aggiorna bottoni
+        document.querySelectorAll('#soggiorno-yr-btns .season-yr-btn').forEach(b => {
+            b.classList.toggle('active', parseInt(b.dataset.soggiornoYr) === currentSoggiornoYear);
+        });
+    }
+
+    // Costruisce i bottoni anno soggiorno (una volta)
+    (function buildSoggiornoButtons() {
+        const container = document.getElementById('soggiorno-yr-btns');
+        if (!container) return;
+        SOGGIORNO_DATA.anni.forEach(a => {
+            const btn = document.createElement('button');
+            btn.className = 'season-yr-btn';
+            btn.dataset.soggiornoYr = a;
+            btn.textContent = a;
+            btn.addEventListener('click', function() {
+                const yr = parseInt(this.dataset.soggiornoYr);
+                currentSoggiornoYear = (currentSoggiornoYear === yr) ? null : yr;
+                renderSoggiorno(currentSoggiornoYear);
+            });
+            container.appendChild(btn);
+        });
+    })();
+    // ── /IMPOSTA DI SOGGIORNO ───────────────────────────────────────
+
+    // ── SPESA TURISMO vs IMPOSTA DI SOGGIORNO ──────────────────────
+    const SPESA_SOG_DATA = {
+        anni: [2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024],
+        spese:[567141,1693456,983352,529906,455438,441215,75037,177353,118803,0,50083,165729,null,null,null,null,null,799763],
+        sog:  [null,null,null,null,null,null,120927,129052,137627,158011,167073,645948,997826,437925,548268,849631,1249421,1783223]
+    };
+
+    let currentSpesaSogYear = null;
+
+    function renderSpesaSog(selYear) {
+        currentSpesaSogYear = (selYear !== undefined) ? selYear : currentSpesaSogYear;
+        const { anni, spese, sog } = SPESA_SOG_DATA;
+        const sel = currentSpesaSogYear;
+
+        const barColors = anni.map((a, i) => {
+            const hasData = spese[i] !== null;
+            const isNew = a >= 2016;
+            const fade = sel && a !== sel;
+            if (!hasData) return 'transparent';
+            if (fade) return isNew ? 'rgba(29,53,87,0.18)' : 'rgba(29,53,87,0.18)';
+            return isNew ? 'rgba(29,53,87,0.55)' : 'rgba(29,53,87,0.82)';
+        });
+        const lineOpacity = sel ? 0.35 : 1;
+
+        const traces = [
+            {
+                x: anni, y: spese, type: 'bar', name: 'Spesa turismo (€)',
+                marker: { color: barColors },
+                hovertemplate: '<b>%{x}</b><br>Spesa turismo: € %{y:,.0f}<extra></extra>',
+                yaxis: 'y'
+            },
+            {
+                x: anni, y: sog, type: 'scatter', mode: 'lines+markers', name: 'Imposta di soggiorno (€)',
+                line: { color: `rgba(224,123,57,${lineOpacity})`, width: 2.5 },
+                marker: {
+                    size: anni.map(a => sel && a === sel ? 10 : 6),
+                    color: anni.map(a => sel && a === sel ? '#e07b39' : `rgba(224,123,57,${lineOpacity})`)
+                },
+                connectgaps: false,
+                hovertemplate: '<b>%{x}</b><br>Imposta soggiorno: € %{y:,.0f}<extra></extra>',
+                yaxis: 'y'
+            }
+        ];
+
+        const layout = {
+            ...baseLayout,
+            xaxis: { fixedrange: true, tickmode: 'array', tickvals: anni, ticktext: anni.map(String), tickangle: -45 },
+            yaxis: { fixedrange: true, tickformat: ',.0f', tickprefix: '€ ', title: '' },
+            showlegend: true,
+            legend: { orientation: 'h', y: -0.28, x: 0.5, xanchor: 'center', font: { size: 11 } },
+            margin: { t: 36, r: 20, b: 80, l: 70 },
+            annotations: [{
+                x: 2015.5, y: 1, xref: 'x', yref: 'paper',
+                text: '◀ DPR 194/96 | D.Lgs. 118/2011 ▶',
+                showarrow: false, font: { size: 9, color: '#888' },
+                xanchor: 'center', yanchor: 'top'
+            }]
+        };
+
+        const el = document.getElementById('chart-spesa-sog');
+        if (!el) return;
+        const cfg = { responsive: true, displayModeBar: false };
+        if (!el.__plotlyInstalled) {
+            el.__plotlyInstalled = true;
+            Plotly.newPlot('chart-spesa-sog', traces, layout, cfg);
+            cefaluRevealNow('chart-spesa-sog');
+        } else {
+            Plotly.react('chart-spesa-sog', traces, layout, cfg);
+        }
+
+        // KPI strip
+        const kpiEl = document.getElementById('spesa-sog-kpi');
+        if (kpiEl) {
+            if (!sel) {
+                // Vista panoramica — KPI sintetici
+                const both = anni.filter((a, i) => spese[i] !== null && spese[i] > 0 && sog[i] !== null);
+                // Miglior rapporto incasso/spesa
+                let bestRatioAnno = null, bestRatio = 0;
+                both.forEach(a => {
+                    const i = anni.indexOf(a);
+                    const r = sog[i] / spese[i];
+                    if (r > bestRatio) { bestRatio = r; bestRatioAnno = a; }
+                });
+                // Anno max spesa
+                const validSpese = anni.filter((a,i) => spese[i] !== null && spese[i] > 0);
+                const maxSpesaAnno = validSpese.reduce((best, a) => spese[anni.indexOf(a)] > spese[anni.indexOf(best)] ? a : best);
+                const maxSpesa = spese[anni.indexOf(maxSpesaAnno)];
+                // Anno max imposta (dall'array sog)
+                const maxSogAnno = anni.reduce((best, a, i) => (sog[i] !== null && (best === null || sog[i] > sog[anni.indexOf(best)])) ? a : best, null);
+                const maxSog = sog[anni.indexOf(maxSogAnno)];
+                // Saldo 2024 (imposta - spesa)
+                const i24 = anni.indexOf(2024);
+                const saldo24 = (sog[i24] || 0) - (spese[i24] || 0);
+                kpiEl.innerHTML = `
+                    <span>record spesa: <b style="color:#1d3557">${maxSpesaAnno}</b> &nbsp;€ ${maxSpesa.toLocaleString('it-IT',{maximumFractionDigits:0})}</span>
+                    <span>record imposta: <b style="color:#e07b39">${maxSogAnno}</b> &nbsp;€ ${maxSog.toLocaleString('it-IT',{maximumFractionDigits:0})}</span>
+                    <span>miglior rapporto: <b style="color:#24b27e">${bestRatioAnno}</b> &nbsp;${bestRatio.toFixed(2)}× incasso/spesa</span>
+                    <span>saldo 2024: <b style="color:${saldo24>=0?'#24b27e':'#e63946'}">+ € ${saldo24.toLocaleString('it-IT',{maximumFractionDigits:0})}</b></span>
+                `;
+            } else {
+                const i = anni.indexOf(sel);
+                const sp = spese[i], sg = sog[i];
+                const hasSp = sp !== null && sp > 0;
+                const hasSg = sg !== null;
+                const prev_i = i > 0 ? i - 1 : -1;
+                let html = `<span><b style="color:var(--text)">${sel}</b></span>`;
+                if (hasSp) {
+                    html += `<span>Spesa: <b style="color:#1d3557">€ ${sp.toLocaleString('it-IT',{maximumFractionDigits:0})}</b></span>`;
+                    const prevSp = prev_i >= 0 ? spese[prev_i] : null;
+                    if (prevSp !== null && prevSp > 0) {
+                        const d = ((sp - prevSp)/prevSp*100).toFixed(1);
+                        html += `<span>vs ${anni[prev_i]}: <b style="color:${parseFloat(d)>=0?'#24b27e':'#e63946'}">${parseFloat(d)>=0?'+':''}${d}%</b></span>`;
+                    }
+                } else {
+                    html += `<span style="color:var(--text-sub)">Spesa turismo: <em>n.d.</em></span>`;
+                }
+                if (hasSg) {
+                    html += `<span>Imposta: <b style="color:#e07b39">€ ${sg.toLocaleString('it-IT',{maximumFractionDigits:0})}</b></span>`;
+                }
+                if (hasSp && hasSg) {
+                    const ratio = (sg / sp).toFixed(2);
+                    html += `<span>Incasso/spesa: <b style="color:${ratio>=1?'#24b27e':'#e63946'}">${ratio}×</b></span>`;
+                }
+                kpiEl.innerHTML = html;
+            }
+        }
+
+        // Aggiorna bottoni
+        document.querySelectorAll('#spesa-sog-yr-btns .season-yr-btn').forEach(b => {
+            b.classList.toggle('active', parseInt(b.dataset.spesaSogYr) === sel);
+        });
+    }
+
+    // Costruisce i bottoni anno spesa-sog (una volta)
+    (function buildSpesaSogButtons() {
+        const container = document.getElementById('spesa-sog-yr-btns');
+        if (!container) return;
+        SPESA_SOG_DATA.anni.forEach(a => {
+            const btn = document.createElement('button');
+            btn.className = 'season-yr-btn';
+            btn.dataset.spesaSogYr = a;
+            btn.textContent = a;
+            btn.addEventListener('click', function() {
+                const yr = parseInt(this.dataset.spesaSogYr);
+                currentSpesaSogYear = (currentSpesaSogYear === yr) ? null : yr;
+                renderSpesaSog(currentSpesaSogYear);
+            });
+            container.appendChild(btn);
+        });
+    })();
+    // ── /SPESA TURISMO vs IMPOSTA DI SOGGIORNO ─────────────────────
+
     function renderSeasonality(yr) {
         if (yr) currentCefSeasonYear = yr;
         const allYrs = advancedData.stagionalitaAllYears;
@@ -1660,7 +1973,8 @@
     <div id="infoBackdrop" onclick="closeInfo()"></div>
     <div id="infoBox">
         <button id="infoClose" onclick="closeInfo()">✕</button>
-        <div id="infoText"></div>
+        <div id="infoBody"></div>
+        <div id="infoFooter" style="display:none;"></div>
     </div>
 </div>
 
@@ -1798,7 +2112,10 @@ const INFO = {
 
     postCovid_reg: "<strong>Regione: post-COVID (2024 vs 2019)</strong>Dato 2019 non disponibile direttamente: ricostruito come (100 + crescita_preCovid). Formula finale: (val_2024/val_2019 − 1)×100. Indica la velocità di recupero regionale dal 2019 al 2024. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024, aggregati per regione.</em>",
 
-    postCovid_top: "<strong>Top City: post-COVID (2024 vs 2019)</strong>Variazione % dal 2019 al 2024 per il comune selezionato. Il livello 2019 è ricostruito da (100 + preArr). Rivela se il boom post-pandemia sia il principale motore della classifica o se la crescita fosse già solida prima. Non disponibile se mancano dati 2019. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>"
+    postCovid_top: "<strong>Top City: post-COVID (2024 vs 2019)</strong>Variazione % dal 2019 al 2024 per il comune selezionato. Il livello 2019 è ricostruito da (100 + preArr). Rivela se il boom post-pandemia sia il principale motore della classifica o se la crescita fosse già solida prima. Non disponibile se mancano dati 2019. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
+
+    chart_spesa_vs_sog: "<strong>Spesa Turismo vs Imposta di Soggiorno — Cefalù</strong><p>Confronto tra quanto il Comune <em>investe</em> in attività turistiche e quanto <em>incassa</em> dall'imposta di soggiorno. Due serie su scala comune (asse €) per capire se la tassa copre o supera la spesa.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Come leggere il grafico</h4><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li><strong>Barre blu scure</strong>: spesa turismo — anni con dato disponibile</li><li><strong>Linea arancione</strong>: imposta di soggiorno — accertamenti annui</li><li><strong>Barre semitrasparenti</strong>: classificazione DPR 194/96 (ante-riforma)</li></ul><h4 style='margin:10px 0 4px;font-size:0.95em;'>Nota metodologica</h4><p>Le serie derivano da due sistemi di classificazione diversi:</p><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li><strong>2007–2015</strong> (DPR 194/96): &quot;Funzioni nel campo turistico&quot; — Quadro 04 del consuntivo</li><li><strong>2024</strong> (D.Lgs. 118/2011 — armonizzato): Missione 07 Turismo — Conto del bilancio spese</li><li><strong>2016</strong>: € 0 (dissesto finanziario in corso)</li><li><strong>2017</strong>: € 50.082 · <strong>2018</strong>: € 165.729 (ripresa post-dissesto)</li><li><strong>2019–2023</strong>: dati non disponibili nelle fonti pubbliche accessibili</li></ul><p>Le due classificazioni coprono sostanzialmente la stessa voce di spesa e sono comparabili per analisi di tendenza, con una discontinuità metodologica al confine 2015/2016.</p><p style='font-size:0.9em;'><strong>Indicatore KPI</strong>: rapporto incasso/spesa per gli anni in cui entrambi i dati sono disponibili. Valore &gt; 1 = l'imposta supera la spesa turistica.</p><em class='info-fonte'>Fonte spesa 2007–2015: Consuntivi comunali (Quadro 04, DPR 194/96) · Fonte spesa 2016–2018: Certificati Consuntivi armonizzati (Quadro 6, Missione 07) — finanzalocale.interno.gov.it · Fonte spesa 2024: Rendiconto 2024 allegati tecnici RAR (Missione 07) — egov.comune.cefalu.pa.it · Fonte imposta soggiorno: Relazioni Giunta Municipale 2020–2024 · Dati spesa 2019–2023 non disponibili in fonte pubblica strutturata.</em>",
+    chart_soggiorno: "<strong>Imposta di Soggiorno — Cefalù 2013–2024</strong><p>Entrate <em>accertate</em> (competenza) dall'imposta di soggiorno: il totale iscritto a bilancio come credito maturato nell'esercizio, indipendentemente dal momento dell'incasso effettivo.</p><p>Le etichette percentuali indicano il peso dell'imposta sul totale delle entrate tributarie comunali dell'anno.</p><p>La linea verde tratteggiata sovrappone le presenze turistiche (notti) per visualizzare la correlazione tra flussi e gettito.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Fatti chiave</h4><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li>2013–2017: imposta introdotta ma con tariffa bassa e applicazione parziale</li><li>2018: primo scatto rilevante (+287% su 2017) — ampliamento a strutture extralberghiere e aumento tariffe</li><li>2019: picco pre-COVID a € 997.826</li><li>2020: crollo COVID -56%</li><li>2022: superato il picco pre-COVID con € 849.631 accertati</li><li>2023–2024: accelerazione — € 1,25M e € 1,78M. Il 2024 rappresenta il massimo storico.</li></ul><p style='font-size:0.9em;'><em>Nota: le tariffe applicate per categoria di struttura e per anno derivano da Delibere del Consiglio Comunale e non sono contenute nelle fonti finanziarie utilizzate.</em></p><em class='info-fonte'>Fonte: Rendiconto di gestione 2020–2022 (Relazioni Giunta, egov.comune.cefalu.pa.it) · Rendiconto 2024 — allegati tecnici (conto del bilancio entrate) · Valori 2023–2024 estratti da Relazione della Giunta al Rendiconto 2024. Metodo: accertamenti di competenza.</em>"
 };
 
 // ── EXPLORER ─────────────────────────────────────────────────────────────
@@ -1927,6 +2244,7 @@ const INFO = {
         advancedData.permanenza = serie.pre_tot.map((p, i) =>
             serie.arr_tot[i] ? Math.round(p / serie.arr_tot[i] * 100) / 100 : null
         );
+        advancedData.pre_tot    = serie.pre_tot;
 
         // Stagionalità
         stagionalitaData = stagData;
@@ -1943,6 +2261,8 @@ const INFO = {
         renderPressure(serie);
         if (ricettivaData) renderRicettiva(ricettivaData);
         if (ricIdx) renderOccupancy(serie.pre_tot, ricIdx);
+        renderSoggiorno();
+        renderSpesaSog();
     });
 
     // Carica indice comuni
@@ -2835,7 +3155,21 @@ function animateLastTrace(chartEl) {
 }
 
 function showInfo(key) {
-    document.getElementById('infoText').innerHTML = INFO[key] || key;
+    const html = INFO[key] || key;
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    const fonteEl = tmp.querySelector('.info-fonte');
+    const footerEl = document.getElementById('infoFooter');
+    if (fonteEl) {
+        footerEl.innerHTML = fonteEl.outerHTML;
+        fonteEl.remove();
+        footerEl.style.display = '';
+    } else {
+        footerEl.innerHTML = '';
+        footerEl.style.display = 'none';
+    }
+    document.getElementById('infoBody').innerHTML = tmp.innerHTML;
+    document.getElementById('infoBody').scrollTop = 0;
     document.getElementById('infoOverlay').classList.add('active');
 }
 function closeInfo() {
