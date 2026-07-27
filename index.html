@@ -2380,7 +2380,7 @@ const INFO = {
         pendingRadarLayout = layout;
 
         const plotFn = radarInst ? Plotly.react : Plotly.newPlot;
-        plotFn(radarEl, traces.map(t => ({ ...t, r: t.r.map(() => 0) })), layout, { displayModeBar: false, responsive: true });
+        plotFn(radarEl, traces.map(t => ({ ...t, r: t.r.map(() => 0) })), layout, { displayModeBar: false, responsive: true, staticPlot: true });
         radarInst = true;
 
         if (radarVisible) {
@@ -2400,7 +2400,7 @@ const INFO = {
         );
 
         const plotFn = radarInst ? Plotly.react : Plotly.newPlot;
-        plotFn(radarEl, traces.map(t => ({ ...t, r: t.r.map(() => 0) })), layout, { displayModeBar: false, responsive: true });
+        plotFn(radarEl, traces.map(t => ({ ...t, r: t.r.map(() => 0) })), layout, { displayModeBar: false, responsive: true, staticPlot: true });
         radarInst = true;
 
         let start = null;
@@ -2417,7 +2417,7 @@ const INFO = {
                     const ease = axisT < 0.5 ? 4*axisT*axisT*axisT : 1 - Math.pow(-2*axisT+2, 3)/2;
                     return v * ease;
                 })
-            })), layout, { displayModeBar: false, responsive: true });
+            })), layout, { displayModeBar: false, responsive: true, staticPlot: true });
 
             if (globalT < 1) requestAnimationFrame(animFrame);
         }
