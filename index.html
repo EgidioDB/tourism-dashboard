@@ -188,12 +188,26 @@
             opacity: 1;
             transform: translateY(0);
         }
+        /* leaderboard row fade-in */
+        @keyframes lb-row-in {
+            from { opacity: 0; transform: translateX(-16px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        .lb-anim { opacity: 0; animation: lb-row-in 0.45s ease forwards; }
+
         /* stagger box comuni */
         @keyframes cbox-in {
             from { opacity: 0; transform: translateY(14px); }
             to   { opacity: 1; transform: translateY(0); }
         }
         .cbox { animation: cbox-in 0.35s ease both; }
+
+        /* heatmap entrance */
+        @keyframes hm-fadein {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: none; }
+        }
+        .hm-fadein { animation: hm-fadein 0.5s ease forwards; }
         /* donut: no pointer su legenda */
         #donut-total .legend, #donut-pre .legend, #donut-post .legend { cursor: default !important; }
         #donut-total .legend rect, #donut-pre .legend rect, #donut-post .legend rect { cursor: default !important; }
@@ -491,7 +505,14 @@
 
     <div class="dashboard-row" style="height: auto;">
         <div class="main-panel" style="flex: 1;">
-            <div class="header-box"><h1>Stagionalità (Notti 2024) <button class="info-btn" onclick="showInfo('chart_seasonality')">i</button></h1></div>
+            <div class="header-box" style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                <h1>Stagionalità <button class="info-btn" onclick="showInfo('chart_seasonality')">i</button></h1>
+                <div style="display:flex; gap:4px; margin-top:2px;">
+                    <button class="season-yr-btn" data-cef-yr="2022">2022</button>
+                    <button class="season-yr-btn" data-cef-yr="2023">2023</button>
+                    <button class="season-yr-btn active" data-cef-yr="2024">2024</button>
+                </div>
+            </div>
             <div id="chart-seasonality" style="height: 320px;"></div> </div>
         <div class="main-panel" style="flex: 1;">
             <div class="header-box"><h1>Origine (Ita vs Estero) <button class="info-btn" onclick="showInfo('chart_origin')">i</button></h1></div>
@@ -529,6 +550,12 @@
         <div class="main-panel" style="flex: 1;">
             <div class="header-box"><h1>Capacità Ricettiva — Posti Letto <button class="info-btn" onclick="showInfo('chart_ricettiva_pl')">i</button></h1></div>
             <div id="chart-ricettiva-pl" style="height: 320px;"></div>
+        </div>
+    </div>
+    <div class="dashboard-row" style="height: auto;">
+        <div class="main-panel" style="flex: 1;">
+            <div class="header-box"><h1>Tasso di Occupazione Ricettiva <button class="info-btn" onclick="showInfo('chart_occupancy')">i</button></h1></div>
+            <div id="chart-occupancy" style="height: 320px;"></div>
         </div>
     </div>
     </div><!-- /cefalu-section -->
@@ -1396,15 +1423,166 @@
     // Aggiornate le altezze a 320px per sfruttare le card più grandi
     const baseLayout = { margin: { l: 40, r: 15, t: 15, b: 45 }, height: 320, plot_bgcolor: '#ffffff', paper_bgcolor: 'rgba(0,0,0,0)', showlegend: false, dragmode: false, displayModeBar: false, xaxis: { tickpad: 8} };
 
+    // ── Animazioni scroll Cefalù ──────────────────────────────────────────
+    function _cefObs(el, fn) {
+        var obs = new IntersectionObserver(function(e) {
+            if (!e[0].isIntersecting) return;
+            obs.disconnect(); fn();
+        }, { threshold: 0.25 });
+        obs.observe(el);
+    }
+    function cefaluAnimBars(elId, traces, layout, cfg) {
+        var el = document.getElementById(elId);
+        if (!el) return;
+        // Calcola il range finale dell'asse Y (stacked: somma per colonna; normale: max singolo valore)
+        var isStacked = layout && layout.barmode === 'stack';
+        var len = (traces[0] && traces[0].y) ? traces[0].y.length : 0;
+        var maxY = 0;
+        for (var xi = 0; xi < len; xi++) {
+            var col = isStacked
+                ? traces.reduce(function(s, t) { return s + (t.y && t.y[xi] != null ? t.y[xi] : 0); }, 0)
+                : Math.max.apply(null, traces.map(function(t) { return t.y && t.y[xi] != null ? t.y[xi] : 0; }));
+            if (col > maxY) maxY = col;
+        }
+        // Fissa il range sull'asse finale così non scala durante l'animazione
+        var fixedLayout = Object.assign({}, layout, {
+            yaxis: Object.assign({}, layout.yaxis, { range: [0, maxY * 1.18], fixedrange: true })
+        });
+        // Rimuovi text labels durante l'animazione per evitare artefatti
+        var animTraces = traces.map(function(t) { return Object.assign({}, t, { text: undefined, textposition: undefined }); });
+        var zero = animTraces.map(function(t) { return Object.assign({}, t, { y: (t.y||[]).map(function(){ return 0; }) }); });
+        Plotly.newPlot(elId, zero, fixedLayout, cfg);
+        _cefObs(el, function() {
+            var start = null, DUR = 750;
+            function fr(ts) {
+                if (!start) start = ts;
+                var p = Math.min(1, (ts-start)/DUR), e = 1-Math.pow(1-p,3);
+                var isLast = p >= 1;
+                Plotly.react(elId, (isLast ? traces : animTraces).map(function(t) {
+                    return Object.assign({}, t, { y: (t.y||[]).map(function(v){ return v!=null ? v*e : null; }) });
+                }), fixedLayout, cfg);
+                if (!isLast) requestAnimationFrame(fr);
+            }
+            requestAnimationFrame(fr);
+        });
+    }
+    function animHeatmapCells(elId, numRows) {
+        var el = document.getElementById(elId);
+        if (!el || !el._fullLayout) return;
+        var xa = el._fullLayout.xaxis, ya = el._fullLayout.yaxis;
+        if (!xa || !ya) return;
+        var x0 = xa._offset, y0 = ya._offset;
+        var w = xa._length, h = ya._length;
+        var cols = 12, rows = numRows || 1;
+        var cw = w / cols, ch = h / rows;
+        var wrap = document.createElement('div');
+        wrap.style.cssText = 'position:absolute;pointer-events:none;z-index:10;overflow:hidden;' +
+            'left:' + x0 + 'px;top:' + y0 + 'px;width:' + Math.ceil(w) + 'px;height:' + Math.ceil(h) + 'px;';
+        var cells = [];
+        for (var r = 0; r < rows; r++) {
+            for (var c = 0; c < cols; c++) {
+                var d = document.createElement('div');
+                var delay = (r + c) * 32;
+                d.style.cssText = 'position:absolute;background:var(--card-bg,#fff);' +
+                    'left:' + Math.floor(c * cw) + 'px;top:' + Math.floor(r * ch) + 'px;' +
+                    'width:' + Math.ceil(cw + 1) + 'px;height:' + Math.ceil(ch + 1) + 'px;' +
+                    'transition:opacity 0.22s ease ' + delay + 'ms;';
+                wrap.appendChild(d);
+                cells.push(d);
+            }
+        }
+        el.style.position = 'relative';
+        el.appendChild(wrap);
+        requestAnimationFrame(function() {
+            requestAnimationFrame(function() {
+                cells.forEach(function(d) { d.style.opacity = '0'; });
+                var maxMs = ((rows - 1) + (cols - 1)) * 32 + 280;
+                setTimeout(function() { wrap.remove(); }, maxMs);
+            });
+        });
+    }
+    function cefaluAnimLines(elId) {
+        var el = document.getElementById(elId);
+        if (!el) return;
+        _cefObs(el, function() { setTimeout(function(){ animateAllTraces(el); }, 80); });
+    }
+    function cefaluAnimLinesOverlay(elId) {
+        var el = document.getElementById(elId);
+        if (!el) return;
+        var ov = _revealOverlay(el);
+        _cefObs(el, function() {
+            setTimeout(function() { animateAllTraces(el); }, 80);
+            _revealGo(el, ov);
+        });
+    }
+    function _revealGo(el, ov) {
+        ov.style.transition = 'transform 0.9s cubic-bezier(0.4,0,0.2,1)';
+        ov.style.transformOrigin = 'right center';
+        requestAnimationFrame(function() {
+            requestAnimationFrame(function() {
+                ov.style.transform = 'scaleX(0)';
+                ov.addEventListener('transitionend', function() {
+                    ov.remove(); el.style.position = '';
+                }, { once: true });
+            });
+        });
+    }
+    function _revealOverlay(el) {
+        el.style.position = 'relative';
+        var ov = document.createElement('div');
+        ov.style.cssText = 'position:absolute;inset:0;background:var(--card-bg,#fff);z-index:5;pointer-events:none;';
+        el.appendChild(ov);
+        return ov;
+    }
+    function cefaluRevealLR(elId) {
+        var el = document.getElementById(elId);
+        if (!el) return;
+        var ov = _revealOverlay(el);
+        _cefObs(el, function() { _revealGo(el, ov); });
+    }
+    function cefaluRevealNow(elId) {
+        var el = document.getElementById(elId);
+        if (!el) return;
+        var ov = _revealOverlay(el);
+        _revealGo(el, ov);
+    }
+    function cefaluCountup(el, target, dec, dur) {
+        if (!el) return;
+        dur = dur || 1000;
+        _cefObs(el, function() {
+            var start = null;
+            function fr(ts) {
+                if (!start) start = ts;
+                var p = Math.min(1, (ts-start)/dur), e = 1-Math.pow(1-p,3);
+                el.textContent = (target*e).toFixed(dec);
+                if (p < 1) requestAnimationFrame(fr);
+            }
+            requestAnimationFrame(fr);
+        });
+    }
+
+    let currentCefSeasonYear = '2024';
+
     // A. Stagionalità (Bar Chart) — dati caricati da stagionalita.json
-    function renderSeasonality() {
-        Plotly.newPlot('chart-seasonality', [{
-            x: advancedData.mesi, y: advancedData.stagionalita2024, type: 'bar', marker: { color: '#457b9d', opacity: 0.8 }
-        }], { ...baseLayout, xaxis: { fixedrange: true, tickpad: 8 }, yaxis: { fixedrange: true } }, { responsive: true, displayModeBar: false });
+    function renderSeasonality(yr) {
+        if (yr) currentCefSeasonYear = yr;
+        const allYrs = advancedData.stagionalitaAllYears;
+        const yData = (allYrs && allYrs[currentCefSeasonYear]) || advancedData.stagionalita2024 || [];
+        const el = document.getElementById('chart-seasonality');
+        const layout = { ...baseLayout, xaxis: { fixedrange: true, tickpad: 8 }, yaxis: { fixedrange: true } };
+        const cfg = { responsive: true, displayModeBar: false };
+        const trace = [{ x: advancedData.mesi, y: yData, type: 'bar', marker: { color: '#457b9d', opacity: 0.8 } }];
+        if (!el.__plotlyInstalled) {
+            el.__plotlyInstalled = true;
+            cefaluAnimBars('chart-seasonality', trace, layout, cfg);
+        } else {
+            Plotly.react('chart-seasonality', trace, layout, cfg);
+        }
     }
 
     // B. Origine Residenti vs Stranieri (Stacked Area)
     function renderOrigin() {
+        cefaluRevealLR('chart-origin'); // overlay prima del render → niente flash
         Plotly.newPlot('chart-origin', [
             { x: advancedData.anni, y: advancedData.stranieri, name: 'Stranieri', fill: 'tozeroy', type: 'scatter', mode: 'none', fillcolor: '#24b27e' },
             { x: advancedData.anni, y: advancedData.residenti, name: 'Italiani', fill: 'tozeroy', type: 'scatter', mode: 'none', fillcolor: '#e63946' }
@@ -1413,9 +1591,35 @@
 
     // C. Permanenza Media (Line Chart)
     function renderAlos() {
+        cefaluAnimLinesOverlay('chart-alos');
         Plotly.newPlot('chart-alos', [{
             x: advancedData.anni, y: advancedData.permanenza, type: 'scatter', mode: 'lines+markers', line: { color: '#f72585', width: 3 }
         }], { ...baseLayout, xaxis: { fixedrange: true, dtick: 2, tickpad: 8 }, yaxis: { fixedrange: true, range: [2, 5] } }, { responsive: true, displayModeBar: false });
+    }
+
+    // E. Tasso di Occupazione Ricettiva
+    function renderOccupancy(preTot, ricIdx) {
+        const cef = ricIdx?.comuni?.['082027'];
+        if (!cef) return;
+        const ricAnni = ricIdx.anni; // [2010..2024]
+        const ANNI_SERIE = [2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024];
+        const occupancy = ANNI_SERIE.map((yr, i) => {
+            const idxRic = ricAnni.indexOf(yr);
+            const pl = idxRic >= 0 ? cef.p[idxRic] : null;
+            return (pl && pl > 0) ? Math.round(preTot[i] / (pl * 365) * 1000) / 10 : null;
+        });
+        cefaluAnimLinesOverlay('chart-occupancy');
+        Plotly.newPlot('chart-occupancy', [{
+            x: ANNI_SERIE, y: occupancy, type: 'scatter', mode: 'lines+markers',
+            line: { color: '#e9c46a', width: 3 },
+            marker: { size: 6 },
+            hovertemplate: '%{x}: %{y:.1f}%<extra></extra>',
+        }], {
+            ...baseLayout,
+            xaxis: { fixedrange: true, dtick: 2, tickpad: 8 },
+            yaxis: { fixedrange: true, ticksuffix: '%', title: { text: '% posti letto × 365gg', font: { size: 10 }, standoff: 8 } },
+            margin: { l: 70, r: 15, t: 15, b: 45 },
+        }, { responsive: true, displayModeBar: false });
     }
 
 
@@ -1431,12 +1635,24 @@
         }
 
         lbHtml += `
-            <div class="data-row" style="font-size: 1.05em; margin-bottom: 6px; ${isCef ? 'background: rgba(36, 178, 126, 0.1); padding: 8px; border-radius: 4px; border-left: 4px solid var(--accent); font-weight: bold;' : 'padding: 6px 8px; border-bottom: 1px solid var(--border);'}">
+            <div class="data-row lb-anim" style="font-size: 1.05em; margin-bottom: 6px; animation-delay:${index * 60}ms; ${isCef ? 'background: rgba(36, 178, 126, 0.1); padding: 8px; border-radius: 4px; border-left: 4px solid var(--accent); font-weight: bold;' : 'padding: 6px 8px; border-bottom: 1px solid var(--border);'}">
                 <span>${row.rank}. ${row.citta}</span>
                 <span class="value" style="${isCef ? 'color: var(--accent);' : 'color: var(--text-sub);'}">${row.growth}</span>
             </div>`;
     });
     document.getElementById('leaderboard-content').innerHTML = lbHtml;
+    // Triggera le animazioni solo quando entra nel viewport
+    (function() {
+        var lbEl = document.getElementById('leaderboard-content');
+        var rows = lbEl.querySelectorAll('.lb-anim');
+        rows.forEach(function(r) { r.style.animationPlayState = 'paused'; });
+        var obs = new IntersectionObserver(function(e) {
+            if (!e[0].isIntersecting) return;
+            obs.disconnect();
+            rows.forEach(function(r) { r.style.animationPlayState = 'running'; });
+        }, { threshold: 0.15 });
+        obs.observe(lbEl);
+    })();
 </script>
 
 <!-- Info popup overlay -->
@@ -1572,6 +1788,7 @@ const INFO = {
     cbox_dettaglio: "<strong>Dettaglio 2024</strong>Dati strutturali dell'anno più recente. <em>Permanenza media</em> (ALOS): rapporto presenze/arrivi — quante notti rimane mediamente ogni visitatore. <em>Quota stranieri</em>: percentuale di arrivi non residenti sul totale, indicatore di attrattività internazionale. <em class='info-fonte'>Fonte: ISTAT dati comunali 2024.</em>",
     cmp_pressure: "<strong>Indice di pressione turistica 2024</strong>Rapporto tra le presenze turistiche 2024 (notti) e la popolazione residente al 1° gennaio 2024: quante notti di turismo si generano per ogni abitante. Consente di confrontare la pressione turistica tra comuni di dimensioni diverse indipendentemente dai volumi assoluti. Valori oltre 50 indicano alta pressione, oltre 100 pressione molto elevata. <em class='info-fonte'>Fonte: ISTAT dati comunali 2024 + ISTAT Anagrafe comunale (POSAS 2019-2024; 2014-2018 estrapolati).</em>",
     cmp_season: "<strong>Stagionalità — presenze mensili</strong>Distribuzione delle presenze (notti) mese per mese per ogni comune selezionato. Il colore va dal bianco (nessuna presenza) al blu scuro (picco massimo), normalizzato su ogni comune separatamente: consente di confrontare il <em>profilo stagionale</em> indipendentemente dai volumi assoluti. Seleziona l'anno (2022, 2023, 2024) per osservare variazioni interannuali. <em class='info-fonte'>Fonte: ISTAT dati mensili comunali 2022-2024.</em>",
+    chart_occupancy: "<strong>Tasso di Occupazione Ricettiva</strong>Rapporto tra le presenze turistiche annuali (notti) e la capacità ricettiva teorica massima (posti letto × 365 giorni). Indica quanta parte della capacità disponibile è stata effettivamente utilizzata. Un valore del 30% significa che in media ogni posto letto ha ospitato turisti per circa 110 notti all'anno. I posti letto sono quelli censiti da ISTAT nelle strutture registrate e non includono locazioni brevi non censite. <em class='info-fonte'>Fonte: ISTAT dati comunali Cefalù 2014-2024 + ISTAT Capacità Esercizi Ricettivi 2010-2024.</em>",
     cmp_radar: "<strong>Radar — Profilo destinazione</strong>Confronto multidimensionale su 5 assi: <em>Crescita totale</em> (presenze 2014→2024), <em>Pre-COVID</em> (2014→2019), <em>Post-COVID</em> (2019→2024), <em>Permanenza media</em> (notti/arrivo 2024), <em>Stranieri%</em> (quota arrivi non residenti 2024). I valori sono normalizzati sul massimo tra i comuni selezionati: il radar mostra differenze relative, non assolute. Aggiungere o rimuovere comuni cambia la scala. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
     cmp_ranking: "<strong>Posizione nel ranking nazionale</strong>Graduatoria dei comuni italiani (solo quelli con dati disponibili per entrambi gli anni) ordinata per crescita delle presenze 2014→2024. Per ogni comune selezionato vengono mostrati i comuni immediatamente vicini in classifica (2 sopra e sotto con 1 comune selezionato, 1 sopra e sotto con 2 o più). Il badge <em>Top X%</em> indica il percentile nella distribuzione nazionale. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
     cmp_ricettiva_est: "<strong>Capacità ricettiva — Numero esercizi</strong>Evoluzione del numero totale di strutture ricettive registrate (alberghi, B&amp;B, case vacanza, campeggi, ostelli ecc.) nei comuni selezionati dal 2010 al 2024. Permette di confrontare la crescita o contrazione dell'offerta ricettiva nel tempo tra destinazioni diverse. <em class='info-fonte'>Fonte: ISTAT — Rilevazione sulla Capacità degli Esercizi Ricettivi, 2010-2024.</em>",
@@ -1633,29 +1850,18 @@ const INFO = {
             return `rgb(${r},${g},${b})`;
         });
 
-        Plotly.newPlot('chart-pressure', [{
-            x: ANNI, y: index, type: 'bar',
-            marker: { color: colors },
-            hovertemplate: '<b>%{x}</b><br>%{y:.1f} notti/abitante<extra></extra>',
-            text: index.map(v => v ? v.toFixed(1) : ''),
-            textposition: 'outside',
-            textfont: { size: 11 }
-        }], {
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(0,0,0,0)',
-            font: { family: 'inherit' },
-            xaxis: { fixedrange: true, dtick: 1, tickangle: -45 },
-            yaxis: { fixedrange: true, range: [0, maxVal * 1.18], title: { text: 'notti/abitante', font: { size: 11 } } },
-            margin: { t: 36, r: 16, b: 60, l: 50 }
-        }, { responsive: true, displayModeBar: false });
+        const pressTraces = [{ x: ANNI, y: index, type: 'bar', marker: { color: colors }, hovertemplate: '<b>%{x}</b><br>%{y:.1f} notti/abitante<extra></extra>', text: index.map(v => v ? v.toFixed(1) : ''), textposition: 'outside', textfont: { size: 11 } }];
+        const pressLayout = { paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)', font: { family: 'inherit' }, xaxis: { fixedrange: true, dtick: 1, tickangle: -45 }, yaxis: { fixedrange: true, range: [0, maxVal * 1.18], title: { text: 'notti/abitante', font: { size: 11 } } }, margin: { t: 36, r: 16, b: 60, l: 50 } };
+        cefaluAnimBars('chart-pressure', pressTraces, pressLayout, { responsive: true, displayModeBar: false });
 
         document.getElementById('pressure-stat').innerHTML = `
-            <div style="font-size:3rem; font-weight:700; color:#e63946; line-height:1;">${latest.toFixed(1)}</div>
+            <div style="font-size:3rem; font-weight:700; color:#e63946; line-height:1;"><span id="pressure-stat-val">0.0</span></div>
             <div style="font-size:0.85rem; color:var(--text-sub); margin-top:4px;">notti di turismo per abitante</div>
             <div style="font-size:0.75rem; color:var(--text-sub);">(${latestYear})</div>
             <div style="font-size:0.78rem; margin-top:16px; color:var(--text-main); max-width:200px; text-align:center; line-height:1.5;">
                 Ogni residente ha "ospitato" in media <strong>${Math.round(latest)} notti</strong> di turisti nell'anno.
             </div>`;
+        cefaluCountup(document.getElementById('pressure-stat-val'), latest, 1, 1000);
     }
 
     function renderRicettiva(data) {
@@ -1693,28 +1899,28 @@ const INFO = {
         };
         const cfg = { responsive: true, displayModeBar: false };
 
-        Plotly.newPlot('chart-ricettiva-est', [
+        cefaluAnimBars('chart-ricettiva-est', [
             { x: anni, y: estAltri, name: 'Hotel/altri', type: 'bar', marker: { color: '#adb5bd' } },
             { x: anni, y: estBnb,   name: 'B&B',         type: 'bar', marker: { color: '#457b9d' } },
             { x: anni, y: estCase,  name: 'Case vacanza', type: 'bar', marker: { color: '#e9c46a' } },
         ], { ...layout, yaxis: { ...layout.yaxis, title: { text: 'n. esercizi', font: { size: 11 } } } }, cfg);
 
-        Plotly.newPlot('chart-ricettiva-pl', [
+        cefaluAnimBars('chart-ricettiva-pl', [
             { x: anni, y: plAltri, name: 'Hotel/altri', type: 'bar', marker: { color: '#adb5bd' } },
             { x: anni, y: plBnb,   name: 'B&B',         type: 'bar', marker: { color: '#457b9d' } },
             { x: anni, y: plCase,  name: 'Case vacanza', type: 'bar', marker: { color: '#e9c46a' } },
         ], { ...layout, yaxis: { ...layout.yaxis, title: { text: 'posti letto', font: { size: 11 } } } }, cfg);
     }
 
-    fetch(DATA_PATH + 'ricettiva_index.json').then(r => r.json()).then(d => { ricettivaIndexData = d; }).catch(() => {});
-
     Promise.all([
         fetch(DATA_PATH + 'serie/082027.json').then(r => r.json()),
         fetch(DATA_PATH + 'stagionalita.json').then(r => r.json()),
         fetch(DATA_PATH + 'popolazione.json').then(r => r.json()).catch(() => null),
         fetch(DATA_PATH + 'ricettiva.json').then(r => r.json()).catch(() => null),
-    ]).then(([serie, stagData, popData, ricettivaData]) => {
+        fetch(DATA_PATH + 'ricettiva_index.json').then(r => r.json()).catch(() => null),
+    ]).then(([serie, stagData, popData, ricettivaData, ricIdx]) => {
         popolazioneData = popData;
+        if (ricIdx) ricettivaIndexData = ricIdx;
         // Popola advancedData da JSON
         advancedData.residenti  = serie.pre_tot_res;
         advancedData.stranieri  = serie.pre_tot_nres;
@@ -1725,7 +1931,10 @@ const INFO = {
         // Stagionalità
         stagionalitaData = stagData;
         const cef = stagData['082027'];
-        if (cef) advancedData.stagionalita2024 = cef['2024'];
+        if (cef) {
+            advancedData.stagionalita2024 = cef['2024'];
+            advancedData.stagionalitaAllYears = cef;
+        }
 
         // Renderizza i grafici con i dati reali
         renderSeasonality();
@@ -1733,6 +1942,7 @@ const INFO = {
         renderAlos();
         renderPressure(serie);
         if (ricettivaData) renderRicettiva(ricettivaData);
+        if (ricIdx) renderOccupancy(serie.pre_tot, ricIdx);
     });
 
     // Carica indice comuni
@@ -2086,6 +2296,7 @@ const INFO = {
     const seasonCard = document.getElementById('seasonCard');
     const seasonRow  = document.getElementById('seasonRow');
     let seasonInst = false;
+    let seasonInstLen = 0;
 
     const ricettivaCompareRow = document.getElementById('ricettivaCompareRow');
 
@@ -2168,13 +2379,13 @@ const INFO = {
         const idx0 = anni.length - 1;
         const { ebY, ecY, eAltriY, pbY, pcY, pAltriY } = dataForIdx(idx0);
 
-        Plotly.newPlot('rc_est_chart', [
+        cefaluAnimBars('rc_est_chart', [
             { x: nomi, y: eAltriY, name: 'Hotel/altri',  type: 'bar', marker: { color: '#adb5bd' } },
             { x: nomi, y: ebY,     name: 'B&B',           type: 'bar', marker: { color: '#457b9d' } },
             { x: nomi, y: ecY,     name: 'Case vacanza',   type: 'bar', marker: { color: '#e9c46a' } },
         ], { ...baseLayout, yaxis: { ...baseLayout.yaxis, title: { text: 'n. esercizi', font: { size: 10 } } } }, cfg);
 
-        Plotly.newPlot('rc_pl_chart', [
+        cefaluAnimBars('rc_pl_chart', [
             { x: nomi, y: pAltriY, name: 'Hotel/altri', type: 'bar', marker: { color: '#adb5bd' } },
             { x: nomi, y: pbY,     name: 'B&B',          type: 'bar', marker: { color: '#457b9d' } },
             { x: nomi, y: pcY,     name: 'Case vacanza',  type: 'bar', marker: { color: '#e9c46a' } },
@@ -2288,10 +2499,30 @@ const INFO = {
         const scEl = document.getElementById('seasonChart');
         scEl.style.height = layout.height + 'px';
         scEl.style.marginTop = '0';
-        const plotPromise = seasonInst
-            ? Plotly.react('seasonChart', traces, layout, { displayModeBar: false, responsive: true })
-            : Plotly.newPlot('seasonChart', traces, layout, { displayModeBar: false, responsive: true });
-        if (!seasonInst) seasonInst = true;
+        const opts = { displayModeBar: false, responsive: true };
+        let plotPromise;
+        if (!seasonInst) {
+            plotPromise = Plotly.newPlot('seasonChart', traces, layout, opts);
+            plotPromise.then(() => {
+                scEl.classList.add('hm-fadein');
+                animHeatmapCells('seasonChart', entries.length);
+                scEl.addEventListener('animationend', function h() {
+                    scEl.classList.remove('hm-fadein');
+                    scEl.removeEventListener('animationend', h);
+                });
+            });
+            seasonInst = true;
+        } else {
+            if (entries.length !== seasonInstLen) {
+                plotPromise = Plotly.react('seasonChart', traces, layout, opts);
+            } else {
+                plotPromise = Promise.resolve(Plotly.restyle('seasonChart', { z: [zData], text: [textData] }, [0]));
+            }
+            plotPromise.then(() => {
+                animHeatmapCells('seasonChart', entries.length);
+            });
+        }
+        seasonInstLen = entries.length;
         plotPromise.then(() => setTimeout(() => {
             const headerEl = seasonCard.querySelector('div');
             const available = seasonCard.offsetHeight
@@ -2301,6 +2532,14 @@ const INFO = {
             if (mt > 0) scEl.style.marginTop = mt + 'px';
         }, 0));
     }
+
+    document.querySelectorAll('[data-cef-yr]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-cef-yr]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderSeasonality(btn.dataset.cefYr);
+        });
+    });
 
     document.querySelectorAll('[data-yr]').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -2480,6 +2719,20 @@ const INFO = {
             }
             return `<div class="rank-block">${rows.join('')}</div>`;
         }).join('');
+        (function() {
+            var rows = rankList.querySelectorAll('.rank-highlight, .rank-neighbor');
+            rows.forEach(function(r, i) {
+                r.classList.add('lb-anim');
+                r.style.animationDelay = (i * 55) + 'ms';
+                r.style.animationPlayState = 'paused';
+            });
+            var obs = new IntersectionObserver(function(e) {
+                if (!e[0].isIntersecting) return;
+                obs.disconnect();
+                rows.forEach(function(r) { r.style.animationPlayState = 'running'; });
+            }, { threshold: 0.1 });
+            obs.observe(rankList);
+        })();
     }
 
     function renderPressureCompare(entries) {
@@ -2501,21 +2754,9 @@ const INFO = {
         const hasData = valori.some(Boolean);
         const maxVal2 = hasData ? Math.max(...valori.filter(Boolean)) : 1;
 
-        Plotly.newPlot('pressureCompareChart', [{
-            x: nomi, y: valori, type: 'bar',
-            marker: { color: colors },
-            hovertemplate: '<b>%{x}</b><br>%{y:.1f} notti/abitante<extra></extra>',
-            text: valori.map(v => v ? v.toFixed(1) : 'n.d.'),
-            textposition: 'outside',
-            textfont: { size: 11 }
-        }], {
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(0,0,0,0)',
-            font: { family: 'inherit' },
-            margin: { t: 36, r: 16, b: 60, l: 50 },
-            xaxis: { fixedrange: true },
-            yaxis: { fixedrange: true, range: [0, maxVal2 * 1.2], title: { text: 'notti/abitante', font: { size: 11 } } },
-        }, { responsive: true, displayModeBar: false });
+        const pressLayout2 = { paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)', font: { family: 'inherit' }, margin: { t: 36, r: 16, b: 60, l: 50 }, xaxis: { fixedrange: true }, yaxis: { fixedrange: true, range: [0, maxVal2 * 1.2], title: { text: 'notti/abitante', font: { size: 11 } } } };
+        const pressTraces2 = [{ x: nomi, y: valori, type: 'bar', marker: { color: colors }, hovertemplate: '<b>%{x}</b><br>%{y:.1f} notti/abitante<extra></extra>' }];
+        cefaluAnimBars('pressureCompareChart', pressTraces2, pressLayout2, { responsive: true, displayModeBar: false });
     }
 
     window.explorerRemove = removeComune;
