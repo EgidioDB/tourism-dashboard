@@ -878,62 +878,22 @@
 </div>
 
 <script>
-    // --- 1. DATABASE VOLUMI ASSOLUTI (Milioni di notti) ---
-    // pre = [alb2012, ext2012] da ISTAT; post = [alb2024, ext2024] da Eurostat tour_occ_nin2
+    // --- 1. VOLUMI ASSOLUTI (Milioni di notti) ---
+    // pre = presenze 2012 [alb, ext] · post = presenze 2024 [alb, ext].
+    // L'Italia la calcola syncItaliaDerived() dalle basi ISTAT; le 20 regioni arrivano
+    // da data/pre2012.json (2012, ISTAT) e data/eurostat_regioni.json (2024, Eurostat).
     const volumeData = {
-        "Italia":         { pre: [256, 125],  post: [284, 182] },
-        "Abruzzo":        { pre: [4.8, 2.4],  post: [5, 3]     },
-        "Basilicata":     { pre: [1.3, 0.6],  post: [2, 1]     },
-        "Calabria":       { pre: [6.7, 1.7],  post: [6, 2]     },
-        "Campania":       { pre: [14.5, 3.9], post: [17, 5]    },
-        "Emilia-Romagna": { pre: [29.5, 7.8], post: [30, 11]   },
-        "Friuli":         { pre: [3.9, 4.9],  post: [5, 5]     },
-        "Lazio":          { pre: [25.6, 4.9], post: [35, 16]   },
-        "Liguria":        { pre: [9.2, 4.3],  post: [9, 7]     },
-        "Lombardia":      { pre: [26.4, 6.9], post: [29, 16]   },
-        "Marche":         { pre: [5.4, 5.7],  post: [5, 5]     },
-        "Molise":         { pre: [0.3, 0.2],  post: [0.3, 0.2] },
-        "Piemonte":       { pre: [8.1, 4.3],  post: [9, 6]     },
-        "Puglia":         { pre: [8.1, 5.2],  post: [10, 8]    },
-        "Sardegna":       { pre: [7.7, 3.2],  post: [10, 6]    },
-        "Sicilia":        { pre: [11.8, 2.4], post: [13, 5]    },
-        "Toscana":        { pre: [22.7, 19.9],post: [21, 25]   },
-        "Trentino":       { pre: [34.7, 10.2],post: [41, 16]   },
-        "Umbria":         { pre: [3.0, 2.8],  post: [4, 3]     },
-        "Valle d'Aosta":  { pre: [2.3, 0.9],  post: [3, 1]     },
-        "Veneto":         { pre: [29.6, 32.8],post: [31, 43]   }
+        "Italia": { pre: [0, 0], post: [0, 0] }
     };
+    // Presenze regionali per tipologia negli anni 2014/2019/2024, in notti.
+    // Popolato da data/eurostat_regioni.json; alimenta i valori nominali del pannello.
+    const regVolumi = {};
 
-    // Arrivi e presenze assolute 2004/2012 per regione — fonte: ISTAT DF_BULK_DCSC_TURISAREA
-    // (sheet Circoscrizioni). I totali arr/pre sono la somma di alberghiero + extra-alberghiero,
-    // non la colonna "Totale" del file: nel 2004 quest'ultima ha righe a zero con le componenti
-    // valorizzate (es. Catanzaro), mentre nel 2012 le due letture coincidono e il totale per
-    // regione combacia con regioni.json.
-    // Unica fonte di verità del pre-2012 regionale: preArr/prePre/preAlb/preExt sono derivati
-    // da qui a runtime da syncPre2012FromAbs(), non memorizzati separatamente.
-    // [arr04, pre04, alb04, ext04, arr12, pre12, alb12, ext12]
-    const preAbs = {
-        "Abruzzo":        [1425332, 6933216, 4918841, 2014375, 1578410, 7252826, 4836807, 2416019],
-        "Basilicata":     [471473, 1922098, 1310398, 611700, 517901, 1881814, 1287038, 594776],
-        "Calabria":       [1299421, 7107249, 5962816, 1144433, 1509337, 8358186, 6668275, 1689911],
-        "Campania":       [4531376, 19890578, 14432816, 5457762, 4597691, 18410150, 14460297, 3949853],
-        "Emilia-Romagna": [7729373, 36175470, 28986469, 7189001, 9097401, 37383182, 29536857, 7846325],
-        "Friuli":         [1670981, 8451993, 3366077, 5085916, 2093070, 8802721, 3895290, 4907431],
-        "Lazio":          [9932717, 28094345, 23097344, 4997001, 10219576, 30525414, 25621858, 4903556],
-        "Liguria":        [3487924, 14214124, 10329302, 3884822, 3679202, 13401547, 9150379, 4251168],
-        "Lombardia":      [9460027, 26250533, 20978883, 5271650, 13595973, 33366636, 26417628, 6949008],
-        "Marche":         [2089204, 12853376, 5816314, 7037062, 2299570, 11081523, 5367551, 5713972],
-        "Molise":         [199493, 754964, 520559, 234405, 178005, 540050, 335235, 204815],
-        "Piemonte":       [2864627, 9261137, 6305281, 2955856, 4276944, 12415037, 8102503, 4312534],
-        "Puglia":         [2332065, 10395189, 5655910, 4739279, 3225974, 13291863, 8086148, 5205715],
-        "Sardegna":       [1957625, 10303418, 7315697, 2987721, 2119118, 10843177, 7683900, 3159277],
-        "Sicilia":        [4254972, 13307382, 11200653, 2106729, 4331580, 14273969, 11836277, 2437692],
-        "Toscana":        [9692067, 35407686, 20135553, 15272133, 11938863, 42651126, 22703649, 19947477],
-        "Umbria":         [2005736, 5753804, 3245873, 2507931, 2181040, 5825889, 3033765, 2792124],
-        "Veneto":         [12061584, 54559238, 26284256, 28274982, 15818490, 62352831, 29565599, 32787232],
-        "Trentino":       [7464293, 39547063, 31353395, 8193668, 9465118, 44887247, 34730644, 10156603],
-        "Valle d'Aosta":  [825674, 3198211, 2410301, 787910, 1009894, 3166295, 2290443, 875852]
-    };
+    // Volumi assoluti 2004/2012 (ISTAT) e 2024 (Eurostat) per regione.
+    // Popolato da data/pre2012.json: e la fonte unica del pre-2012 regionale,
+    // da cui syncPre2012FromAbs() deriva preArr/prePre/preAlb/preExt.
+    // [arr04, pre04, alb04, ext04, arr12, pre12, alb12, ext12] in notti/arrivi
+    const preAbs = {};
 
     // --- 2. DATABASE REPORT REGIONALI ---
     const regionalDataFull = {
@@ -1019,14 +979,18 @@
             const pcRegPre = sgn((data.reg.pre / (100 + data.reg.covid.pre) - 1) * 100);
             const pcRegAlb = sgn((data.reg.alb / (100 + data.reg.covid.alb) - 1) * 100);
             const pcRegExt = sgn((data.reg.ext / (100 + data.reg.covid.ext) - 1) * 100);
-            // Valori assoluti per i nominali (Milioni di notti)
-            const vd = volumeData[name] || volumeData["Italia"];
-            const alb14 = vd.pre[0], ext14 = vd.pre[1], pre14 = +((alb14+ext14).toFixed(1));
-            const alb24 = vd.post[0], ext24 = vd.post[1], pre24 = +((alb24+ext24).toFixed(1));
-            const alb19 = +((alb14*(100+data.reg.covid.alb)/100).toFixed(1));
-            const ext19 = +((ext14*(100+data.reg.covid.ext)/100).toFixed(1));
-            const pre19 = +((pre14*(100+data.reg.covid.pre)/100).toFixed(1));
-            const pa = preAbs[name] || [0,0,0,0,0,0,0,0];
+            // Valori assoluti per i nominali (Milioni di notti). Sono i dati Eurostat veri
+            // per 2014, 2019 e 2024: prima il 2019 veniva stimato dagli indici e il 2014
+            // usava per errore i volumi 2012 di volumeData.pre.
+            const ev = regVolumi[name] || {};
+            const M = (anno, k) => ev[anno] ? r1(ev[anno][k] / 1e6) : null;
+            const alb14 = M(2014,'alb'), ext14 = M(2014,'ext'), pre14 = M(2014,'pre');
+            const alb19 = M(2019,'alb'), ext19 = M(2019,'ext'), pre19 = M(2019,'pre');
+            const alb24 = M(2024,'alb'), ext24 = M(2024,'ext'), pre24 = M(2024,'pre');
+            // I nominali dei volumi mostrano 'n/d' se eurostat_regioni.json non e disponibile
+            const fmtN = v => v === null || v === undefined ? 'n/d' : formatNotti(v);
+            // Se pre2012.json non è ancora arrivato o è fallito, il gruppo pre-2012 si omette
+            const pa = preAbs[name] || null;
             // Post-COVID Top City
             const topHasPreCovid = data.top.covidArr !== null;
             const pcTopArr = topHasPreCovid ? sgn((data.top.arr / (100 + data.top.covidArr) - 1) * 100) : null;
@@ -1036,33 +1000,33 @@
 
             document.getElementById('regionReportContent').innerHTML = `
                 <div class="report-title">${name}</div>
-                <div class="data-group">
+                ${!pa ? '' : `<div class="data-group">
                     <div class="group-label">Regione: Pre-2012 ${ib('pre2012_nat')}</div>
                     <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(pa[0])} arrivi</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(pa[4])} arrivi</b></div>"><span>Arrivi ${ib('arr_pre2012_reg')}</span><span class="value">${sgn(data.reg.preArr)}%</span></div>
                     <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(pa[1])} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(pa[5])} notti</b></div>"><span>Presenze</span><span class="value">${sgn(data.reg.prePre)}%</span></div>
                     <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(pa[2])} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(pa[6])} notti</b></div>"><span>Alb ${ib('alb_pre2012_reg')}</span><span class="value">${sgn(data.reg.preAlb)}%</span></div>
                     <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(pa[3])} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(pa[7])} notti</b></div>"><span>Extra-Alb</span><span class="value">${sgn(data.reg.preExt)}%</span></div>
-                </div>
+                </div>`}
                 <div class="data-group">
                     <div class="group-label" style="color:var(--accent)">Regione: Post-2012 ${ib('reg_post2012')}</div>
                     <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>100</b></div><div class='nom-r'><span>2024 (indice)</span><b>${data.reg.arr.toFixed(1)}</b></div>"><span>Arrivi ${ib('arr_post2012_reg')}</span><span class="value">${fmt(data.reg.arr)}%</span></div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(pre14)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(pre24)} notti</b></div>"><span>Presenze</span><span class="value">${fmt(data.reg.pre)}%</span></div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(alb14)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(alb24)} notti</b></div>"><span>Alb ${ib('alb_post2012_reg')}</span><span class="value">${fmt(data.reg.alb)}%</span></div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(ext14)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(ext24)} notti</b></div>"><span>Extra-Alb</span><span class="value">${fmt(data.reg.ext)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtN(pre14)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtN(pre24)} notti</b></div>"><span>Presenze</span><span class="value">${fmt(data.reg.pre)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtN(alb14)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtN(alb24)} notti</b></div>"><span>Alb ${ib('alb_post2012_reg')}</span><span class="value">${fmt(data.reg.alb)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtN(ext14)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtN(ext24)} notti</b></div>"><span>Extra-Alb</span><span class="value">${fmt(data.reg.ext)}%</span></div>
                 </div>
                 <div class="data-group">
                     <div class="group-label">Regione: Pre-COVID (2019 vs 2014) ${ib('reg_preCovid')}</div>
                     <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>100</b></div><div class='nom-r'><span>2019 (indice)</span><b>${(100+data.reg.covid.arr).toFixed(1)}</b></div>"><span>Arrivi ${ib('arr_preCovid_reg')}</span><span class="value">${sgn(data.reg.covid.arr)}%</span></div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(pre14)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtNotti(pre19)} notti</b></div>"><span>Presenze</span><span class="value">${sgn(data.reg.covid.pre)}%</span></div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(alb14)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtNotti(alb19)} notti</b></div>"><span>Alb ${ib('alb_preCovid_reg')}</span><span class="value">${sgn(data.reg.covid.alb)}%</span></div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(ext14)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtNotti(ext19)} notti</b></div>"><span>Extra-Alb</span><span class="value">${sgn(data.reg.covid.ext)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtN(pre14)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtN(pre19)} notti</b></div>"><span>Presenze</span><span class="value">${sgn(data.reg.covid.pre)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtN(alb14)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtN(alb19)} notti</b></div>"><span>Alb ${ib('alb_preCovid_reg')}</span><span class="value">${sgn(data.reg.covid.alb)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtN(ext14)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtN(ext19)} notti</b></div>"><span>Extra-Alb</span><span class="value">${sgn(data.reg.covid.ext)}%</span></div>
                 </div>
                 <div class="data-group">
                     <div class="group-label" style="color:#457b9d">Regione: Post-COVID (2024 vs 2019) ${ib('postCovid_reg')}</div>
                     <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019 (indice)</span><b>${(100+data.reg.covid.arr).toFixed(1)}</b></div><div class='nom-r'><span>2024 (indice)</span><b>${data.reg.arr.toFixed(1)}</b></div>"><span>Arrivi ${ib('arr_post2012_reg')}</span><span class="value">${pcRegArr}%</span></div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtNotti(pre19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(pre24)} notti</b></div>"><span>Presenze</span><span class="value">${pcRegPre}%</span></div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtNotti(alb19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(alb24)} notti</b></div>"><span>Alb ${ib('alb_post2012_reg')}</span><span class="value">${pcRegAlb}%</span></div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtNotti(ext19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(ext24)} notti</b></div>"><span>Extra-Alb</span><span class="value">${pcRegExt}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtN(pre19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtN(pre24)} notti</b></div>"><span>Presenze</span><span class="value">${pcRegPre}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtN(alb19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtN(alb24)} notti</b></div>"><span>Alb ${ib('alb_post2012_reg')}</span><span class="value">${pcRegAlb}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtN(ext19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtN(ext24)} notti</b></div>"><span>Extra-Alb</span><span class="value">${pcRegExt}%</span></div>
                 </div>
                 <div class="data-group" style="border-left: 4px solid #457b9d; background: #f0f7ff;">
                     <div class="group-label" style="color:#457b9d">Top City: ${data.top.name}</div>
@@ -1311,6 +1275,63 @@
         });
     }
     syncPre2012FromAbs();
+
+    // Popola preAbs dai volumi 2004/2012 di pre2012.json e allinea la serie di Cefalù
+    // per gli anni 2004-2013, che le serie comunali (dal 2014) non coprono.
+    function syncPre2012FromJson(json) {
+        if (!json) return false;
+        if (json.regioni) {
+            Object.entries(json.regioni).forEach(([nome, y]) => {
+                const a = y['2004'], b = y['2012'];
+                if (!a || !b) return;
+                preAbs[nome] = [a.arr, a.pre, a.alb, a.ext, b.arr, b.pre, b.alb, b.ext];
+                // I volumi del donut "pre-2012" sono le presenze 2012 per tipologia
+                if (!volumeData[nome]) volumeData[nome] = { pre: [0, 0], post: [0, 0] };
+                volumeData[nome].pre = [r1(b.alb / 1e6), r1(b.ext / 1e6)];
+            });
+            syncPre2012FromAbs();
+        }
+        const c = json.cefalu;
+        if (c && Array.isArray(c.anni) && c.pre_tot && c.pre_tot[c.anni.indexOf(2012)]) {
+            const bPre = c.pre_tot[c.anni.indexOf(2012)],
+                  bArr = c.arr_tot[c.anni.indexOf(2012)],
+                  bExt = c.pre_ext[c.anni.indexOf(2012)];
+            c.anni.forEach((anno, i) => {
+                const k = anno - 2004;
+                if (k < 0 || k > 20) return;
+                if (c.pre_tot[i] != null) rawData.cefPre[k] = c.pre_tot[i] / bPre * 100;
+                if (c.arr_tot[i] != null) rawData.cefArr[k] = c.arr_tot[i] / bArr * 100;
+                if (c.pre_ext[i] != null) rawData.cefExt[k] = c.pre_ext[i] / bExt * 100;
+                const pAbs = rawData.cefPre[k] * CEF_PRE_BASE / 100;
+                const eAbs = rawData.cefExt[k] * CEF_EXT_BASE / 100;
+                cefAlb[k] = ((pAbs - eAbs) / CEF_ALB_BASE) * 100;
+            });
+        }
+        return true;
+    }
+
+    // Split alberghiero/extra regionale: non è in regioni.json, arriva da Eurostat NUTS2.
+    // L'Italia è esclusa di proposito, la calcola già syncItaliaDerived() dalle basi ISTAT
+    // (i due valori coincidono, ma così il pannello nazionale resta su un'unica fonte).
+    function syncEurostatRegioni(json) {
+        if (!json || !json.regioni) return false;
+        Object.entries(json.regioni).forEach(([nome, y]) => {
+            if (nome === 'Italia') return;
+            const reg = regionalDataFull[nome] && regionalDataFull[nome].reg;
+            const a = y['2014'], b = y['2019'], c = y['2024'];
+            if (!reg || !a || !c || !a.alb || !a.ext) return;
+            regVolumi[nome] = { 2014: a, 2019: b, 2024: c };
+            reg.alb = r1(c.alb / a.alb * 100);
+            reg.ext = r1(c.ext / a.ext * 100);
+            if (b) {
+                reg.covid.alb = r1((b.alb / a.alb - 1) * 100);
+                reg.covid.ext = r1((b.ext / a.ext - 1) * 100);
+            }
+            if (!volumeData[nome]) volumeData[nome] = { pre: [0, 0], post: [0, 0] };
+            volumeData[nome].post = [r1(c.alb / 1e6), r1(c.ext / 1e6)];
+        });
+        return true;
+    }
 
     // Riallinea rawData.it* (2004-2024, base 2012=100) alla serie nazionale del JSON.
     // I valori hardcoded sono il fallback se il fetch fallisce.
@@ -2960,13 +2981,20 @@ const INFO = {
         fetch(DATA_PATH + 'irpef_cefalu.json').then(r => r.json()).catch(() => null),
         fetch(DATA_PATH + 'italia.json').then(r => r.json()).catch(() => null),
         fetch(DATA_PATH + 'regioni.json').then(r => r.json()).catch(() => null),
-    ]).then(([serie, stagData, popData, ricettivaData, ricIdx, irpefData, itaData, regData]) => {
+        fetch(DATA_PATH + 'pre2012.json').then(r => r.json()).catch(() => null),
+        fetch(DATA_PATH + 'eurostat_regioni.json').then(r => r.json()).catch(() => null),
+    ]).then(([serie, stagData, popData, ricettivaData, ricIdx, irpefData, itaData, regData, pre12Data, euData]) => {
         popolazioneData = popData;
         if (ricIdx) ricettivaIndexData = ricIdx;
 
         // Riallinea gli indici nazionali e regionali ai JSON (i valori hardcoded sono fallback)
         const itaSynced = syncItaliaFromJson(itaData);
         syncRegionaliFromJson(regData);
+        // Va prima del patch 2014-2024 sotto: qui si riscrivono gli anni 2004-2013 di Cefalù
+        const pre12Synced = syncPre2012FromJson(pre12Data);
+        syncEurostatRegioni(euData);
+        // Se l'utente ha già aperto una regione prima che i JSON arrivassero, ridisegna
+        if (currentRegionName) renderRegionPanel(currentRegionName);
         // Popola advancedData da JSON
         advancedData.residenti  = serie.pre_tot_res;
         advancedData.stranieri  = serie.pre_tot_nres;
