@@ -895,29 +895,21 @@
     // [arr04, pre04, alb04, ext04, arr12, pre12, alb12, ext12] in notti/arrivi
     const preAbs = {};
 
-    // --- 2. DATABASE REPORT REGIONALI ---
-    const regionalDataFull = {
-        "Abruzzo":        { reg: { arr: 128.2, pre: 114.2, alb: 114.0, ext: 114.7, covid: { arr: +16.4, pre:  -1.7, alb:  +1.1, ext:  -6.6 } }, top: { name: "Pescara",                        covidArr:   +43.4, covidPre:   +16.9, covidAlb:   +7.1, covidExt: +172.5, arr: 125.0, pre: 228.7, alb: 121.3, ext: 1946.6 } },
-        "Basilicata":     { reg: { arr: 153.9, pre: 119.6, alb: 120.7, ext: 117.1, covid: { arr: +63.0, pre: +30.2, alb: +31.0, ext: +28.4 } }, top: { name: "Matera",                          covidArr:  +153.7, covidPre:  +198.3, covidAlb: +120.4, covidExt: +390.4, arr: 249.1, pre: 239.5, alb: 184.5, ext: 374.9 } },
-        "Calabria":       { reg: { arr: 124.8, pre: 104.9, alb: 101.6, ext: 118.1, covid: { arr: +35.2, pre: +22.5, alb: +23.3, ext: +19.2 } }, top: { name: "Ricadi",                          covidArr:   +35.0, covidPre:   +14.4, covidAlb:  +16.3, covidExt:   +6.3, arr: 145.5, pre: 109.4, alb: 108.0, ext: 115.3 } },
-        "Campania":       { reg: { arr: 132.7, pre: 118.3, alb: 111.4, ext: 152.0, covid: { arr: +35.5, pre: +21.9, alb: +15.5, ext: +53.2 } }, top: { name: "Napoli",                          covidArr:   +90.3, covidPre:   +30.3, covidAlb:  +15.7, covidExt:+1172.5, arr: 201.2, pre: 133.6, alb: 106.0, ext: 2303.4 } },
-        "Emilia-Romagna": { reg: { arr: 129.2, pre: 115.3, alb: 105.6, ext: 153.9, covid: { arr: +26.1, pre: +14.1, alb: +11.7, ext: +23.5 } }, top: { name: "Bologna",                        covidArr:   +44.2, covidPre:   +47.6, covidAlb:  +34.1, covidExt: +172.5, arr: 168.0, pre: 192.0, alb: 138.2, ext: 689.9 } },
-        "Friuli":         { reg: { arr: 146.6, pre: 133.4, alb: 141.7, ext: 125.3, covid: { arr: +27.8, pre: +19.0, alb: +22.6, ext: +15.5 } }, top: { name: "Trieste",                        covidArr:   +36.2, covidPre:   +38.8, covidAlb:  +15.3, covidExt: +104.4, arr: 178.7, pre: 193.5, alb: 148.7, ext: 318.5 } },
-        "Lazio":          { reg: { arr: 123.3, pre: 168.0, alb: 136.6, ext: 333.3, covid: { arr: +24.0, pre: +26.7, alb:  +4.5, ext:+143.6 } }, top: { name: "Fiumicino",                      covidArr:  +169.8, covidPre:  +129.3, covidAlb: +112.5, covidExt: +695.2, arr: 326.4, pre: 420.8, alb: 387.8, ext: 1527.8 } },
-        "Liguria":        { reg: { arr: 127.4, pre: 119.7, alb: 101.1, ext: 160.6, covid: { arr: +18.0, pre: +11.9, alb:  +3.4, ext: +30.6 } }, top: { name: "La Spezia",                      covidArr:   +69.2, covidPre:   +90.3, covidAlb:  +11.9, covidExt: +296.9, arr: 211.3, pre: 252.6, alb: 128.9, ext: 578.4 } },
-        "Lombardia":      { reg: { arr: 132.2, pre: 131.6, alb: 110.3, ext: 204.8, covid: { arr: +24.3, pre: +18.0, alb: +12.4, ext: +37.5 } }, top: { name: "Bergamo",                        covidArr:   +58.9, covidPre:   +55.0, covidAlb:  +27.2, covidExt: +100.8, arr: 216.8, pre: 217.4, alb: 165.9, ext: 302.2 } },
-        "Marche":         { reg: { arr: 116.0, pre:  92.3, alb:  95.7, ext:  89.3, covid: { arr:  +6.8, pre:  -8.7, alb: -11.1, ext:  -6.5 } }, top: { name: "Pesaro",                         covidArr:   +16.3, covidPre:    -3.6, covidAlb:   -3.6, covidExt:   -3.7, arr: 126.3, pre: 107.6, alb: 104.1, ext: 122.4 } },
-        "Molise":         { reg: { arr:  94.0, pre: 108.7, alb:  91.3, ext: 146.3, covid: { arr:  -7.0, pre:  +4.8, alb:  -5.6, ext: +27.2 } }, top: { name: "Termoli",                        covidArr:   +17.6, covidPre:    +6.8, covidAlb:   +4.7, covidExt:   +9.7, arr: 104.7, pre: 101.8, alb:  95.8, ext: 110.1 } },
-        "Piemonte":       { reg: { arr: 124.4, pre: 110.2, alb: 102.3, ext: 124.8, covid: { arr: +20.6, pre: +14.0, alb:  +4.2, ext: +32.3 } }, top: { name: "Baveno",                         covidArr:   +20.0, covidPre:   +14.4, covidAlb:  +12.3, covidExt:  +17.1, arr: 120.8, pre: 122.1, alb: 105.3, ext: 144.1 } },
-        "Puglia":         { reg: { arr: 156.1, pre: 134.8, alb: 118.1, ext: 161.4, covid: { arr: +30.2, pre: +16.3, alb: +13.6, ext: +20.7 } }, top: { name: "Monopoli",                       covidArr:  +126.9, covidPre:  +110.1, covidAlb:  +67.1, covidExt: +251.1, arr: 334.2, pre: 290.3, alb: 189.7, ext: 620.4 } },
-        "Sardegna":       { reg: { arr: 161.9, pre: 137.4, alb: 120.7, ext: 184.5, covid: { arr: +44.0, pre: +33.3, alb: +27.1, ext: +50.8 } }, top: { name: "Pula",                           covidArr:   +47.9, covidPre:   +52.7, covidAlb:  +49.7, covidExt:  +75.9, arr: 176.7, pre: 168.9, alb: 159.0, ext: 245.0 } },
-        "Sicilia":        { reg: { arr: 125.5, pre: 116.7, alb: 104.9, ext: 168.4, covid: { arr: +10.8, pre:  +1.7, alb:  -2.1, ext: +18.0 } }, top: { name: "Marsala",                        covidArr:   +25.9, covidPre:   +36.5, covidAlb:  +29.8, covidExt:  +66.5, arr: 168.6, pre: 342.5, alb: 360.5, ext: 262.7 } },
-        "Toscana":        { reg: { arr: 121.3, pre: 107.1, alb:  92.4, ext: 123.9, covid: { arr: +15.8, pre: +11.4, alb:  +5.5, ext: +18.1 } }, top: { name: "Castagneto Carducci",            covidArr:   +41.3, covidPre:   +15.8, covidAlb:  -28.0, covidExt:  +28.6, arr: 180.8, pre: 144.6, alb: 106.5, ext: 155.7 } },
-        "Trentino":       { reg: { arr: 142.0, pre: 129.4, alb: 121.2, ext: 156.8, covid: { arr: +26.8, pre: +18.9, alb: +15.6, ext: +29.9 } }, top: { name: "Bolzano",                  covidArr:   +20.8, covidPre:   +28.0, covidAlb:  +15.2, covidExt:  +92.3, arr: 150.8, pre: 168.0, alb: 135.6, ext: 330.6 } },
-        "Umbria":         { reg: { arr: 113.2, pre: 115.2, alb: 112.5, ext: 118.3, covid: { arr:  +5.0, pre:  +0.5, alb:  -0.1, ext:  +1.2 } }, top: { name: "Assisi",                         covidArr:   +10.5, covidPre:    +8.8, covidAlb:   +8.3, covidExt:   +9.5, arr: 122.5, pre: 133.0, alb: 133.0, ext: 133.1 } },
-        "Valle d'Aosta":  { reg: { arr: 136.2, pre: 123.7, alb: 121.0, ext: 131.0, covid: { arr: +28.8, pre: +21.4, alb: +17.8, ext: +31.1 } }, top: { name: "Courmayeur",                        covidArr:   +53.8, covidPre:   +33.8, covidAlb:  +28.6, covidExt:   +53.0, arr: 159.9, pre: 136.4, alb: 133.1, ext: 148.8 } },
-        "Veneto":         { reg: { arr: 133.8, pre: 118.8, alb: 102.7, ext: 133.7, covid: { arr: +24.2, pre: +15.2, alb: +10.1, ext: +19.8 } }, top: { name: "Verona",                         covidArr:   +56.1, covidPre:   +63.2, covidAlb:  +11.9, covidExt: +176.8, arr: 191.9, pre: 184.6, alb: 110.7, ext: 348.4 } }
-    };
+    // --- 2. REPORT REGIONALI ---
+    // Struttura vuota: ogni valore arriva dai JSON in data/.
+    //   reg.arr/pre e reg.covid.arr/pre      <- regioni.json
+    //   reg.alb/ext e reg.covid.alb/ext      <- eurostat_regioni.json
+    //   reg.preArr/prePre/preAlb/preExt      <- pre2012.json, via preAbs
+    //   top.*                                <- comuni_index.json + serie/<cod>.json
+    const REGIONI = [
+        "Abruzzo", "Basilicata", "Calabria", "Campania",
+        "Emilia-Romagna", "Friuli", "Lazio", "Liguria",
+        "Lombardia", "Marche", "Molise", "Piemonte",
+        "Puglia", "Sardegna", "Sicilia", "Toscana",
+        "Trentino", "Umbria", "Valle d'Aosta", "Veneto"
+    ];
+    const regionalDataFull = {};
+    REGIONI.forEach(n => { regionalDataFull[n] = { reg: { covid: {} }, top: {} }; });
 
     // --- 3. FORMATTAZIONE NUMERI ---
     function formatNotti(val) {
@@ -972,8 +964,21 @@
     // anche quando la serie della Top City arriva dal fetch.
     function renderRegionPanel(name) {
             const data = regionalDataFull[name];
-            const gapArr = (data.top.arr - itBenchmark.arr).toFixed(1);
-            const gapPre = (data.top.pre - itBenchmark.pre).toFixed(1);
+            const pa = preAbs[name] || null;
+            const ev = regVolumi[name] || null;
+            // Tutti i valori vengono dai JSON in data/: se non sono ancora arrivati non c'è
+            // nulla di sensato da mostrare. Chi carica i dati richiama questa funzione.
+            if (!data || !ev || data.reg.arr === undefined) {
+                document.getElementById('regionReportContent').innerHTML =
+                    `<div class="report-title">${name}</div>
+                     <div class="data-group"><div class="data-row">
+                       <span style="color:var(--text-sub);font-style:italic;font-size:0.9em">Caricamento dati…</span>
+                     </div></div>`;
+                return;
+            }
+            const hasTop = data.top.arr !== undefined && data.top.name;
+            const gapArr = hasTop ? (data.top.arr - itBenchmark.arr).toFixed(1) : null;
+            const gapPre = hasTop ? (data.top.pre - itBenchmark.pre).toFixed(1) : null;
             // Post-COVID regione: deriva 2019 dal covid (% vs 2014) e 2024 già disponibile
             const pcRegArr = sgn((data.reg.arr / (100 + data.reg.covid.arr) - 1) * 100);
             const pcRegPre = sgn((data.reg.pre / (100 + data.reg.covid.pre) - 1) * 100);
@@ -982,17 +987,13 @@
             // Valori assoluti per i nominali (Milioni di notti). Sono i dati Eurostat veri
             // per 2014, 2019 e 2024: prima il 2019 veniva stimato dagli indici e il 2014
             // usava per errore i volumi 2012 di volumeData.pre.
-            const ev = regVolumi[name] || {};
             const M = (anno, k) => ev[anno] ? r1(ev[anno][k] / 1e6) : null;
             const alb14 = M(2014,'alb'), ext14 = M(2014,'ext'), pre14 = M(2014,'pre');
             const alb19 = M(2019,'alb'), ext19 = M(2019,'ext'), pre19 = M(2019,'pre');
             const alb24 = M(2024,'alb'), ext24 = M(2024,'ext'), pre24 = M(2024,'pre');
-            // I nominali dei volumi mostrano 'n/d' se eurostat_regioni.json non e disponibile
             const fmtN = v => v === null || v === undefined ? 'n/d' : formatNotti(v);
-            // Se pre2012.json non è ancora arrivato o è fallito, il gruppo pre-2012 si omette
-            const pa = preAbs[name] || null;
             // Post-COVID Top City
-            const topHasPreCovid = data.top.covidArr !== null;
+            const topHasPreCovid = hasTop && data.top.covidArr !== null;
             const pcTopArr = topHasPreCovid ? sgn((data.top.arr / (100 + data.top.covidArr) - 1) * 100) : null;
             const pcTopPre = topHasPreCovid ? sgn((data.top.pre / (100 + data.top.covidPre) - 1) * 100) : null;
             const pcTopAlb = (topHasPreCovid && data.top.covidAlb !== null && data.top.alb !== null) ? sgn((data.top.alb / (100 + data.top.covidAlb) - 1) * 100) : null;
@@ -1028,6 +1029,10 @@
                     <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtN(alb19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtN(alb24)} notti</b></div>"><span>Alb ${ib('alb_post2012_reg')}</span><span class="value">${pcRegAlb}%</span></div>
                     <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtN(ext19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtN(ext24)} notti</b></div>"><span>Extra-Alb</span><span class="value">${pcRegExt}%</span></div>
                 </div>
+                ${!hasTop ? `<div class="data-group" style="border-left: 4px solid #457b9d; background: #f0f7ff;">
+                    <div class="group-label" style="color:#457b9d">Top City</div>
+                    <div class="data-row"><span style="color:var(--text-sub);font-style:italic;font-size:0.9em">Caricamento serie comunale…</span></div>
+                </div>` : `
                 <div class="data-group" style="border-left: 4px solid #457b9d; background: #f0f7ff;">
                     <div class="group-label" style="color:#457b9d">Top City: ${data.top.name}</div>
                     <div class="group-label" style="font-size:0.6em; margin-top:15px;">Pre-COVID (2019 vs 2014) ${ib('top_preCovid')}</div>
@@ -1052,7 +1057,7 @@
                     <div class="group-label" style="font-size:0.6em; margin-top:15px;">Gap vs IT (2024) ${ib('top_gap')}</div>
                     <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>Top City (indice 2024)</span><b>${data.top.arr.toFixed(1)}</b></div><div class='nom-r'><span>Media IT (indice 2024)</span><b>${itBenchmark.arr}</b></div>"><span>Gap Arrivi</span><span class="value" style="color:${gapArr > 0 ? 'var(--accent)' : '#c0392b'}">${gapArr > 0 ? '+' : ''}${gapArr}%</span></div>
                     <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>Top City (indice 2024)</span><b>${data.top.pre.toFixed(1)}</b></div><div class='nom-r'><span>Media IT (indice 2024)</span><b>${itBenchmark.pre}</b></div>"><span>Gap Presenze</span><span class="value" style="color:${gapPre > 0 ? 'var(--accent)' : '#c0392b'}">${gapPre > 0 ? '+' : ''}${gapPre}%</span></div>
-                </div>`;
+                </div>`}`;
             updateDonuts(name);
     }
 
@@ -1174,14 +1179,10 @@
 
     // --- 6. GRAFICO STORICO CEFALÙ ---
     const years = [2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024];
-    const rawData = {
-        cefPre: [101.1, 104, 95.5, 91.2, 92.9, 92.3, 96.5, 98.0, 100, 95.5, 97.5, 97.5, 100, 106.8, 122.9, 123.7, 46.5, 87.7, 127.8, 124.4, 146.4],
-        cefArr: [101, 99.1, 94.5, 89.3, 89.3, 90.9, 90.7, 92.3, 100, 99.2, 105.3, 105.3, 112.4, 124.5, 137.2, 149.9, 73.4, 109, 155.6, 176.4, 178.7],
-        cefExt: [212.5, 193.8, 90.8, 90.5, 94.3, 87.6, 82.7, 104.3, 100, 106.6, 116.2, 116.2, 132.3, 160.5, 178.4, 180.2, 59.9, 109.5, 257.3, 214.8, 198.2],
-        itPre: [90.8, 93.3, 96.3, 98.9, 98.1, 97.4, 98.6, 101.6, 100, 99.0, 99.2, 103.2, 105.8, 110.5, 112.6, 114.7, 54.8, 76.0, 108.2, 117.5, 122.4],
-        itArr: [82.9, 85.2, 89.7, 92.7, 92.1, 92.1, 95.3, 100.0, 100, 100.1, 102.7, 109.3, 112.7, 118.8, 123.5, 126.7, 53.7, 75.8, 114.2, 128.8, 134.6],
-        itExt: [89.2, 91.8, 94.7, 97.8, 97.5, 99.2, 99.5, 101.5, 100, 97.5, 98.2, 103.8, 108.1, 116.3, 119.4, 124.5, 68.1, 95.6, 127.4, 137.3, 145.7]
-    };
+    // Indici 2004-2024, base 2012=100. Riempiti dai JSON in data/:
+    //   it*  <- italia.json (serie nazionale, copre tutti gli anni)
+    //   cef* <- pre2012.json per il 2004-2013 e serie/082027.json dal 2014
+    const rawData = { cefPre: [], cefArr: [], cefExt: [], itPre: [], itArr: [], itExt: [] };
 
     // --- NUOVI DATI ANALITICI CEFALÙ ---
     const advancedData = {
@@ -1232,18 +1233,19 @@
 
     const fmt = (v) => (v - 100) > 0 ? '+' + (v - 100).toFixed(1) : (v - 100).toFixed(1);
 
-    // Calcolo indice alberghiero: alb = tot_pre - ext_pre, re-indicizzato a 2012=100
+    // Indice alberghiero: alb = tot_pre - ext_pre, re-indicizzato a 2012=100.
+    // Le basi 2012 coincidono con i valori di Cefalù in pre2012.json (verificato).
+    // Riempito per indice da chi carica i dati, come rawData.
     const CEF_PRE_BASE = 634776, CEF_EXT_BASE = 80447, CEF_ALB_BASE = CEF_PRE_BASE - CEF_EXT_BASE;
-    let cefAlb = years.map((_, i) => {
-        const preAbs = rawData.cefPre[i] * CEF_PRE_BASE / 100;
-        const extAbs = rawData.cefExt[i] * CEF_EXT_BASE / 100;
-        return ((preAbs - extAbs) / CEF_ALB_BASE) * 100;
-    });
+    // Base arrivi 2012: la fornisce pre2012.json. Prima veniva ricavata all'indietro
+    // dividendo gli arrivi 2014 per l'indice hardcoded, ora non più necessario.
+    let CEF_ARR_BASE = 0;
+    let cefAlb = [];
     // Basi 2012 in valore assoluto. Restano costanti: 2012 è un anno chiuso e questi sono i
     // dati ISTAT esatti, mentre italia.json li arrotonda alle migliaia.
     const IT_PRE_BASE = 380711483, IT_EXT_BASE = 125101340, IT_ALB_BASE = IT_PRE_BASE - IT_EXT_BASE;
     const r1 = v => Math.round(v * 10) / 10;
-    const itAlb = years.map(() => 0);
+    const itAlb = [];
     const itBenchmark = { arr: 0, pre: 0, ext: 0 };
     // Ricalcola in-place tutto ciò che deriva da rawData.it*: indice alberghiero, benchmark
     // nazionale e volumi del donut Italia. Muta gli array esistenti invece di riassegnarli,
@@ -1260,7 +1262,9 @@
         volumeData["Italia"].pre  = [r1(IT_ALB_BASE / 1e6), r1(IT_EXT_BASE / 1e6)];
         volumeData["Italia"].post = [r1(IT_ALB_BASE * itAlb[20] / 100 / 1e6), r1(IT_EXT_BASE * rawData.itExt[20] / 100 / 1e6)];
     }
-    syncItaliaDerived();
+    // Vero quando rawData è popolato: i report e i grafici che ne dipendono si disegnano
+    // solo da quel momento. La chiamano syncItaliaFromJson e il patch della serie di Cefalù.
+    let dataReady = false;
 
     // Deriva le variazioni regionali 2004 vs 2012 dai volumi assoluti di preAbs.
     // Indici: 0=arr04 1=pre04 2=alb04 3=ext04 4=arr12 5=pre12 6=alb12 7=ext12
@@ -1296,6 +1300,7 @@
             const bPre = c.pre_tot[c.anni.indexOf(2012)],
                   bArr = c.arr_tot[c.anni.indexOf(2012)],
                   bExt = c.pre_ext[c.anni.indexOf(2012)];
+            CEF_ARR_BASE = bArr;
             c.anni.forEach((anno, i) => {
                 const k = anno - 2004;
                 if (k < 0 || k > 20) return;
@@ -1521,6 +1526,9 @@
     let currentHighlightYear = null;
 
     function showTotalReport() {
+        // Senza rawData popolato non c'e nulla da mostrare: chi carica i dati richiama
+        // questa funzione appena i JSON sono arrivati.
+        if (!dataReady) return;
         currentHighlightYear = null;
         const gA = (rawData.cefArr[20] - rawData.itArr[20]).toFixed(1);
         const gP = (rawData.cefPre[20] - rawData.itPre[20]).toFixed(1);
@@ -1574,6 +1582,9 @@
     }
 
     function showYearlyReport(idx) {
+        // Senza rawData popolato non c'e nulla da mostrare: chi carica i dati richiama
+        // questa funzione appena i JSON sono arrivati.
+        if (!dataReady) return;
         const anno = years[idx];
         currentHighlightYear = anno;
         // Valori assoluti per l'anno selezionato
@@ -1713,7 +1724,13 @@
     chartDiv.addEventListener('mouseup', () => setTimeout(handleAutoScale, 60));
 
     // --- MOBILE CHART (Chart.js con touch custom) ---
-    if (window.matchMedia('(max-width: 768px)').matches) {
+        // Il grafico mobile usa rawData, quindi si costruisce solo a dati caricati.
+        // Lo richiama chi carica i JSON; la guardia sul media query resta qui.
+        let mobileChartBuilt = false;
+        function buildMobileChart() {
+            if (mobileChartBuilt || !dataReady) return;
+            if (!window.matchMedia('(max-width: 768px)').matches) return;
+            mobileChartBuilt = true;
         const mobileCanvas = document.getElementById('mobileChart');
         const dash = [5, 4];
         let _selectedYear = null;
@@ -3003,19 +3020,20 @@ const INFO = {
         );
         advancedData.pre_tot    = serie.pre_tot;
 
-        // Patcha rawData.cef* per gli anni 2014-2024 con valori reali dal JSON
-        // Gli anni 2004-2013 restano hardcoded (non coperti dalla serie comunale)
-        const CEF_ARR_BASE12 = Math.round(serie.arr_tot[0] / (rawData.cefArr[10] / 100));
+        // Patcha rawData.cef* per gli anni 2014-2024 dalla serie comunale.
+        // Il 2004-2013 lo ha già scritto syncPre2012FromJson qui sopra.
         serie.anni.forEach((anno, i) => {
             const idx = anno - 2004;
             if (idx < 0 || idx > 20) return;
             if (serie.pre_tot[i] != null) rawData.cefPre[idx] = (serie.pre_tot[i] / CEF_PRE_BASE) * 100;
             if (serie.pre_ext[i] != null) rawData.cefExt[idx] = (serie.pre_ext[i] / CEF_EXT_BASE) * 100;
-            if (serie.arr_tot[i] != null) rawData.cefArr[idx] = (serie.arr_tot[i] / CEF_ARR_BASE12) * 100;
+            if (serie.arr_tot[i] != null && CEF_ARR_BASE) rawData.cefArr[idx] = (serie.arr_tot[i] / CEF_ARR_BASE) * 100;
             const preAbs = rawData.cefPre[idx] * CEF_PRE_BASE / 100;
             const extAbs = rawData.cefExt[idx] * CEF_EXT_BASE / 100;
             cefAlb[idx] = ((preAbs - extAbs) / CEF_ALB_BASE) * 100;
         });
+        // Da qui in poi rawData è popolato: i report possono disegnarsi.
+        dataReady = itaSynced && pre12Synced && rawData.cefPre.length === 21;
         // Aggiorna solo i dati y del grafico evoluzione storica (restyle preserva layout/interazioni).
         // Tracce 0-3 = Cefalù, 4-7 = Italia; queste ultime solo se il JSON nazionale è arrivato.
         const yData = [
@@ -3038,6 +3056,8 @@ const INFO = {
         Plotly.restyle(chartDiv, { y: yData }, yIdx);
         if (currentHighlightYear !== null) showYearlyReport(currentHighlightYear - 2004);
         else showTotalReport();
+        // Su mobile il grafico Chart.js si costruisce ora, che rawData è pieno
+        buildMobileChart();
 
         // Stagionalità
         stagionalitaData = stagData;
