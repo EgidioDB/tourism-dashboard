@@ -2851,12 +2851,26 @@ const INFO = {
                 node.style.maxHeight = 'none';
             }
         });
-        // Gestisci anche .row-map con altezza fissa
-        const rowMaps = el.querySelectorAll('.row-map');
+        // Gestisci anche .row-map e .row-chart con altezza fissa
+        const rowMaps = el.querySelectorAll('.row-map, .row-chart');
         const savedRowMaps = [];
         rowMaps.forEach(node => {
             savedRowMaps.push({ node, h: node.style.height });
             node.style.height = 'auto';
+        });
+        // Rendi visibili sezioni e box non ancora animati
+        const savedOpacity = [];
+        if (el.classList.contains('section-anim') && !el.classList.contains('visible')) {
+            savedOpacity.push({ node: el, opacity: el.style.opacity, transform: el.style.transform });
+            el.style.opacity = '1';
+            el.style.transform = 'none';
+        }
+        el.querySelectorAll('*').forEach(node => {
+            if (node.style.opacity === '0') {
+                savedOpacity.push({ node, opacity: node.style.opacity, transform: node.style.transform });
+                node.style.opacity = '1';
+                node.style.transform = 'none';
+            }
         });
 
         html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#f8f9fb' }).then(canvas => {
@@ -2868,6 +2882,10 @@ const INFO = {
                 node.style.maxHeight = mh;
             });
             savedRowMaps.forEach(({ node, h }) => { node.style.height = h; });
+            savedOpacity.forEach(({ node, opacity, transform }) => {
+                node.style.opacity = opacity;
+                node.style.transform = transform;
+            });
 
             canvas.toBlob(function(blob) {
                 const file = new File([blob], filename, { type: 'image/png' });
