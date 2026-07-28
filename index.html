@@ -166,7 +166,7 @@
             transition: transform 0.2s, background 0.2s;
             display: flex; align-items: center; justify-content: center;
         }
-        #nav-fab.fab-open #fab-toggle { transform: rotate(90deg); }
+        #nav-fab.fab-open #fab-toggle { transform: scale(1.08); }
         .fab-item {
             display: flex; align-items: center; gap: 8px;
             background: var(--card-bg); color: var(--text-main);
@@ -3553,13 +3553,19 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInfo();
     }
 
     // Toggle fisarmonica FAB
-    document.getElementById('fab-toggle').addEventListener('click', function() {
-        fab.classList.toggle('fab-open');
+    const fabToggle = document.getElementById('fab-toggle');
+    fabToggle.addEventListener('click', function() {
+        const opening = !fab.classList.contains('fab-open');
+        fab.classList.toggle('fab-open', opening);
+        fabToggle.textContent = opening ? '✕' : '☰';
     });
 
     // Chiudi FAB se si clicca fuori
     document.addEventListener('click', function(e) {
-        if (!fab.contains(e.target)) fab.classList.remove('fab-open');
+        if (!fab.contains(e.target)) {
+            fab.classList.remove('fab-open');
+            fabToggle.textContent = '☰';
+        }
     });
 
     // Scroll to section on click
@@ -3571,6 +3577,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInfo();
             const top = target.getBoundingClientRect().top + window.scrollY - offset;
             window.scrollTo({ top, behavior: 'smooth' });
             fab.classList.remove('fab-open');
+            fabToggle.textContent = '☰';
         });
     });
 
