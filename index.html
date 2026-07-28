@@ -937,26 +937,26 @@
 
     // --- 2. DATABASE REPORT REGIONALI ---
     const regionalDataFull = {
-        "Abruzzo":        { reg: { arr: 128.2, pre: 114.2, alb: 114.0, ext: 114.7, covid: { arr: +16.4, pre:  -1.7, alb:  +1.1, ext:  -6.6 } }, top: { name: "Pescara",                        preArr:   +43.4, prePre:   +16.9, preAlb:   +7.1, preExt: +172.5, arr: 125.0, pre: 228.7, alb: 121.3, ext: 1946.6 } },
-        "Basilicata":     { reg: { arr: 153.9, pre: 119.6, alb: 120.7, ext: 117.1, covid: { arr: +63.0, pre: +30.2, alb: +31.0, ext: +28.4 } }, top: { name: "Matera",                          preArr:  +153.7, prePre:  +198.3, preAlb: +120.4, preExt: +390.4, arr: 249.1, pre: 239.5, alb: 184.5, ext: 374.9 } },
-        "Calabria":       { reg: { arr: 124.8, pre: 104.9, alb: 101.6, ext: 118.1, covid: { arr: +35.2, pre: +22.5, alb: +23.3, ext: +19.2 } }, top: { name: "Ricadi",                          preArr:   +35.0, prePre:   +14.4, preAlb:  +16.3, preExt:   +6.3, arr: 145.5, pre: 109.4, alb: 108.0, ext: 115.3 } },
-        "Campania":       { reg: { arr: 132.7, pre: 118.3, alb: 111.4, ext: 152.0, covid: { arr: +35.5, pre: +21.9, alb: +15.5, ext: +53.2 } }, top: { name: "Napoli",                          preArr:   +90.3, prePre:   +30.3, preAlb:  +15.7, preExt:+1172.5, arr: 201.2, pre: 133.6, alb: 106.0, ext: 2303.4 } },
-        "Emilia-Romagna": { reg: { arr: 129.2, pre: 115.3, alb: 105.6, ext: 153.9, covid: { arr: +26.1, pre: +14.1, alb: +11.7, ext: +23.5 } }, top: { name: "Bologna",                        preArr:   +44.2, prePre:   +47.6, preAlb:  +34.1, preExt: +172.5, arr: 168.0, pre: 192.0, alb: 138.2, ext: 689.9 } },
-        "Friuli":         { reg: { arr: 146.6, pre: 133.4, alb: 141.7, ext: 125.3, covid: { arr: +27.8, pre: +19.0, alb: +22.6, ext: +15.5 } }, top: { name: "Trieste",                        preArr:   +36.2, prePre:   +38.8, preAlb:  +15.3, preExt: +104.4, arr: 178.7, pre: 193.5, alb: 148.7, ext: 318.5 } },
-        "Lazio":          { reg: { arr: 123.3, pre: 168.0, alb: 136.6, ext: 333.3, covid: { arr: +24.0, pre: +26.7, alb:  +4.5, ext:+143.6 } }, top: { name: "Fiumicino",                      preArr:  +169.8, prePre:  +129.3, preAlb: +112.5, preExt: +695.2, arr: 326.4, pre: 420.8, alb: 387.8, ext: 1527.8 } },
-        "Liguria":        { reg: { arr: 127.4, pre: 119.7, alb: 101.1, ext: 160.6, covid: { arr: +18.0, pre: +11.9, alb:  +3.4, ext: +30.6 } }, top: { name: "La Spezia",                      preArr:   +69.2, prePre:   +90.3, preAlb:  +11.9, preExt: +296.9, arr: 211.3, pre: 252.6, alb: 128.9, ext: 578.4 } },
-        "Lombardia":      { reg: { arr: 132.2, pre: 131.6, alb: 110.3, ext: 204.8, covid: { arr: +24.3, pre: +18.0, alb: +12.4, ext: +37.5 } }, top: { name: "Bergamo",                        preArr:   +58.9, prePre:   +55.0, preAlb:  +27.2, preExt: +100.8, arr: 216.8, pre: 217.4, alb: 165.9, ext: 302.2 } },
-        "Marche":         { reg: { arr: 116.0, pre:  92.3, alb:  95.7, ext:  89.3, covid: { arr:  +6.8, pre:  -8.7, alb: -11.1, ext:  -6.5 } }, top: { name: "Pesaro",                         preArr:   +16.3, prePre:    -3.6, preAlb:   -3.6, preExt:   -3.7, arr: 126.3, pre: 107.6, alb: 104.1, ext: 122.4 } },
-        "Molise":         { reg: { arr:  94.0, pre: 108.7, alb:  91.3, ext: 146.3, covid: { arr:  -7.0, pre:  +4.8, alb:  -5.6, ext: +27.2 } }, top: { name: "Termoli",                        preArr:   +17.6, prePre:    +6.8, preAlb:   +4.7, preExt:   +9.7, arr: 104.7, pre: 101.8, alb:  95.8, ext: 110.1 } },
-        "Piemonte":       { reg: { arr: 124.4, pre: 110.2, alb: 102.3, ext: 124.8, covid: { arr: +20.6, pre: +14.0, alb:  +4.2, ext: +32.3 } }, top: { name: "Baveno",                         preArr:   +20.0, prePre:   +14.4, preAlb:  +12.3, preExt:  +17.1, arr: 120.8, pre: 122.1, alb: 105.3, ext: 144.1 } },
-        "Puglia":         { reg: { arr: 156.1, pre: 134.8, alb: 118.1, ext: 161.4, covid: { arr: +30.2, pre: +16.3, alb: +13.6, ext: +20.7 } }, top: { name: "Monopoli",                       preArr:  +126.9, prePre:  +110.1, preAlb:  +67.1, preExt: +251.1, arr: 334.2, pre: 290.3, alb: 189.7, ext: 620.4 } },
-        "Sardegna":       { reg: { arr: 161.9, pre: 137.4, alb: 120.7, ext: 184.5, covid: { arr: +44.0, pre: +33.3, alb: +27.1, ext: +50.8 } }, top: { name: "Pula",                           preArr:   +47.9, prePre:   +52.7, preAlb:  +49.7, preExt:  +75.9, arr: 176.7, pre: 168.9, alb: 159.0, ext: 245.0 } },
-        "Sicilia":        { reg: { arr: 125.5, pre: 116.7, alb: 104.9, ext: 168.4, covid: { arr: +10.8, pre:  +1.7, alb:  -2.1, ext: +18.0 } }, top: { name: "Marsala",                        preArr:   +25.9, prePre:   +36.5, preAlb:  +29.8, preExt:  +66.5, arr: 168.6, pre: 342.5, alb: 360.5, ext: 262.7 } },
-        "Toscana":        { reg: { arr: 121.3, pre: 107.1, alb:  92.4, ext: 123.9, covid: { arr: +15.8, pre: +11.4, alb:  +5.5, ext: +18.1 } }, top: { name: "Castagneto Carducci",            preArr:   +41.3, prePre:   +15.8, preAlb:  -28.0, preExt:  +28.6, arr: 180.8, pre: 144.6, alb: 106.5, ext: 155.7 } },
-        "Trentino":       { reg: { arr: 142.0, pre: 129.4, alb: 121.2, ext: 156.8, covid: { arr: +26.8, pre: +18.9, alb: +15.6, ext: +29.9 } }, top: { name: "Bolzano",                  preArr:   +20.8, prePre:   +28.0, preAlb:  +15.2, preExt:  +92.3, arr: 150.8, pre: 168.0, alb: 135.6, ext: 330.6 } },
-        "Umbria":         { reg: { arr: 113.2, pre: 115.2, alb: 112.5, ext: 118.3, covid: { arr:  +5.0, pre:  +0.5, alb:  -0.1, ext:  +1.2 } }, top: { name: "Assisi",                         preArr:   +10.5, prePre:    +8.8, preAlb:   +8.3, preExt:   +9.5, arr: 122.5, pre: 133.0, alb: 133.0, ext: 133.1 } },
-        "Valle d'Aosta":  { reg: { arr: 136.2, pre: 123.7, alb: 121.0, ext: 131.0, covid: { arr: +28.8, pre: +21.4, alb: +17.8, ext: +31.1 } }, top: { name: "Courmayeur",                        preArr:   +53.8, prePre:   +33.8, preAlb:  +28.6, preExt:   +53.0, arr: 159.9, pre: 136.4, alb: 133.1, ext: 148.8 } },
-        "Veneto":         { reg: { arr: 133.8, pre: 118.8, alb: 102.7, ext: 133.7, covid: { arr: +24.2, pre: +15.2, alb: +10.1, ext: +19.8 } }, top: { name: "Verona",                         preArr:   +56.1, prePre:   +63.2, preAlb:  +11.9, preExt: +176.8, arr: 191.9, pre: 184.6, alb: 110.7, ext: 348.4 } }
+        "Abruzzo":        { reg: { arr: 128.2, pre: 114.2, alb: 114.0, ext: 114.7, covid: { arr: +16.4, pre:  -1.7, alb:  +1.1, ext:  -6.6 } }, top: { name: "Pescara",                        covidArr:   +43.4, covidPre:   +16.9, covidAlb:   +7.1, covidExt: +172.5, arr: 125.0, pre: 228.7, alb: 121.3, ext: 1946.6 } },
+        "Basilicata":     { reg: { arr: 153.9, pre: 119.6, alb: 120.7, ext: 117.1, covid: { arr: +63.0, pre: +30.2, alb: +31.0, ext: +28.4 } }, top: { name: "Matera",                          covidArr:  +153.7, covidPre:  +198.3, covidAlb: +120.4, covidExt: +390.4, arr: 249.1, pre: 239.5, alb: 184.5, ext: 374.9 } },
+        "Calabria":       { reg: { arr: 124.8, pre: 104.9, alb: 101.6, ext: 118.1, covid: { arr: +35.2, pre: +22.5, alb: +23.3, ext: +19.2 } }, top: { name: "Ricadi",                          covidArr:   +35.0, covidPre:   +14.4, covidAlb:  +16.3, covidExt:   +6.3, arr: 145.5, pre: 109.4, alb: 108.0, ext: 115.3 } },
+        "Campania":       { reg: { arr: 132.7, pre: 118.3, alb: 111.4, ext: 152.0, covid: { arr: +35.5, pre: +21.9, alb: +15.5, ext: +53.2 } }, top: { name: "Napoli",                          covidArr:   +90.3, covidPre:   +30.3, covidAlb:  +15.7, covidExt:+1172.5, arr: 201.2, pre: 133.6, alb: 106.0, ext: 2303.4 } },
+        "Emilia-Romagna": { reg: { arr: 129.2, pre: 115.3, alb: 105.6, ext: 153.9, covid: { arr: +26.1, pre: +14.1, alb: +11.7, ext: +23.5 } }, top: { name: "Bologna",                        covidArr:   +44.2, covidPre:   +47.6, covidAlb:  +34.1, covidExt: +172.5, arr: 168.0, pre: 192.0, alb: 138.2, ext: 689.9 } },
+        "Friuli":         { reg: { arr: 146.6, pre: 133.4, alb: 141.7, ext: 125.3, covid: { arr: +27.8, pre: +19.0, alb: +22.6, ext: +15.5 } }, top: { name: "Trieste",                        covidArr:   +36.2, covidPre:   +38.8, covidAlb:  +15.3, covidExt: +104.4, arr: 178.7, pre: 193.5, alb: 148.7, ext: 318.5 } },
+        "Lazio":          { reg: { arr: 123.3, pre: 168.0, alb: 136.6, ext: 333.3, covid: { arr: +24.0, pre: +26.7, alb:  +4.5, ext:+143.6 } }, top: { name: "Fiumicino",                      covidArr:  +169.8, covidPre:  +129.3, covidAlb: +112.5, covidExt: +695.2, arr: 326.4, pre: 420.8, alb: 387.8, ext: 1527.8 } },
+        "Liguria":        { reg: { arr: 127.4, pre: 119.7, alb: 101.1, ext: 160.6, covid: { arr: +18.0, pre: +11.9, alb:  +3.4, ext: +30.6 } }, top: { name: "La Spezia",                      covidArr:   +69.2, covidPre:   +90.3, covidAlb:  +11.9, covidExt: +296.9, arr: 211.3, pre: 252.6, alb: 128.9, ext: 578.4 } },
+        "Lombardia":      { reg: { arr: 132.2, pre: 131.6, alb: 110.3, ext: 204.8, covid: { arr: +24.3, pre: +18.0, alb: +12.4, ext: +37.5 } }, top: { name: "Bergamo",                        covidArr:   +58.9, covidPre:   +55.0, covidAlb:  +27.2, covidExt: +100.8, arr: 216.8, pre: 217.4, alb: 165.9, ext: 302.2 } },
+        "Marche":         { reg: { arr: 116.0, pre:  92.3, alb:  95.7, ext:  89.3, covid: { arr:  +6.8, pre:  -8.7, alb: -11.1, ext:  -6.5 } }, top: { name: "Pesaro",                         covidArr:   +16.3, covidPre:    -3.6, covidAlb:   -3.6, covidExt:   -3.7, arr: 126.3, pre: 107.6, alb: 104.1, ext: 122.4 } },
+        "Molise":         { reg: { arr:  94.0, pre: 108.7, alb:  91.3, ext: 146.3, covid: { arr:  -7.0, pre:  +4.8, alb:  -5.6, ext: +27.2 } }, top: { name: "Termoli",                        covidArr:   +17.6, covidPre:    +6.8, covidAlb:   +4.7, covidExt:   +9.7, arr: 104.7, pre: 101.8, alb:  95.8, ext: 110.1 } },
+        "Piemonte":       { reg: { arr: 124.4, pre: 110.2, alb: 102.3, ext: 124.8, covid: { arr: +20.6, pre: +14.0, alb:  +4.2, ext: +32.3 } }, top: { name: "Baveno",                         covidArr:   +20.0, covidPre:   +14.4, covidAlb:  +12.3, covidExt:  +17.1, arr: 120.8, pre: 122.1, alb: 105.3, ext: 144.1 } },
+        "Puglia":         { reg: { arr: 156.1, pre: 134.8, alb: 118.1, ext: 161.4, covid: { arr: +30.2, pre: +16.3, alb: +13.6, ext: +20.7 } }, top: { name: "Monopoli",                       covidArr:  +126.9, covidPre:  +110.1, covidAlb:  +67.1, covidExt: +251.1, arr: 334.2, pre: 290.3, alb: 189.7, ext: 620.4 } },
+        "Sardegna":       { reg: { arr: 161.9, pre: 137.4, alb: 120.7, ext: 184.5, covid: { arr: +44.0, pre: +33.3, alb: +27.1, ext: +50.8 } }, top: { name: "Pula",                           covidArr:   +47.9, covidPre:   +52.7, covidAlb:  +49.7, covidExt:  +75.9, arr: 176.7, pre: 168.9, alb: 159.0, ext: 245.0 } },
+        "Sicilia":        { reg: { arr: 125.5, pre: 116.7, alb: 104.9, ext: 168.4, covid: { arr: +10.8, pre:  +1.7, alb:  -2.1, ext: +18.0 } }, top: { name: "Marsala",                        covidArr:   +25.9, covidPre:   +36.5, covidAlb:  +29.8, covidExt:  +66.5, arr: 168.6, pre: 342.5, alb: 360.5, ext: 262.7 } },
+        "Toscana":        { reg: { arr: 121.3, pre: 107.1, alb:  92.4, ext: 123.9, covid: { arr: +15.8, pre: +11.4, alb:  +5.5, ext: +18.1 } }, top: { name: "Castagneto Carducci",            covidArr:   +41.3, covidPre:   +15.8, covidAlb:  -28.0, covidExt:  +28.6, arr: 180.8, pre: 144.6, alb: 106.5, ext: 155.7 } },
+        "Trentino":       { reg: { arr: 142.0, pre: 129.4, alb: 121.2, ext: 156.8, covid: { arr: +26.8, pre: +18.9, alb: +15.6, ext: +29.9 } }, top: { name: "Bolzano",                  covidArr:   +20.8, covidPre:   +28.0, covidAlb:  +15.2, covidExt:  +92.3, arr: 150.8, pre: 168.0, alb: 135.6, ext: 330.6 } },
+        "Umbria":         { reg: { arr: 113.2, pre: 115.2, alb: 112.5, ext: 118.3, covid: { arr:  +5.0, pre:  +0.5, alb:  -0.1, ext:  +1.2 } }, top: { name: "Assisi",                         covidArr:   +10.5, covidPre:    +8.8, covidAlb:   +8.3, covidExt:   +9.5, arr: 122.5, pre: 133.0, alb: 133.0, ext: 133.1 } },
+        "Valle d'Aosta":  { reg: { arr: 136.2, pre: 123.7, alb: 121.0, ext: 131.0, covid: { arr: +28.8, pre: +21.4, alb: +17.8, ext: +31.1 } }, top: { name: "Courmayeur",                        covidArr:   +53.8, covidPre:   +33.8, covidAlb:  +28.6, covidExt:   +53.0, arr: 159.9, pre: 136.4, alb: 133.1, ext: 148.8 } },
+        "Veneto":         { reg: { arr: 133.8, pre: 118.8, alb: 102.7, ext: 133.7, covid: { arr: +24.2, pre: +15.2, alb: +10.1, ext: +19.8 } }, top: { name: "Verona",                         covidArr:   +56.1, covidPre:   +63.2, covidAlb:  +11.9, covidExt: +176.8, arr: 191.9, pre: 184.6, alb: 110.7, ext: 348.4 } }
     };
 
     // --- 3. FORMATTAZIONE NUMERI ---
@@ -1028,11 +1028,11 @@
             const pre19 = +((pre14*(100+data.reg.covid.pre)/100).toFixed(1));
             const pa = preAbs[name] || [0,0,0,0,0,0,0,0];
             // Post-COVID Top City
-            const topHasPreCovid = data.top.preArr !== null;
-            const pcTopArr = topHasPreCovid ? sgn((data.top.arr / (100 + data.top.preArr) - 1) * 100) : null;
-            const pcTopPre = topHasPreCovid ? sgn((data.top.pre / (100 + data.top.prePre) - 1) * 100) : null;
-            const pcTopAlb = (topHasPreCovid && data.top.preAlb !== null && data.top.alb !== null) ? sgn((data.top.alb / (100 + data.top.preAlb) - 1) * 100) : null;
-            const pcTopExt = topHasPreCovid ? sgn((data.top.ext / (100 + data.top.preExt) - 1) * 100) : null;
+            const topHasPreCovid = data.top.covidArr !== null;
+            const pcTopArr = topHasPreCovid ? sgn((data.top.arr / (100 + data.top.covidArr) - 1) * 100) : null;
+            const pcTopPre = topHasPreCovid ? sgn((data.top.pre / (100 + data.top.covidPre) - 1) * 100) : null;
+            const pcTopAlb = (topHasPreCovid && data.top.covidAlb !== null && data.top.alb !== null) ? sgn((data.top.alb / (100 + data.top.covidAlb) - 1) * 100) : null;
+            const pcTopExt = topHasPreCovid ? sgn((data.top.ext / (100 + data.top.covidExt) - 1) * 100) : null;
 
             document.getElementById('regionReportContent').innerHTML = `
                 <div class="report-title">${name}</div>
@@ -1067,12 +1067,12 @@
                 <div class="data-group" style="border-left: 4px solid #457b9d; background: #f0f7ff;">
                     <div class="group-label" style="color:#457b9d">Top City: ${data.top.name}</div>
                     <div class="group-label" style="font-size:0.6em; margin-top:15px;">Pre-COVID (2019 vs 2014) ${ib('top_preCovid')}</div>
-                    ${data.top.preArr === null
+                    ${data.top.covidArr === null
                         ? `<div class="data-row"><span style="color:var(--text-sub);font-style:italic;font-size:0.9em">Dati non disponibili per il 2019</span></div>`
-                        : `<div class="data-row"><span>Arrivi ${ib('arr_preCovid_top')}</span><span class="value">${data.top.preArr > 0 ? '+' : ''}${data.top.preArr}%</span></div>
-                    <div class="data-row"><span>Presenze</span><span class="value">${data.top.prePre > 0 ? '+' : ''}${data.top.prePre}%</span></div>
-                    ${data.top.preAlb === null ? '' : `<div class="data-row"><span>Alb</span><span class="value">${data.top.preAlb > 0 ? '+' : ''}${data.top.preAlb}%</span></div>`}
-                    <div class="data-row"><span>Extra-Alb</span><span class="value">${data.top.preExt > 0 ? '+' : ''}${data.top.preExt}%</span></div>`}
+                        : `<div class="data-row"><span>Arrivi ${ib('arr_preCovid_top')}</span><span class="value">${data.top.covidArr > 0 ? '+' : ''}${data.top.covidArr}%</span></div>
+                    <div class="data-row"><span>Presenze</span><span class="value">${data.top.covidPre > 0 ? '+' : ''}${data.top.covidPre}%</span></div>
+                    ${data.top.covidAlb === null ? '' : `<div class="data-row"><span>Alb</span><span class="value">${data.top.covidAlb > 0 ? '+' : ''}${data.top.covidAlb}%</span></div>`}
+                    <div class="data-row"><span>Extra-Alb</span><span class="value">${data.top.covidExt > 0 ? '+' : ''}${data.top.covidExt}%</span></div>`}
                     <div class="group-label" style="font-size:0.6em; margin-top:15px; color:#457b9d">Post-COVID (2024 vs 2019) ${ib('postCovid_top')}</div>
                     ${pcTopArr === null
                         ? `<div class="data-row"><span style="color:var(--text-sub);font-style:italic;font-size:0.9em">Dati non disponibili</span></div>`
@@ -1438,7 +1438,7 @@
         const vpc = k => (s[k] && s[k][i14]) ? r1((s[k][i19] / s[k][i14] - 1) * 100) : null;
         return {
             arr: idx('arr_tot'), pre: idx('pre_tot'), alb: idx('pre_alb'), ext: idx('pre_ext'),
-            preArr: vpc('arr_tot'), prePre: vpc('pre_tot'), preAlb: vpc('pre_alb'), preExt: vpc('pre_ext')
+            covidArr: vpc('arr_tot'), covidPre: vpc('pre_tot'), covidAlb: vpc('pre_alb'), covidExt: vpc('pre_ext')
         };
     }
 

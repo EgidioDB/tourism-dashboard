@@ -192,8 +192,18 @@ Effetto sulle variazioni pre-2012 mostrate: essendo il 2004 leggermente sottosti
 
 ## Sviluppi futuri
 
+### Da fare
+
+- **Accordion per la Top City** — le righe della Top City sono le uniche del pannello regionale senza `toggleNominal`: mostrano solo percentuali, non i valori assoluti. La serie comunale è già in cache dopo il primo click (`topSerieCache`), quindi arrivi e notti 2014/2019/2024 sono disponibili senza fetch aggiuntivi. Serve solo aggiungere `onclick="toggleNominal(this)"` e `data-nominal` alle righe dei gruppi pre-COVID, post-COVID e crescita totale.
+
+### Nuovi indicatori
+
 - Durata media del soggiorno (presenze/arrivi) per regione e anno
 - Split residenti/non-residenti per regione (turismo internazionale vs domestico)
 - Indice di stagionalità regionale (dati mensili ISTAT disponibili)
 - Tasso di occupazione alberghiera (Eurostat `tour_occ_occh2`, NUTS2)
 - Benchmark europeo: confronto con regioni NUTS2 di Spagna, Francia, Grecia
+
+### Valutato e scartato
+
+- **Gruppo pre-2012 per la Top City** — solo 12 delle 20 Top City esistono come circoscrizione turistica autonoma nei dati ISTAT 2004–2013. Le altre otto (Ricadi, Fiumicino, Baveno, Monopoli, Pula, Marsala, Castagneto Carducci, Courmayeur) sono aggregate in aree più ampie e non separabili, quindi il gruppo resterebbe vuoto per il 40% delle regioni. Non esiste una fonte ISTAT comunale con split alberghiero/extra prima del 2014.
