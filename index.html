@@ -160,13 +160,21 @@
         #nav-fab.nav-visible { opacity: 1; pointer-events: auto; }
         #fab-toggle {
             width: 48px; height: 48px; border-radius: 50%;
-            background: var(--accent); color: #fff; border: none;
-            font-size: 1.2em; cursor: pointer; flex-shrink: 0;
+            background: var(--accent); border: none;
+            cursor: pointer; flex-shrink: 0;
             box-shadow: 0 3px 12px rgba(0,0,0,0.25);
-            transition: transform 0.2s, background 0.2s;
-            display: flex; align-items: center; justify-content: center;
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: 5px; padding: 0;
         }
-        #nav-fab.fab-open #fab-toggle { transform: scale(1.08); }
+        #fab-toggle span {
+            display: block; width: 18px; height: 2px;
+            background: #fff; border-radius: 2px;
+            transition: transform 0.28s ease, opacity 0.28s ease;
+            transform-origin: center;
+        }
+        #nav-fab.fab-open #fab-toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        #nav-fab.fab-open #fab-toggle span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        #nav-fab.fab-open #fab-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
         .fab-item {
             display: flex; align-items: center; gap: 8px;
             background: var(--card-bg); color: var(--text-main);
@@ -190,6 +198,42 @@
 
         @media (min-width: 769px) { #nav-fab { display: none !important; } }
         @media (max-width: 768px) { #main-nav { display: none !important; } }
+
+        /* Export bottom sheet */
+        #export-sheet {
+            display: none; position: fixed; inset: 0; z-index: 3000;
+        }
+        #export-sheet.active { display: block; }
+        #export-backdrop {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.45);
+        }
+        #export-panel {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: var(--card-bg); border-radius: 18px 18px 0 0;
+            padding: 20px 16px 32px; display: flex; flex-direction: column; gap: 10px;
+            transform: translateY(100%); transition: transform 0.32s cubic-bezier(0.32,0.72,0,1);
+        }
+        #export-sheet.active #export-panel { transform: translateY(0); }
+        #export-sheet-title {
+            font-size: 0.8em; font-weight: 600; color: var(--text-sub);
+            text-transform: uppercase; letter-spacing: 0.06em;
+            margin-bottom: 4px; text-align: center;
+        }
+        .export-sheet-btn {
+            display: flex; align-items: center; gap: 14px;
+            background: var(--bg); border: 1px solid rgba(0,0,0,0.09);
+            border-radius: 12px; padding: 14px 16px; cursor: pointer;
+            text-align: left; color: var(--text-main);
+            transition: background 0.15s;
+        }
+        .export-sheet-btn:hover { background: rgba(0,0,0,0.04); }
+        .export-sheet-icon { font-size: 1.6em; flex-shrink: 0; }
+        .export-sheet-btn strong { font-size: 0.95em; }
+        .export-sheet-btn small { font-size: 0.78em; color: var(--text-sub); }
+        .export-sheet-cancel {
+            background: none; border: none; color: var(--text-sub);
+            font-size: 0.9em; padding: 8px; cursor: pointer; text-align: center;
+        }
         #infoBox p strong, #infoBox li strong, #infoBox h4 strong { display: inline; margin-bottom: 0; font-size: inherit; }
         .info-fonte { display: block; font-size: 0.82em; opacity: 0.55; font-style: italic; }
         .data-row { cursor: pointer; border-radius: 3px; margin: 0 -4px; padding: 6px 4px; transition: background .1s; }
@@ -516,10 +560,27 @@
 
 <!-- FAB mobile -->
 <div id="nav-fab">
-    <button id="fab-toggle" aria-label="Menu sezioni">☰</button>
+    <button id="fab-toggle" aria-label="Menu sezioni"><span></span><span></span><span></span></button>
     <a class="fab-item" data-sec="sec-confronta"><span class="fab-dot" style="background:#2a9d8f"></span>Confronta</a>
     <a class="fab-item" data-sec="sec-cefalu"><span class="fab-dot" style="background:#e9c46a"></span>Cefalù</a>
     <a class="fab-item fab-active" data-sec="sec-italia"><span class="fab-dot" style="background:#457b9d"></span>Italia</a>
+</div>
+
+<!-- Export bottom sheet (mobile) -->
+<div id="export-sheet">
+    <div id="export-backdrop" onclick="closeExportSheet()"></div>
+    <div id="export-panel">
+        <div id="export-sheet-title">Esporta sezione</div>
+        <button class="export-sheet-btn" onclick="doExport('mobile')">
+            <span class="export-sheet-icon">📱</span>
+            <span><strong>Vista mobile</strong><br><small>Come la vedi ora</small></span>
+        </button>
+        <button class="export-sheet-btn" onclick="doExport('desktop')">
+            <span class="export-sheet-icon">🖥</span>
+            <span><strong>Vista desktop</strong><br><small>Layout a schermo largo</small></span>
+        </button>
+        <button class="export-sheet-cancel" onclick="closeExportSheet()">Annulla</button>
+    </div>
 </div>
 
 <div class="main-layout">
@@ -3536,7 +3597,43 @@ function showInfo(key) {
 function closeInfo() {
     document.getElementById('infoOverlay').classList.remove('active');
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInfo(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeInfo(); closeExportSheet(); } });
+
+// ── EXPORT SHEET (mobile) ─────────────────────────────────────────────────
+let _exportPending = null;
+
+// Su mobile intercetta exportSection e mostra il bottom sheet
+const _exportSectionOrig = window.exportSection;
+window.exportSection = function(which) {
+    if (window.innerWidth > 768) { _exportSectionOrig(which); return; }
+    _exportPending = which;
+    document.getElementById('export-sheet').classList.add('active');
+};
+
+window.closeExportSheet = function() {
+    document.getElementById('export-sheet').classList.remove('active');
+    _exportPending = null;
+};
+
+window.doExport = function(mode) {
+    closeExportSheet();
+    if (!_exportPending) return;
+    const which = _exportPending;
+    if (mode === 'mobile') { _exportSectionOrig(which); return; }
+
+    // Desktop: forza larghezza 1280px temporaneamente
+    const layout = document.querySelector('.main-layout');
+    const origStyle = layout.getAttribute('style') || '';
+    layout.style.width = '1280px';
+    layout.style.maxWidth = '1280px';
+    // Forza reflow
+    layout.getBoundingClientRect();
+    _exportSectionOrig(which);
+    // Ripristina dopo che html2canvas ha catturato (leggermente dopo)
+    setTimeout(function() {
+        layout.setAttribute('style', origStyle);
+    }, 500);
+};
 
 // ── NAVIGATION ────────────────────────────────────────────────────────────
 (function() {
@@ -3555,17 +3652,12 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInfo();
     // Toggle fisarmonica FAB
     const fabToggle = document.getElementById('fab-toggle');
     fabToggle.addEventListener('click', function() {
-        const opening = !fab.classList.contains('fab-open');
-        fab.classList.toggle('fab-open', opening);
-        fabToggle.textContent = opening ? '✕' : '☰';
+        fab.classList.toggle('fab-open');
     });
 
     // Chiudi FAB se si clicca fuori
     document.addEventListener('click', function(e) {
-        if (!fab.contains(e.target)) {
-            fab.classList.remove('fab-open');
-            fabToggle.textContent = '☰';
-        }
+        if (!fab.contains(e.target)) fab.classList.remove('fab-open');
     });
 
     // Scroll to section on click
@@ -3576,8 +3668,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInfo();
             const offset = nav.classList.contains('nav-visible') ? 54 : 0;
             const top = target.getBoundingClientRect().top + window.scrollY - offset;
             window.scrollTo({ top, behavior: 'smooth' });
-            fab.classList.remove('fab-open');
-            fabToggle.textContent = '☰';
+                fab.classList.remove('fab-open');
         });
     });
 
