@@ -109,20 +109,73 @@ Presenze alberghiero 2012:          255.610.143
 
 ---
 
-## Indicatori hardcoded e loro origine
+## Come circolano i dati
 
-Alcuni dati storici (2004–2013) sono necessariamente hardcoded perché le API ISTAT non restituiscono la serie regionale con split alb/ext per quel periodo.
+L'obiettivo è avere **una sola fonte di verità per ogni grandezza**: gli indicatori derivati vengono ricalcolati a runtime, mai memorizzati in parallelo. Aggiornare il JSON aggiorna tutta la dashboard.
 
-| Campo | Significato | Fonte |
-|-------|-------------|-------|
-| `preArr` | Variazione arrivi 2004 vs 2012 per regione | ISTAT circoscrizioni |
-| `prePre` | Variazione presenze 2004 vs 2012 per regione | ISTAT circoscrizioni |
-| `preExt` | Variazione extra-alb 2004 vs 2012 per regione | ISTAT `DF_BULK_DCSC_TURISAREA` |
-| `preAbs` | Presenze assolute 2004 e 2012 [alb, ext] per regione (Milioni) | ISTAT `DF_BULK_DCSC_TURISAREA` |
-| `volumeData.pre` | Presenze 2012 [alb, ext] per regione (Milioni) | ISTAT (allineato a costanti base) |
-| `volumeData.post` | Presenze 2024 [alb, ext] per regione (Milioni) | Eurostat NUTS2 |
-| `rawData.cef*` | Indici Cefalù 2004–2024 (base 2012=100) | ISTAT comunale + serie storica |
-| `rawData.it*` | Indici Italia 2004–2024 (base 2012=100) | `data/italia.json` |
+### Derivati a runtime
+
+| Grandezza | Derivata da | Funzione |
+|-----------|-------------|----------|
+| `rawData.it*` (2004–2024) | `data/italia.json` | `syncItaliaFromJson()` |
+| `itAlb`, `itBenchmark`, `volumeData.Italia` | `rawData.it*` + costanti 2012 | `syncItaliaDerived()` |
+| `rawData.cef*` (2014–2024) | `data/serie/082027.json` | patch nel `Promise.all` |
+| `cefAlb` | `rawData.cef*` + costanti Cefalù | ricalcolo in-place |
+| `reg.arr`, `reg.pre`, `reg.covid.arr/pre` | `data/regioni.json` | `syncRegionaliFromJson()` |
+| `reg.preArr/prePre/preAlb/preExt` | `preAbs` | `syncPre2012FromAbs()` |
+| Classifica crescita comuni | `data/comuni_index.json` | `buildLeaderboard()` |
+
+I valori presenti nei letterali JS servono da **fallback** se un fetch fallisce, e vengono sovrascritti appena il JSON arriva.
+
+### Ancora statici (e perché)
+
+| Campo | Motivo |
+|-------|--------|
+| `preAbs` | Arrivi e presenze regionali 2004/2012 dal file XLS ISTAT: non esiste API né JSON per il pre-2014 con split alb/ext |
+| `IT_PRE_BASE`, `IT_EXT_BASE` | Basi 2012 esatte; `italia.json` le arrotonda alle migliaia e il 2012 è un anno chiuso |
+| `CEF_PRE_BASE`, `CEF_EXT_BASE` | Idem per Cefalù |
+| `rawData.*` anni 2004–2013 di Cefalù | La serie comunale JSON parte dal 2014 |
+| `reg.alb`, `reg.ext`, `covid.alb/ext` | Split alberghiero/extra da Eurostat NUTS2, non presente in `regioni.json` |
+| `volumeData[regione].post` | Volumi 2024 regionali da Eurostat NUTS2 |
+| `top.*` | Top City per regione, da elaborazione su `comuni_index.json` |
+
+### Nota sui totali del file ISTAT circoscrizioni
+
+In `preAbs` i totali arrivi e presenze sono calcolati come **alberghiero + extra-alberghiero**, non letti dalla colonna "Totale" del file. Nel 2004 quella colonna ha righe azzerate pur avendo le componenti valorizzate (es. Catanzaro, Vibo Valentia), il che sottostimava il totale di 8 regioni. Nel 2012 le due letture coincidono e il totale per regione combacia esattamente con `regioni.json`.
+
+---
+
+## Validazione dei dati
+
+I valori non sono solo internamente coerenti: sono stati verificati contro fonti indipendenti.
+
+### 2012 — riconciliazione perfetta
+
+La somma delle 20 regioni di `preAbs` combacia con i totali nazionali di `data/italia.json`, che è un file distinto e prodotto separatamente:
+
+| Grandezza | Somma 20 regioni | `italia.json` | Scarto |
+|-----------|------------------|---------------|--------|
+| Arrivi | 103.733.157 | 103.733.000 | +0,00% |
+| Presenze | 380.711.483 | 380.711.000 | +0,00% |
+| Alberghiero | 255.610.143 | 255.610.000 | +0,00% |
+| Extra-alberghiero | 125.101.340 | 125.101.000 | +0,00% |
+
+Gli scarti di poche centinaia di unità sono l'arrotondamento alle migliaia di `italia.json`. Questo conferma anche che `IT_PRE_BASE` e `IT_EXT_BASE` sono cifre ISTAT autentiche.
+
+### 2004 — verifica incrociata su due file ISTAT
+
+I valori 2004 coincidono **all'unità** con la somma delle circoscrizioni del file `3. Dati per circoscrizione turistica 2004-2013.xlsx`, che è una pubblicazione ISTAT separata da quella usata per l'estrazione:
+
+| | Estratto da `DF_BULK_DCSC_TURISAREA` | File 3 (indipendente) |
+|---|---|---|
+| Alberghiero 2004 | 233.626.738 | 233.626.738 |
+| Extra-alberghiero 2004 | 110.754.336 | 110.754.336 |
+
+### Residuo noto nel 2004
+
+Nel 2004 il totale nazionale ISTAT è più alto della somma delle circoscrizioni: ~1,2M di presenze (0,36%) non risultano attribuite ad alcuna circoscrizione. **È un residuo presente nella fonte ISTAT stessa** — nel file 3 la riga "ITALIA" riporta 345.616.227 presenze contro 343.271.993 della somma delle righe — non un errore di estrazione. Nel 2012 il residuo non esiste.
+
+Effetto sulle variazioni pre-2012 mostrate: essendo il 2004 leggermente sottostimato, i cali risultano sovrastimati di circa 0,2 pp (arrivi), 0,4 pp (presenze), 0,2 pp (alberghiero) e 0,8 pp (extra-alberghiero). Esempio: Piemonte extra-alberghiero è mostrato a −31,5% mentre il valore riconciliato al totale nazionale sarebbe circa −30,9%.
 
 ---
 
