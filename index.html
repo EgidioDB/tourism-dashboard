@@ -150,6 +150,7 @@
         .nav-tab:hover:not(.nav-active) { background: rgba(0,0,0,0.06); color: var(--text-main); }
         .nav-tab.nav-active { background: var(--accent); color: #fff; }
         body.nav-open { padding-top: 46px; }
+        body.nav-open [id] { scroll-margin-top: 62px; }
         .nav-tab-wrap { position: relative; display: flex; align-items: center; }
         .nav-sub {
             position: absolute; top: 100%; left: 50%;
@@ -3746,23 +3747,12 @@ window.doExport = function(mode) {
         if (!fab.contains(e.target)) fab.classList.remove('fab-open');
     });
 
-    function navScrollOffset() {
-        const navBottom = nav.getBoundingClientRect().bottom;
-        return navBottom > 0 ? navBottom + 8 : 0;
-    }
-
-    function layoutTop(el) {
-        let top = 0;
-        while (el) { top += el.offsetTop; el = el.offsetParent; }
-        return top;
-    }
-
     // Scroll to section on click
     document.querySelectorAll('.nav-tab, .fab-item').forEach(el => {
         el.addEventListener('click', function() {
             const target = document.getElementById(this.dataset.sec);
             if (!target) return;
-            window.scrollTo({ top: layoutTop(target) - navScrollOffset(), behavior: 'smooth' });
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             fab.classList.remove('fab-open');
         });
     });
@@ -3771,7 +3761,7 @@ window.doExport = function(mode) {
         el.addEventListener('click', function() {
             const target = document.getElementById(this.dataset.target);
             if (!target) return;
-            window.scrollTo({ top: layoutTop(target) - navScrollOffset(), behavior: 'smooth' });
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
     });
 
