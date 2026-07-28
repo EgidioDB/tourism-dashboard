@@ -2482,7 +2482,7 @@ const INFO = {
             },
             {
                 x: [xMin, xMax], y: [slope*xMin+intercept, slope*xMax+intercept],
-                mode: 'lines', name: `Trend (R²=${r2.toFixed(2)})`,
+                mode: 'lines', name: `Regressione (R²=${r2.toFixed(2)})`,
                 line: { color: '#e9c46a', width: 2, dash: 'dash' },
                 hoverinfo: 'skip'
             }
@@ -2502,8 +2502,8 @@ const INFO = {
                     font: { size: 10, color: '#e63946' }
                 },
                 {
-                    xref: 'paper', yref: 'paper', x: 0.98, y: 0.97,
-                    xanchor: 'right', yanchor: 'top',
+                    xref: 'paper', yref: 'paper', x: 0.98, y: 0.06,
+                    xanchor: 'right', yanchor: 'bottom',
                     text: `R² = ${r2.toFixed(2)}`,
                     showarrow: false,
                     font: { size: 15, color: textC, family: 'monospace' },

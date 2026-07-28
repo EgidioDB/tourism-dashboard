@@ -5,6 +5,52 @@ Autore: Claude (sessione di verifica dati vs ISTAT/Eurostat)
 
 ---
 
+## Problema aperto: rawData.cef* hardcoded non si aggiorna automaticamente col JSON
+
+### Dove si trova
+In `index.html` righe ~962-964, l'oggetto `rawData` contiene tre array di 21 valori (2004-2024, base 2012=100):
+```js
+cefPre: [101.1, 104, 95.5, ..., 146.4]   // presenze
+cefArr: [101, 99.1, ..., 178.7]           // arrivi
+cefExt: [212.5, ..., 198.2]               // extra-alberghiero
+```
+
+### Perché esiste
+Il grafico "Evoluzione storica" copre il 2004-2024. Il file `serie/082027.json` parte solo dal 2014, quindi gli anni 2004-2013 sono necessariamente hardcoded. Per uniformità anche il 2014-2024 è stato hardcoded con indici.
+
+### Entità del problema
+Per il 2014-2024, lo scarto tra indici hardcoded e dati JSON reali è trascurabile (max 137 notti su 929.175 = 0,01%). Il problema è strutturale: se il JSON venisse aggiornato (es. revisioni ISTAT), il grafico storico non si aggiornerebbe automaticamente.
+
+### Come risolvere (refactor non banale)
+Il grafico è costruito **sincronamente** al caricamento pagina (riga ~1052), prima che `Promise.all` risolva. Per renderlo dinamico bisogna:
+
+1. Spostare la costruzione di `traces` e la chiamata `Plotly.newPlot(cefaluChart, ...)` dentro la callback di `Promise.all` (riga ~2532).
+2. All'inizio della callback, prima di usare `rawData`, patchare gli indici 10-20 (anni 2014-2024):
+   ```js
+   // Dentro Promise.all callback, dopo aver ricevuto `serie`:
+   const CEF_ARR_BASE = Math.round(serie.arr_tot[0] / (rawData.cefArr[10] / 100)); // ~132.685
+   serie.anni.forEach((anno, i) => {
+       const idx = anno - 2004;
+       rawData.cefPre[idx] = (serie.pre_tot[i] / CEF_PRE_BASE) * 100;
+       rawData.cefExt[idx] = (serie.pre_ext[i] / CEF_EXT_BASE) * 100;
+       rawData.cefArr[idx] = (serie.arr_tot[i] / CEF_ARR_BASE) * 100;
+   });
+   // Poi ricomputa cefAlb:
+   for (let i = 10; i <= 20; i++) {
+       const preAbs = rawData.cefPre[i] * CEF_PRE_BASE / 100;
+       const extAbs = rawData.cefExt[i] * CEF_EXT_BASE / 100;
+       cefAlb[i] = ((preAbs - extAbs) / CEF_ALB_BASE) * 100;
+   }
+   ```
+3. Aggiungere `const CEF_ARR_BASE` alle costanti a riga 1020 (o calcolarlo dinamicamente come sopra).
+4. `cefAlb` deve diventare `let` invece di `const` (riga 1021).
+5. Verificare che nessun codice di rendering che usa `rawData.cef*` o `cefAlb` venga chiamato prima che `Promise.all` risolva.
+
+### Rischio
+Medio. Il grafico "Evoluzione storica" è anche condiviso con la sezione "Confronta" (`buildLeaderboard`/`mkDataset`). Verificare che lo spostamento dentro `Promise.all` non rompa quella sezione.
+
+---
+
 ## Stato attuale
 
 Tutti i valori hardcoded nella sezione **Sintesi Italia** (pre-2012, post-2012, pre-COVID, post-COVID) sono stati convertiti in calcoli dinamici da `rawData`. Nessun valore stringa fissa rimane in quei blocchi.
