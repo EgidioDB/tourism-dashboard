@@ -1,6 +1,6 @@
 # Tourism Dashboard — Analisi del Turismo Italiano
 
-Dashboard interattiva per l'analisi delle presenze turistiche in Italia, con focus sul Comune di Cefalù e confronto con i benchmark regionali e nazionali. Copre il periodo **1956–2024** con dati ISTAT ed Eurostat.
+Dashboard interattiva per l'analisi delle presenze turistiche in Italia, con focus sul Comune di Cefalù e confronto con i benchmark regionali e nazionali. Copre il periodo **2004–2024** con dati ISTAT ed Eurostat.
 
 ---
 
@@ -65,7 +65,8 @@ tourism-dashboard/
 ├── index.html                          # Applicazione: solo codice, nessun dato
 │
 ├── data/
-│   ├── italia.json                     # Serie storica nazionale 1956–2024
+│   ├── italia.json                     # Serie storica nazionale 1956–2024 (66 anni; la
+│   │                                   # dashboard ne usa 2004–2024, il resto non è esposto)
 │   │                                   # Arrivi e presenze: totale, alb, ext, residenti/non-res
 │   ├── regioni.json                    # Serie regionale 2008–2024 (20 regioni)
 │   │                                   # Arrivi e presenze totali per anno
@@ -244,6 +245,8 @@ Effetto sulle variazioni pre-2012 mostrate: essendo il 2004 leggermente sottosti
 ## Sviluppi futuri
 
 ### Nuovi indicatori
+
+- **Vista storica lunga** — `italia.json` contiene la serie nazionale dal 1956, 45 anni che la dashboard non espone. Basterebbe un grafico a parte per mostrare il turismo italiano dal dopoguerra, senza scaricare nulla di nuovo. Attenzione ai tre anni mancanti nel file: 1986, 1996 e 1999.
 
 - Durata media del soggiorno (presenze/arrivi) per regione e anno
 - Split residenti/non-residenti per regione (turismo internazionale vs domestico)
