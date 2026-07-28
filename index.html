@@ -2439,7 +2439,7 @@ const INFO = {
         el.style.opacity = '0';
         el.style.transition = 'opacity 0.6s ease';
         Plotly.newPlot(el, [traccePresenze, tracceRpc], layout, { responsive: true, displayModeBar: false });
-        requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = '1'; }));
+        _cefObs(el, function() { requestAnimationFrame(function() { el.style.opacity = '1'; }); });
     }
 
     window.renderRedditoScatter = function renderRedditoScatter(irpef, serie) {
@@ -2518,7 +2518,7 @@ const INFO = {
         el.style.opacity = '0';
         el.style.transition = 'opacity 0.6s ease';
         Plotly.newPlot(el, traces, layout, { responsive: true, displayModeBar: false });
-        requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = '1'; }));
+        setTimeout(function() { el.style.opacity = '1'; }, 50);
     }
     // ── fine REDDITO & TURISMO ─────────────────────────────────────────
 
