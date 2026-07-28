@@ -1,9 +1,2 @@
-DCSC_Occupancy_in_collective_accommodation/
-*.xlsx
-*.py
-__pycache__/
-data/italia_raw.json
-data/reg_prov_raw.json
-
-data/.DS_Store
 .DS_Store
+.claude/
