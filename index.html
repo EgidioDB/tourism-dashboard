@@ -879,59 +879,89 @@
 
 <script>
     // --- 1. DATABASE VOLUMI ASSOLUTI (Milioni di notti) ---
+    // pre = [alb2012, ext2012] da ISTAT; post = [alb2024, ext2024] da Eurostat tour_occ_nin2
     const volumeData = {
-        "Italia":         { pre: [236, 113], post: [284, 182] },
-        "Abruzzo":        { pre: [4, 2],     post: [5, 3]     },
-        "Basilicata":     { pre: [1, 1],     post: [2, 1]     },
-        "Calabria":       { pre: [5, 1],     post: [6, 2]     },
-        "Campania":       { pre: [14, 3],    post: [17, 5]    },
-        "Emilia-Romagna": { pre: [28, 7],    post: [30, 11]   },
-        "Friuli":         { pre: [4, 4],     post: [5, 5]     },
-        "Lazio":          { pre: [25, 5],    post: [35, 16]   },
-        "Liguria":        { pre: [9, 4],     post: [9, 7]     },
-        "Lombardia":      { pre: [20, 6],    post: [29, 16]   },
-        "Marche":         { pre: [5, 5],     post: [5, 5]     },
-        "Molise":         { pre: [0.3, 0.1], post: [0.3, 0.2] },
-        "Piemonte":       { pre: [7, 3],     post: [9, 6]     },
-        "Puglia":         { pre: [8, 5],     post: [10, 8]    },
-        "Sardegna":       { pre: [8, 3],     post: [10, 6]    },
-        "Sicilia":        { pre: [11, 2],    post: [13, 5]    },
-        "Toscana":        { pre: [22, 19],   post: [21, 25]   },
-        "Trentino":       { pre: [32, 10],   post: [41, 16]   },
-        "Umbria":         { pre: [3, 2],     post: [4, 3]     },
-        "Valle d'Aosta":  { pre: [2, 1],     post: [3, 1]     },
-        "Veneto":         { pre: [28, 31],   post: [31, 43]   }
+        "Italia":         { pre: [256, 125],  post: [284, 182] },
+        "Abruzzo":        { pre: [4.8, 2.4],  post: [5, 3]     },
+        "Basilicata":     { pre: [1.3, 0.6],  post: [2, 1]     },
+        "Calabria":       { pre: [6.7, 1.7],  post: [6, 2]     },
+        "Campania":       { pre: [14.5, 3.9], post: [17, 5]    },
+        "Emilia-Romagna": { pre: [29.5, 7.8], post: [30, 11]   },
+        "Friuli":         { pre: [3.9, 4.9],  post: [5, 5]     },
+        "Lazio":          { pre: [25.6, 4.9], post: [35, 16]   },
+        "Liguria":        { pre: [9.2, 4.3],  post: [9, 7]     },
+        "Lombardia":      { pre: [26.4, 6.9], post: [29, 16]   },
+        "Marche":         { pre: [5.4, 5.7],  post: [5, 5]     },
+        "Molise":         { pre: [0.3, 0.2],  post: [0.3, 0.2] },
+        "Piemonte":       { pre: [8.1, 4.3],  post: [9, 6]     },
+        "Puglia":         { pre: [8.1, 5.2],  post: [10, 8]    },
+        "Sardegna":       { pre: [7.7, 3.2],  post: [10, 6]    },
+        "Sicilia":        { pre: [11.8, 2.4], post: [13, 5]    },
+        "Toscana":        { pre: [22.7, 19.9],post: [21, 25]   },
+        "Trentino":       { pre: [34.7, 10.2],post: [41, 16]   },
+        "Umbria":         { pre: [3.0, 2.8],  post: [4, 3]     },
+        "Valle d'Aosta":  { pre: [2.3, 0.9],  post: [3, 1]     },
+        "Veneto":         { pre: [29.6, 32.8],post: [31, 43]   }
+    };
+
+    // Presenze assolute 2004/2012 per regione (Milioni) — fonte: ISTAT DF_BULK_DCSC_TURISAREA
+    // [pre04, alb04, ext04, pre12, alb12, ext12]
+    const preAbs = {
+        "Abruzzo":        [6.9, 4.9, 2.0, 7.3, 4.8, 2.4],
+        "Basilicata":     [1.9, 1.3, 0.6, 1.9, 1.3, 0.6],
+        "Calabria":       [6.3, 6.0, 1.1, 8.4, 6.7, 1.7],
+        "Campania":       [19.7, 14.4, 5.5, 18.4, 14.5, 3.9],
+        "Emilia-Romagna": [36.1, 29.0, 7.2, 37.4, 29.5, 7.8],
+        "Friuli":         [8.6, 3.4, 5.1, 8.8, 3.9, 4.9],
+        "Lazio":          [28.1, 23.1, 5.0, 30.5, 25.6, 4.9],
+        "Liguria":        [14.2, 10.3, 3.9, 13.4, 9.2, 4.3],
+        "Lombardia":      [26.2, 21.0, 5.3, 33.4, 26.4, 6.9],
+        "Marche":         [12.9, 5.8, 7.0, 11.1, 5.4, 5.7],
+        "Molise":         [0.8, 0.5, 0.2, 0.5, 0.3, 0.2],
+        "Piemonte":       [9.3, 6.3, 3.0, 12.4, 8.1, 4.3],
+        "Puglia":         [10.4, 5.7, 4.7, 13.3, 8.1, 5.2],
+        "Sardegna":       [10.3, 7.3, 3.0, 10.8, 7.7, 3.2],
+        "Sicilia":        [13.2, 11.2, 2.1, 14.3, 11.8, 2.4],
+        "Toscana":        [35.4, 20.1, 15.3, 42.7, 22.7, 19.9],
+        "Umbria":         [5.8, 3.2, 2.5, 5.8, 3.0, 2.8],
+        "Veneto":         [54.6, 26.3, 28.3, 62.4, 29.6, 32.8],
+        "Trentino":       [39.5, 31.4, 8.2, 44.9, 34.7, 10.2],
+        "Valle d'Aosta":  [3.2, 2.4, 0.8, 3.2, 2.3, 0.9]
     };
 
     // --- 2. DATABASE REPORT REGIONALI ---
     const itBenchmark = { arr: 131.1, pre: 123.4, ext: 148.4 };
     const regionalDataFull = {
-        "Abruzzo":        { reg: { preArr: +15.2, prePre: +20.3, preExt:  +0.0, arr: 128.2, pre: 114.2, alb: 114.0, ext: 114.7, covid: { arr: +16.4, pre:  -1.7, alb:  +1.1, ext:  -6.6 } }, top: { name: "Pescara",                        preArr:   +43.4, prePre:   +16.9, preAlb:   +7.1, preExt: +172.5, arr: 125.0, pre: 228.7, alb: 121.3, ext: 116.6 } },
-        "Basilicata":     { reg: { preArr: -19.5, prePre: -11.3, preExt:  +0.0, arr: 153.9, pre: 119.6, alb: 120.7, ext: 117.1, covid: { arr: +63.0, pre: +30.2, alb: +31.0, ext: +28.4 } }, top: { name: "Matera",                          preArr:  +153.7, prePre:  +198.3, preAlb: +120.4, preExt: +390.4, arr: 249.1, pre: 239.5, alb: 184.5, ext: 374.9 } },
-        "Calabria":       { reg: { preArr:  +8.9, prePre:  +9.4, preExt:  +0.0, arr: 124.8, pre: 104.9, alb: 101.6, ext: 118.1, covid: { arr: +35.2, pre: +22.5, alb: +23.3, ext: +19.2 } }, top: { name: "Ricadi",                          preArr:   +35.0, prePre:   +14.4, preAlb:  +16.3, preExt:   +6.3, arr: 145.5, pre: 109.4, alb: 108.0, ext: 115.3 } },
-        "Campania":       { reg: { preArr:  -3.3, prePre:  +3.7, preExt:  +0.0, arr: 132.7, pre: 118.3, alb: 111.4, ext: 152.0, covid: { arr: +35.5, pre: +21.9, alb: +15.5, ext: +53.2 } }, top: { name: "Napoli",                          preArr:   +90.3, prePre:   +30.3, preAlb:  +15.7, preExt:+1172.5, arr: 201.2, pre: 133.6, alb: 106.0, ext: 2303.4 } },
-        "Emilia-Romagna": { reg: { preArr:  -4.7, prePre:  +8.4, preExt:  +0.0, arr: 129.2, pre: 115.3, alb: 105.6, ext: 153.9, covid: { arr: +26.1, pre: +14.1, alb: +11.7, ext: +23.5 } }, top: { name: "Bologna",                        preArr:   +44.2, prePre:   +47.6, preAlb:  +34.1, preExt: +172.5, arr: 168.0, pre: 192.0, alb: 138.2, ext: 689.9 } },
-        "Friuli":         { reg: { preArr:  -5.8, prePre: +16.7, preExt:  +0.0, arr: 146.6, pre: 133.4, alb: 141.7, ext: 125.3, covid: { arr: +27.8, pre: +19.0, alb: +22.6, ext: +15.5 } }, top: { name: "Trieste",                        preArr:   +36.2, prePre:   +38.8, preAlb:  +15.3, preExt: +104.4, arr: 178.7, pre: 193.5, alb: 148.7, ext: 318.5 } },
-        "Lazio":          { reg: { preArr:  +2.7, prePre:  +2.8, preExt:  +0.0, arr: 123.3, pre: 168.0, alb: 136.6, ext: 333.3, covid: { arr: +24.0, pre: +26.7, alb:  +4.5, ext:+143.6 } }, top: { name: "Fiumicino",                      preArr:  +169.8, prePre:  +129.3, preAlb: +112.5, preExt: +695.2, arr: 326.4, pre: 420.8, alb: 387.8, ext: 1527.8 } },
-        "Liguria":        { reg: { preArr: -11.1, prePre:  +4.9, preExt:  +0.0, arr: 127.4, pre: 119.7, alb: 101.1, ext: 160.6, covid: { arr: +18.0, pre: +11.9, alb:  +3.4, ext: +30.6 } }, top: { name: "La Spezia",                      preArr:   +69.2, prePre:   +90.3, preAlb:  +11.9, preExt: +296.9, arr: 211.3, pre: 252.6, alb: 128.9, ext: 168.6 } },
-        "Lombardia":      { reg: { preArr: -23.5, prePre: -17.5, preExt:  +0.0, arr: 132.2, pre: 131.6, alb: 110.3, ext: 204.8, covid: { arr: +24.3, pre: +18.0, alb: +12.4, ext: +37.5 } }, top: { name: "Bergamo",                        preArr:   +58.9, prePre:   +55.0, preAlb:  +27.2, preExt: +100.8, arr: 216.8, pre: 217.4, alb: 165.9, ext: 302.2 } },
-        "Marche":         { reg: { preArr:  -8.6, prePre:  +1.1, preExt:  +0.0, arr: 116.0, pre:  92.3, alb:  95.7, ext:  89.3, covid: { arr:  +6.8, pre:  -8.7, alb: -11.1, ext:  -6.5 } }, top: { name: "Pesaro",                         preArr:   +16.3, prePre:    -3.6, preAlb:   -3.6, preExt:   -3.7, arr: 126.3, pre: 107.6, alb: 104.1, ext: 122.4 } },
-        "Molise":         { reg: { preArr: +32.8, prePre: +57.1, preExt:  +0.0, arr:  94.0, pre: 108.7, alb:  91.3, ext: 146.3, covid: { arr:  -7.0, pre:  +4.8, alb:  -5.6, ext: +27.2 } }, top: { name: "Termoli",                        preArr:   +17.6, prePre:    +6.8, preAlb:   +4.7, preExt:   +9.7, arr: 104.7, pre: 101.8, alb:  95.8, ext: 110.1 } },
-        "Piemonte":       { reg: { preArr: -21.8, prePre: -11.5, preExt:  +0.0, arr: 124.4, pre: 110.2, alb: 102.3, ext: 124.8, covid: { arr: +20.6, pre: +14.0, alb:  +4.2, ext: +32.3 } }, top: { name: "Baveno",                         preArr:   +20.0, prePre:   +14.4, preAlb:  +12.3, preExt:  +17.1, arr: 120.8, pre: 122.1, alb: 105.3, ext: 144.1 } },
-        "Puglia":         { reg: { preArr: -10.7, prePre:  -8.2, preExt:  +0.0, arr: 156.1, pre: 134.8, alb: 118.1, ext: 161.4, covid: { arr: +30.2, pre: +16.3, alb: +13.6, ext: +20.7 } }, top: { name: "Monopoli",                       preArr:  +126.9, prePre:  +110.1, preAlb:  +67.1, preExt: +251.1, arr: 334.2, pre: 290.3, alb: 189.7, ext: 166.7 } },
-        "Sardegna":       { reg: { preArr:  -1.1, prePre:  +8.2, preExt:  +0.0, arr: 161.9, pre: 137.4, alb: 120.7, ext: 184.5, covid: { arr: +44.0, pre: +33.3, alb: +27.1, ext: +50.8 } }, top: { name: "Pula",                           preArr:   +47.9, prePre:   +52.7, preAlb:  +49.7, preExt:  +75.9, arr: 176.7, pre: 168.9, alb: 159.0, ext: 245.0 } },
-        "Sicilia":        { reg: { preArr:  -9.0, prePre:  -6.2, preExt:  +0.0, arr: 125.5, pre: 116.7, alb: 104.9, ext: 168.4, covid: { arr: +10.8, pre:  +1.7, alb:  -2.1, ext: +18.0 } }, top: { name: "Marsala",                        preArr:   +25.9, prePre:   +36.5, preAlb:  +29.8, preExt:  +66.5, arr: 168.6, pre: 342.5, alb: 360.5, ext: 262.7 } },
-        "Toscana":        { reg: { preArr: -12.3, prePre:  -4.4, preExt:  +0.0, arr: 121.3, pre: 107.1, alb:  92.4, ext: 123.9, covid: { arr: +15.8, pre: +11.4, alb:  +5.5, ext: +18.1 } }, top: { name: "Castagneto Carducci",            preArr:   +41.3, prePre:   +15.8, preAlb:  -28.0, preExt:  +28.6, arr: 180.8, pre: 144.6, alb: 106.5, ext: 155.7 } },
-        "Trentino":       { reg: { preArr: -12.3, prePre:  -2.8, preExt:  +0.0, arr: 142.0, pre: 129.4, alb: 121.2, ext: 156.8, covid: { arr: +26.8, pre: +18.9, alb: +15.6, ext: +29.9 } }, top: { name: "Commezzadura",                  preArr:   +66.7, prePre:   +59.5, preAlb:  +62.0, preExt:  +40.2, arr: 149.9, pre: 159.0, alb: 154.6, ext: 193.2 } },
-        "Umbria":         { reg: { preArr:  -7.6, prePre:  +2.6, preExt:  +0.0, arr: 113.2, pre: 115.2, alb: 112.5, ext: 118.3, covid: { arr:  +5.0, pre:  +0.5, alb:  -0.1, ext:  +1.2 } }, top: { name: "Assisi",                         preArr:   +10.5, prePre:    +8.8, preAlb:   +8.3, preExt:   +9.5, arr: 122.5, pre: 133.0, alb: 133.0, ext: 133.1 } },
-        "Valle d'Aosta":  { reg: { preArr: -13.0, prePre:  +4.3, preExt:  +0.0, arr: 136.2, pre: 123.7, alb: 121.0, ext: 131.0, covid: { arr: +28.8, pre: +21.4, alb: +17.8, ext: +31.1 } }, top: { name: "Gressan",                        preArr:   +39.5, prePre:   +38.8, preAlb:  +45.5, preExt:   +4.5, arr: 141.4, pre: 155.8, alb: 170.7, ext: 144.4 } },
-        "Veneto":         { reg: { preArr: -13.1, prePre:  -2.0, preExt:  +0.0, arr: 133.8, pre: 118.8, alb: 102.7, ext: 133.7, covid: { arr: +24.2, pre: +15.2, alb: +10.1, ext: +19.8 } }, top: { name: "Verona",                         preArr:   +56.1, prePre:   +63.2, preAlb:  +11.9, preExt: +176.8, arr: 191.9, pre: 184.6, alb: 110.7, ext: 348.4 } }
+        "Abruzzo":        { reg: { preArr: +15.2, prePre: +20.3, preExt: -16.6, arr: 128.2, pre: 114.2, alb: 114.0, ext: 114.7, covid: { arr: +16.4, pre:  -1.7, alb:  +1.1, ext:  -6.6 } }, top: { name: "Pescara",                        preArr:   +43.4, prePre:   +16.9, preAlb:   +7.1, preExt: +172.5, arr: 125.0, pre: 228.7, alb: 121.3, ext: 116.6 } },
+        "Basilicata":     { reg: { preArr: -19.5, prePre: -11.3, preExt:  +2.8, arr: 153.9, pre: 119.6, alb: 120.7, ext: 117.1, covid: { arr: +63.0, pre: +30.2, alb: +31.0, ext: +28.4 } }, top: { name: "Matera",                          preArr:  +153.7, prePre:  +198.3, preAlb: +120.4, preExt: +390.4, arr: 249.1, pre: 239.5, alb: 184.5, ext: 374.9 } },
+        "Calabria":       { reg: { preArr:  +8.9, prePre:  +9.4, preExt: -32.3, arr: 124.8, pre: 104.9, alb: 101.6, ext: 118.1, covid: { arr: +35.2, pre: +22.5, alb: +23.3, ext: +19.2 } }, top: { name: "Ricadi",                          preArr:   +35.0, prePre:   +14.4, preAlb:  +16.3, preExt:   +6.3, arr: 145.5, pre: 109.4, alb: 108.0, ext: 115.3 } },
+        "Campania":       { reg: { preArr:  -3.3, prePre:  +3.7, preExt: +38.2, arr: 132.7, pre: 118.3, alb: 111.4, ext: 152.0, covid: { arr: +35.5, pre: +21.9, alb: +15.5, ext: +53.2 } }, top: { name: "Napoli",                          preArr:   +90.3, prePre:   +30.3, preAlb:  +15.7, preExt:+1172.5, arr: 201.2, pre: 133.6, alb: 106.0, ext: 2303.4 } },
+        "Emilia-Romagna": { reg: { preArr:  -4.7, prePre:  +8.4, preExt:  -8.4, arr: 129.2, pre: 115.3, alb: 105.6, ext: 153.9, covid: { arr: +26.1, pre: +14.1, alb: +11.7, ext: +23.5 } }, top: { name: "Bologna",                        preArr:   +44.2, prePre:   +47.6, preAlb:  +34.1, preExt: +172.5, arr: 168.0, pre: 192.0, alb: 138.2, ext: 689.9 } },
+        "Friuli":         { reg: { preArr:  -5.8, prePre: +16.7, preExt:  +3.6, arr: 146.6, pre: 133.4, alb: 141.7, ext: 125.3, covid: { arr: +27.8, pre: +19.0, alb: +22.6, ext: +15.5 } }, top: { name: "Trieste",                        preArr:   +36.2, prePre:   +38.8, preAlb:  +15.3, preExt: +104.4, arr: 178.7, pre: 193.5, alb: 148.7, ext: 318.5 } },
+        "Lazio":          { reg: { preArr:  +2.7, prePre:  +2.8, preExt:  +1.9, arr: 123.3, pre: 168.0, alb: 136.6, ext: 333.3, covid: { arr: +24.0, pre: +26.7, alb:  +4.5, ext:+143.6 } }, top: { name: "Fiumicino",                      preArr:  +169.8, prePre:  +129.3, preAlb: +112.5, preExt: +695.2, arr: 326.4, pre: 420.8, alb: 387.8, ext: 1527.8 } },
+        "Liguria":        { reg: { preArr: -11.1, prePre:  +4.9, preExt:  -8.6, arr: 127.4, pre: 119.7, alb: 101.1, ext: 160.6, covid: { arr: +18.0, pre: +11.9, alb:  +3.4, ext: +30.6 } }, top: { name: "La Spezia",                      preArr:   +69.2, prePre:   +90.3, preAlb:  +11.9, preExt: +296.9, arr: 211.3, pre: 252.6, alb: 128.9, ext: 168.6 } },
+        "Lombardia":      { reg: { preArr: -23.5, prePre: -17.5, preExt: -24.1, arr: 132.2, pre: 131.6, alb: 110.3, ext: 204.8, covid: { arr: +24.3, pre: +18.0, alb: +12.4, ext: +37.5 } }, top: { name: "Bergamo",                        preArr:   +58.9, prePre:   +55.0, preAlb:  +27.2, preExt: +100.8, arr: 216.8, pre: 217.4, alb: 165.9, ext: 302.2 } },
+        "Marche":         { reg: { preArr:  -8.6, prePre:  +1.1, preExt: +23.2, arr: 116.0, pre:  92.3, alb:  95.7, ext:  89.3, covid: { arr:  +6.8, pre:  -8.7, alb: -11.1, ext:  -6.5 } }, top: { name: "Pesaro",                         preArr:   +16.3, prePre:    -3.6, preAlb:   -3.6, preExt:   -3.7, arr: 126.3, pre: 107.6, alb: 104.1, ext: 122.4 } },
+        "Molise":         { reg: { preArr: +32.8, prePre: +57.1, preExt: +14.4, arr:  94.0, pre: 108.7, alb:  91.3, ext: 146.3, covid: { arr:  -7.0, pre:  +4.8, alb:  -5.6, ext: +27.2 } }, top: { name: "Termoli",                        preArr:   +17.6, prePre:    +6.8, preAlb:   +4.7, preExt:   +9.7, arr: 104.7, pre: 101.8, alb:  95.8, ext: 110.1 } },
+        "Piemonte":       { reg: { preArr: -21.8, prePre: -11.5, preExt: -31.5, arr: 124.4, pre: 110.2, alb: 102.3, ext: 124.8, covid: { arr: +20.6, pre: +14.0, alb:  +4.2, ext: +32.3 } }, top: { name: "Baveno",                         preArr:   +20.0, prePre:   +14.4, preAlb:  +12.3, preExt:  +17.1, arr: 120.8, pre: 122.1, alb: 105.3, ext: 144.1 } },
+        "Puglia":         { reg: { preArr: -10.7, prePre:  -8.2, preExt:  -9.0, arr: 156.1, pre: 134.8, alb: 118.1, ext: 161.4, covid: { arr: +30.2, pre: +16.3, alb: +13.6, ext: +20.7 } }, top: { name: "Monopoli",                       preArr:  +126.9, prePre:  +110.1, preAlb:  +67.1, preExt: +251.1, arr: 334.2, pre: 290.3, alb: 189.7, ext: 166.7 } },
+        "Sardegna":       { reg: { preArr:  -1.1, prePre:  +8.2, preExt:  -5.4, arr: 161.9, pre: 137.4, alb: 120.7, ext: 184.5, covid: { arr: +44.0, pre: +33.3, alb: +27.1, ext: +50.8 } }, top: { name: "Pula",                           preArr:   +47.9, prePre:   +52.7, preAlb:  +49.7, preExt:  +75.9, arr: 176.7, pre: 168.9, alb: 159.0, ext: 245.0 } },
+        "Sicilia":        { reg: { preArr:  -9.0, prePre:  -6.2, preExt: -13.6, arr: 125.5, pre: 116.7, alb: 104.9, ext: 168.4, covid: { arr: +10.8, pre:  +1.7, alb:  -2.1, ext: +18.0 } }, top: { name: "Marsala",                        preArr:   +25.9, prePre:   +36.5, preAlb:  +29.8, preExt:  +66.5, arr: 168.6, pre: 342.5, alb: 360.5, ext: 262.7 } },
+        "Toscana":        { reg: { preArr: -12.3, prePre:  -4.4, preExt: -23.4, arr: 121.3, pre: 107.1, alb:  92.4, ext: 123.9, covid: { arr: +15.8, pre: +11.4, alb:  +5.5, ext: +18.1 } }, top: { name: "Castagneto Carducci",            preArr:   +41.3, prePre:   +15.8, preAlb:  -28.0, preExt:  +28.6, arr: 180.8, pre: 144.6, alb: 106.5, ext: 155.7 } },
+        "Trentino":       { reg: { preArr: -12.3, prePre:  -2.8, preExt: -19.3, arr: 142.0, pre: 129.4, alb: 121.2, ext: 156.8, covid: { arr: +26.8, pre: +18.9, alb: +15.6, ext: +29.9 } }, top: { name: "Commezzadura",                  preArr:   +66.7, prePre:   +59.5, preAlb:  +62.0, preExt:  +40.2, arr: 149.9, pre: 159.0, alb: 154.6, ext: 193.2 } },
+        "Umbria":         { reg: { preArr:  -7.6, prePre:  +2.6, preExt: -10.2, arr: 113.2, pre: 115.2, alb: 112.5, ext: 118.3, covid: { arr:  +5.0, pre:  +0.5, alb:  -0.1, ext:  +1.2 } }, top: { name: "Assisi",                         preArr:   +10.5, prePre:    +8.8, preAlb:   +8.3, preExt:   +9.5, arr: 122.5, pre: 133.0, alb: 133.0, ext: 133.1 } },
+        "Valle d'Aosta":  { reg: { preArr: -13.0, prePre:  +4.3, preExt: -10.0, arr: 136.2, pre: 123.7, alb: 121.0, ext: 131.0, covid: { arr: +28.8, pre: +21.4, alb: +17.8, ext: +31.1 } }, top: { name: "Gressan",                        preArr:   +39.5, prePre:   +38.8, preAlb:  +45.5, preExt:   +4.5, arr: 141.4, pre: 155.8, alb: 170.7, ext: 144.4 } },
+        "Veneto":         { reg: { preArr: -13.1, prePre:  -2.0, preExt: -13.8, arr: 133.8, pre: 118.8, alb: 102.7, ext: 133.7, covid: { arr: +24.2, pre: +15.2, alb: +10.1, ext: +19.8 } }, top: { name: "Verona",                         preArr:   +56.1, prePre:   +63.2, preAlb:  +11.9, preExt: +176.8, arr: 191.9, pre: 184.6, alb: 110.7, ext: 348.4 } }
     };
 
     // --- 3. FORMATTAZIONE NUMERI ---
     function formatNotti(val) {
         if (val >= 1000) return `${val.toLocaleString('it-IT')} Milioni (${(val/1000).toFixed(2).replace('.',',')} Miliardi)`;
         return `${val.toLocaleString('it-IT')} Milioni`;
+    }
+    // Per i nominali regionali: numero per esteso (val in Milioni → notti intere)
+    function fmtNotti(val) {
+        return Math.round(val * 1e6).toLocaleString('it-IT');
     }
 
     // --- 4. LOGICA CIAMBELLE ---
@@ -1073,6 +1103,14 @@
                 const pcRegPre = sgn((data.reg.pre / (100 + data.reg.covid.pre) - 1) * 100);
                 const pcRegAlb = sgn((data.reg.alb / (100 + data.reg.covid.alb) - 1) * 100);
                 const pcRegExt = sgn((data.reg.ext / (100 + data.reg.covid.ext) - 1) * 100);
+                // Valori assoluti per i nominali (Milioni di notti)
+                const vd = volumeData[name] || volumeData["Italia"];
+                const alb14 = vd.pre[0], ext14 = vd.pre[1], pre14 = +((alb14+ext14).toFixed(1));
+                const alb24 = vd.post[0], ext24 = vd.post[1], pre24 = +((alb24+ext24).toFixed(1));
+                const alb19 = +((alb14*(100+data.reg.covid.alb)/100).toFixed(1));
+                const ext19 = +((ext14*(100+data.reg.covid.ext)/100).toFixed(1));
+                const pre19 = +((pre14*(100+data.reg.covid.pre)/100).toFixed(1));
+                const pa = preAbs[name] || [0,0,0,0,0,0];
                 // Post-COVID Top City
                 const topHasPreCovid = data.top.preArr !== null;
                 const pcTopArr = topHasPreCovid ? sgn((data.top.arr / (100 + data.top.preArr) - 1) * 100) : null;
@@ -1085,29 +1123,29 @@
                     <div class="data-group">
                         <div class="group-label">Regione: Pre-2012 ${ib('pre2012_nat')}</div>
                         <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${data.reg.preArr}%</b></div><div class='nom-r'><span>2012 (base)</span><b>100</b></div>"><span>Arrivi ${ib('arr_pre2012_reg')}</span><span class="value">${data.reg.preArr}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${data.reg.prePre}%</b></div><div class='nom-r'><span>2012 (base)</span><b>100</b></div>"><span>Presenze</span><span class="value">${data.reg.prePre}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${data.reg.preExt}%</b></div><div class='nom-r'><span>2012 (base)</span><b>100</b></div>"><span>Extra-Alb</span><span class="value">${data.reg.preExt}%</span></div>
+                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${fmtNotti(pa[0])} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${fmtNotti(pa[3])} notti</b></div>"><span>Presenze</span><span class="value">${data.reg.prePre}%</span></div>
+                        ${data.reg.preExt === null ? '' : `<div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${fmtNotti(pa[2])} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${fmtNotti(pa[5])} notti</b></div>"><span>Extra-Alb</span><span class="value">${data.reg.preExt}%</span></div>`}
                     </div>
                     <div class="data-group">
                         <div class="group-label" style="color:var(--accent)">Regione: Post-2012 ${ib('reg_post2012')}</div>
                         <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>100</b></div><div class='nom-r'><span>2024 (indice)</span><b>${data.reg.arr.toFixed(1)}</b></div>"><span>Arrivi ${ib('arr_post2012_reg')}</span><span class="value">${fmt(data.reg.arr)}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>100</b></div><div class='nom-r'><span>2024 (indice)</span><b>${data.reg.pre.toFixed(1)}</b></div>"><span>Presenze</span><span class="value">${fmt(data.reg.pre)}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>100</b></div><div class='nom-r'><span>2024 (indice)</span><b>${data.reg.alb.toFixed(1)}</b></div>"><span>Alb ${ib('alb_post2012_reg')}</span><span class="value">${fmt(data.reg.alb)}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>100</b></div><div class='nom-r'><span>2024 (indice)</span><b>${data.reg.ext.toFixed(1)}</b></div>"><span>Extra-Alb</span><span class="value">${fmt(data.reg.ext)}%</span></div>
+                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(pre14)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(pre24)} notti</b></div>"><span>Presenze</span><span class="value">${fmt(data.reg.pre)}%</span></div>
+                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(alb14)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(alb24)} notti</b></div>"><span>Alb ${ib('alb_post2012_reg')}</span><span class="value">${fmt(data.reg.alb)}%</span></div>
+                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(ext14)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(ext24)} notti</b></div>"><span>Extra-Alb</span><span class="value">${fmt(data.reg.ext)}%</span></div>
                     </div>
                     <div class="data-group">
                         <div class="group-label">Regione: Pre-COVID (2019 vs 2014) ${ib('reg_preCovid')}</div>
                         <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>100</b></div><div class='nom-r'><span>2019 (indice)</span><b>${(100+data.reg.covid.arr).toFixed(1)}</b></div>"><span>Arrivi ${ib('arr_preCovid_reg')}</span><span class="value">${sgn(data.reg.covid.arr)}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>100</b></div><div class='nom-r'><span>2019 (indice)</span><b>${(100+data.reg.covid.pre).toFixed(1)}</b></div>"><span>Presenze</span><span class="value">${sgn(data.reg.covid.pre)}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>100</b></div><div class='nom-r'><span>2019 (indice)</span><b>${(100+data.reg.covid.alb).toFixed(1)}</b></div>"><span>Alb ${ib('alb_preCovid_reg')}</span><span class="value">${sgn(data.reg.covid.alb)}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>100</b></div><div class='nom-r'><span>2019 (indice)</span><b>${(100+data.reg.covid.ext).toFixed(1)}</b></div>"><span>Extra-Alb</span><span class="value">${sgn(data.reg.covid.ext)}%</span></div>
+                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(pre14)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtNotti(pre19)} notti</b></div>"><span>Presenze</span><span class="value">${sgn(data.reg.covid.pre)}%</span></div>
+                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(alb14)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtNotti(alb19)} notti</b></div>"><span>Alb ${ib('alb_preCovid_reg')}</span><span class="value">${sgn(data.reg.covid.alb)}%</span></div>
+                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(ext14)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtNotti(ext19)} notti</b></div>"><span>Extra-Alb</span><span class="value">${sgn(data.reg.covid.ext)}%</span></div>
                     </div>
                     <div class="data-group">
                         <div class="group-label" style="color:#457b9d">Regione: Post-COVID (2024 vs 2019) ${ib('postCovid_reg')}</div>
                         <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019 (indice)</span><b>${(100+data.reg.covid.arr).toFixed(1)}</b></div><div class='nom-r'><span>2024 (indice)</span><b>${data.reg.arr.toFixed(1)}</b></div>"><span>Arrivi ${ib('arr_post2012_reg')}</span><span class="value">${pcRegArr}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019 (indice)</span><b>${(100+data.reg.covid.pre).toFixed(1)}</b></div><div class='nom-r'><span>2024 (indice)</span><b>${data.reg.pre.toFixed(1)}</b></div>"><span>Presenze</span><span class="value">${pcRegPre}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019 (indice)</span><b>${(100+data.reg.covid.alb).toFixed(1)}</b></div><div class='nom-r'><span>2024 (indice)</span><b>${data.reg.alb.toFixed(1)}</b></div>"><span>Alb ${ib('alb_post2012_reg')}</span><span class="value">${pcRegAlb}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019 (indice)</span><b>${(100+data.reg.covid.ext).toFixed(1)}</b></div><div class='nom-r'><span>2024 (indice)</span><b>${data.reg.ext.toFixed(1)}</b></div>"><span>Extra-Alb</span><span class="value">${pcRegExt}%</span></div>
+                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtNotti(pre19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(pre24)} notti</b></div>"><span>Presenze</span><span class="value">${pcRegPre}%</span></div>
+                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtNotti(alb19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(alb24)} notti</b></div>"><span>Alb ${ib('alb_post2012_reg')}</span><span class="value">${pcRegAlb}%</span></div>
+                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtNotti(ext19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(ext24)} notti</b></div>"><span>Extra-Alb</span><span class="value">${pcRegExt}%</span></div>
                     </div>
                     <div class="data-group" style="border-left: 4px solid #457b9d; background: #f0f7ff;">
                         <div class="group-label" style="color:#457b9d">Top City: ${data.top.name}</div>
@@ -1209,7 +1247,7 @@
 
     // Calcolo indice alberghiero: alb = tot_pre - ext_pre, re-indicizzato a 2012=100
     const CEF_PRE_BASE = 634776, CEF_EXT_BASE = 80447, CEF_ALB_BASE = CEF_PRE_BASE - CEF_EXT_BASE;
-    const cefAlb = years.map((_, i) => {
+    let cefAlb = years.map((_, i) => {
         const preAbs = rawData.cefPre[i] * CEF_PRE_BASE / 100;
         const extAbs = rawData.cefExt[i] * CEF_EXT_BASE / 100;
         return ((preAbs - extAbs) / CEF_ALB_BASE) * 100;
@@ -2722,6 +2760,29 @@ const INFO = {
             serie.arr_tot[i] ? Math.round(p / serie.arr_tot[i] * 100) / 100 : null
         );
         advancedData.pre_tot    = serie.pre_tot;
+
+        // Patcha rawData.cef* per gli anni 2014-2024 con valori reali dal JSON
+        // Gli anni 2004-2013 restano hardcoded (non coperti dalla serie comunale)
+        const CEF_ARR_BASE12 = Math.round(serie.arr_tot[0] / (rawData.cefArr[10] / 100));
+        serie.anni.forEach((anno, i) => {
+            const idx = anno - 2004;
+            if (idx < 0 || idx > 20) return;
+            if (serie.pre_tot[i] != null) rawData.cefPre[idx] = (serie.pre_tot[i] / CEF_PRE_BASE) * 100;
+            if (serie.pre_ext[i] != null) rawData.cefExt[idx] = (serie.pre_ext[i] / CEF_EXT_BASE) * 100;
+            if (serie.arr_tot[i] != null) rawData.cefArr[idx] = (serie.arr_tot[i] / CEF_ARR_BASE12) * 100;
+            const preAbs = rawData.cefPre[idx] * CEF_PRE_BASE / 100;
+            const extAbs = rawData.cefExt[idx] * CEF_EXT_BASE / 100;
+            cefAlb[idx] = ((preAbs - extAbs) / CEF_ALB_BASE) * 100;
+        });
+        // Aggiorna solo i dati y del grafico evoluzione storica (restyle preserva layout/interazioni)
+        Plotly.restyle(chartDiv, { y: [
+            rawData.cefPre.map(v=>v-100),
+            rawData.cefArr.map(v=>v-100),
+            cefAlb.map(v=>v-100),
+            rawData.cefExt.map(v=>v-100)
+        ]}, [0, 1, 2, 3]);
+        if (currentHighlightYear !== null) showYearlyReport(currentHighlightYear - 2004);
+        else showTotalReport();
 
         // Stagionalità
         stagionalitaData = stagData;
