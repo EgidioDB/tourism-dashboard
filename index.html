@@ -1653,10 +1653,10 @@
         // Tag <style> con !important — persiste attraverso tutti i Plotly.react durante l'animazione barre
         var hideStyle = document.createElement('style');
         hideStyle.textContent = '#' + elId + ' .scatterlayer .trace .lines path, #' + elId + ' .scatterlayer .trace .points path { opacity: 0 !important; }';
+        document.head.appendChild(hideStyle);
 
         Plotly.newPlot(elId, zeroTraces, fixedLayout, cfg).then(function() {
             _cefObs(el, function() {
-                document.head.appendChild(hideStyle);
 
                 var start = null, DUR = 780;
                 function fr(ts) {
