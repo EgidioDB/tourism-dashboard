@@ -673,27 +673,27 @@
 <script>
     // --- 1. DATABASE VOLUMI ASSOLUTI (Milioni di notti) ---
     const volumeData = {
-        "Italia": { pre: [236, 113], post: [269, 172] },
-        "Abruzzo": { pre: [4, 2], post: [4, 3] },
-        "Basilicata": { pre: [1, 1], post: [2, 1] },
-        "Calabria": { pre: [5, 1], post: [6, 2] },
-        "Campania": { pre: [14, 3], post: [16, 4] },
-        "Emilia-Romagna": { pre: [28, 7], post: [29, 10] },
-        "Friuli": { pre: [4, 4], post: [5, 5] },
-        "Lazio": { pre: [25, 5], post: [35, 16] },
-        "Liguria": { pre: [9, 4], post: [9, 6] },
-        "Lombardia": { pre: [20, 6], post: [24, 14] },
-        "Marche": { pre: [5, 5], post: [5, 5] },
-        "Molise": { pre: [1, 0], post: [1, 1] },
-        "Piemonte": { pre: [7, 3], post: [7, 5] },
-        "Puglia": { pre: [8, 5], post: [9, 8] },
-        "Sardegna": { pre: [8, 3], post: [10, 5] },
-        "Sicilia": { pre: [11, 2], post: [11, 4] },
-        "Toscana": { pre: [22, 19], post: [21, 23] },
-        "Trentino": { pre: [32, 10], post: [41, 16] },
-        "Umbria": { pre: [3, 2], post: [3, 3] },
-        "Valle d'Aosta": { pre: [2, 1], post: [2, 1] },
-        "Veneto": { pre: [28, 31], post: [29, 42] }
+        "Italia":         { pre: [236, 113], post: [284, 182] },
+        "Abruzzo":        { pre: [4, 2],     post: [5, 3]     },
+        "Basilicata":     { pre: [1, 1],     post: [2, 1]     },
+        "Calabria":       { pre: [5, 1],     post: [6, 2]     },
+        "Campania":       { pre: [14, 3],    post: [17, 5]    },
+        "Emilia-Romagna": { pre: [28, 7],    post: [30, 11]   },
+        "Friuli":         { pre: [4, 4],     post: [5, 5]     },
+        "Lazio":          { pre: [25, 5],    post: [35, 16]   },
+        "Liguria":        { pre: [9, 4],     post: [9, 7]     },
+        "Lombardia":      { pre: [20, 6],    post: [29, 16]   },
+        "Marche":         { pre: [5, 5],     post: [5, 5]     },
+        "Molise":         { pre: [0.3, 0.1], post: [0.3, 0.2] },
+        "Piemonte":       { pre: [7, 3],     post: [9, 6]     },
+        "Puglia":         { pre: [8, 5],     post: [10, 8]    },
+        "Sardegna":       { pre: [8, 3],     post: [10, 6]    },
+        "Sicilia":        { pre: [11, 2],    post: [13, 5]    },
+        "Toscana":        { pre: [22, 19],   post: [21, 25]   },
+        "Trentino":       { pre: [32, 10],   post: [41, 16]   },
+        "Umbria":         { pre: [3, 2],     post: [4, 3]     },
+        "Valle d'Aosta":  { pre: [2, 1],     post: [3, 1]     },
+        "Veneto":         { pre: [28, 31],   post: [31, 43]   }
     };
 
     // --- 2. DATABASE REPORT REGIONALI ---
@@ -2146,19 +2146,19 @@ const INFO = {
 
     preCovid_nat: "<strong>Pre-COVID — Italia (2019 vs 2012)</strong>Crescita nazionale pre-pandemica dal 2012 al 2019. Riferimento per valutare se la crescita di Cefalù nello stesso periodo fosse in linea col sistema o eccezionale. Alb derivato. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
-    reg_post2012: "<strong>Regione: 2014–2024 (base 2014)</strong>I dati comunali ISTAT sono disponibili dal 2014; l'indice usa base 2014=100. Aggregazione di tutti i comuni della regione selezionata. Formula: (val_2024/val_2014 − 1)×100. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024, aggregati per regione.</em>",
+    reg_post2012: "<strong>Regione: 2014–2024 (base 2014)</strong>Indice base 2014=100 calcolato sui dati ufficiali ISTAT regionali. Formula: (val_2024/val_2014 − 1)×100. <em class='info-fonte'>Fonte: ISTAT statistiche regionali del turismo 2014-2024.</em>",
 
-    reg_preCovid: "<strong>Regione: pre-COVID (2019 vs 2014)</strong>Crescita regionale dal 2014 al 2019. Permette di capire se Cefalù crescesse già più o meno della propria regione prima della pandemia. Formula: (val_2019/val_2014 − 1)×100. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024, aggregati per regione.</em>",
+    reg_preCovid: "<strong>Regione: pre-COVID (2019 vs 2014)</strong>Crescita regionale dal 2014 al 2019 su dati ufficiali ISTAT. Permette di capire se Cefalù crescesse già più o meno della propria regione prima della pandemia. Formula: (val_2019/val_2014 − 1)×100. <em class='info-fonte'>Fonte: ISTAT statistiche regionali del turismo 2014-2024.</em>",
 
     top_preCovid: "<strong>Top City: pre-COVID (2019 vs 2014)</strong>Crescita degli indicatori nel comune selezionato tra il 2014 e il 2019. 'Dati non disponibili' = il comune non aveva voce separata nel file ISTAT 2019. Alb derivato dalla colonna ISTAT diretta (alb_pre_tot). <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
 
-    top_post2014: "<strong>Top City: crescita totale (2024 vs 2014)</strong>Indice base 2014=100. Crescita complessiva del comune dal primo anno disponibile al 2024. Su questo indicatore (presenze) è basata la selezione del Top City per ogni regione. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
+    top_post2014: "<strong>Top City: crescita totale (2024 vs 2014)</strong>Indice base 2014=100. Crescita complessiva delle presenze nel comune dal 2014 al 2024. Il Top City per ogni regione è il comune con la crescita % più alta tra quelli con almeno 500.000 presenze annue: la soglia garantisce che si tratti di destinazioni con volume sufficiente a essere rappresentative. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
 
     top_gap: "<strong>Gap vs Media Nazionale al 2024</strong>Differenza in punti indice tra il comune e l'Italia (entrambi base 2014=100). Positivo = il comune cresce più della media; negativo = sotto la media. Indica se la performance sia strutturalmente superiore al sistema o legata al rimbalzo post-COVID. <em class='info-fonte'>Fonte: ISTAT dati comunali + nazionali.</em>",
 
     chart_donuts: "<strong>Analisi Volumi Presenze — Donut</strong>Tre grafici mostrano la composizione delle presenze (notti) per tipologia ricettiva: • Totale 2024 — distribuzione assoluta alberghiero/extra-alb. • Pre-2012 (2004) — composizione nel primo anno disponibile. • Post-2012 — confronto quote 2024 vs 2012. I valori mostrati sono presenze assolute (notti). <em class='info-fonte'>Fonte: ISTAT Circoscrizioni Turistiche 2004-2013 + dati comunali Cefalù 2014-2024.</em>",
 
-    chart_map: "<strong>Analisi Geografica — Mappa Italia</strong>Clicca su una regione per visualizzare: dati Pre-2012, Post-2012 e Pre-COVID aggregati (indice base 2014=100) e il comune con la maggiore crescita assoluta di presenze 2024 vs 2014 (Top City). I dati regionali sono aggregati dai microdati comunali ISTAT. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
+    chart_map: "<strong>Analisi Geografica — Mappa Italia</strong>Clicca su una regione per visualizzare: dati Pre-2012, Post-2012 e Pre-COVID regionali (indice base 2014=100) e il comune con la maggiore crescita % di presenze 2024 vs 2014 tra quelli con almeno 500.000 presenze annue (Top City). La soglia di 500k esclude comuni con volumi troppo bassi per costituire una destinazione turistica strutturata. I dati regionali provengono dalle statistiche ufficiali ISTAT. <em class='info-fonte'>Fonte: ISTAT dati comunali e regionali 2014-2024.</em>",
 
     chart_evol: "<strong>Evoluzione Storica — Grafico Lineare</strong>Serie storica 2004–2024, indice base 2012=100 (0 sull'asse Y = livello 2012). Linee continue = Cefalù (Presenze, Arrivi, Alb derivato, Extra-Alb); linee tratteggiate = Italia. L'Alb è derivato come Presenze_tot − Extra-alb, re-indicizzato. La linea verticale indica il 2012 (base).<br><br><em>Desktop: trascina per navigare, rotellina per zoom. Mobile: un dito per navigare, pinch per zoom, doppio tap per resettare.</em> <em class='info-fonte'>Fonte: ISTAT Serie Storiche 1956-2024 + dati comunali.</em>",
 
@@ -2171,7 +2171,7 @@ const INFO = {
     chart_ricettiva_est: "<strong>Capacità Ricettiva — Numero Esercizi</strong>Numero totale di strutture ricettive registrate nel comune di Cefalù per anno. La linea verde mostra il totale; le barre mostrano la composizione per B&B e case vacanza in affitto gestite in forma imprenditoriale. Non include locazioni brevi occasionali (es. Airbnb non registrati). <em class='info-fonte'>Fonte: ISTAT — Rilevazione sulla Capacità degli Esercizi Ricettivi, 2010-2024.</em>",
     chart_ricettiva_pl: "<strong>Capacità Ricettiva — Posti Letto</strong>Numero totale di posti letto disponibili nelle strutture ricettive registrate a Cefalù. La linea verde indica il totale complessivo; le barre la composizione tra B&B e case vacanza. La crescita delle case vacanza riflette in parte l'espansione del mercato short-term rental. <em class='info-fonte'>Fonte: ISTAT — Rilevazione sulla Capacità degli Esercizi Ricettivi, 2010-2024.</em>",
 
-    chart_ranking: "<strong>Classifica di Crescita Nazionale</strong>Graduatoria dei comuni italiani per crescita delle presenze 2024 vs 2014 (base 2014=100). Cefalù è evidenziata. La posizione in classifica indica se la crescita locale sia eccezionale o in linea con tendenze diffuse nel panorama turistico nazionale. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
+    chart_ranking: "<strong>Classifica di Crescita Nazionale</strong>Graduatoria dei comuni italiani con almeno 500.000 presenze annue, ordinati per crescita % 2024 vs 2014. La soglia esclude comuni con volumi troppo bassi dove una singola struttura può gonfiare artificialmente le percentuali. Cefalù è evidenziata. La posizione indica se la crescita locale sia eccezionale rispetto a destinazioni di peso comparabile nel panorama turistico nazionale. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
     cbox_crescita: "<strong>Crescita complessiva 2014→2024</strong>Variazione percentuale di arrivi e presenze tra il primo e l'ultimo anno disponibile. Gli <em>arrivi</em> contano i visitatori, le <em>presenze</em> le notti trascorse. Tocca un valore per vedere i numeri assoluti di partenza e arrivo. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
     cbox_precovid: "<strong>Pre-COVID 2014→2019</strong>Crescita del periodo pre-pandemia, che rappresenta il trend strutturale del turismo locale al netto degli shock esterni. Confrontare questo dato con il Post-COVID rivela se il comune ha recuperato o superato il ritmo precedente. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
     cbox_postcovid: "<strong>Post-COVID 2019→2024</strong>Variazione dal picco pre-pandemico al 2024. Un valore positivo indica che il comune ha non solo recuperato le perdite del 2020-2021 ma ha superato i livelli pre-COVID. Un valore negativo segnala una ripresa ancora incompleta. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
@@ -2186,7 +2186,7 @@ const INFO = {
 
     postCovid_nat: "<strong>Post-COVID — Italia (2024 vs 2019)</strong>Recupero e crescita del turismo italiano dal 2019 al 2024. Benchmark per contestualizzare il rimbalzo di Cefalù: se l'Italia complessiva è già sopra il 2019, la barra è alta per valutare l'eccezionalità locale. Formula: (val_2024/val_2019 − 1)×100. Alb derivato. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
-    postCovid_reg: "<strong>Regione: post-COVID (2024 vs 2019)</strong>Dato 2019 non disponibile direttamente: ricostruito come (100 + crescita_preCovid). Formula finale: (val_2024/val_2019 − 1)×100. Indica la velocità di recupero regionale dal 2019 al 2024. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024, aggregati per regione.</em>",
+    postCovid_reg: "<strong>Regione: post-COVID (2024 vs 2019)</strong>Recupero regionale dal 2019 al 2024 su dati ufficiali ISTAT. Il livello 2019 è derivato dalla crescita pre-COVID (ricostruito come 100 + covid%). Formula: (val_2024/val_2019 − 1)×100. <em class='info-fonte'>Fonte: ISTAT statistiche regionali del turismo 2014-2024.</em>",
 
     postCovid_top: "<strong>Top City: post-COVID (2024 vs 2019)</strong>Variazione % dal 2019 al 2024 per il comune selezionato. Il livello 2019 è ricostruito da (100 + preArr). Rivela se il boom post-pandemia sia il principale motore della classifica o se la crescita fosse già solida prima. Non disponibile se mancano dati 2019. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
 
