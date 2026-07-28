@@ -11,7 +11,7 @@ Uso:  python3 scripts/fetch_eurostat.py
 import json, urllib.request, urllib.parse, os, sys
 
 BASE = "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/tour_occ_nin2"
-ANNI = [2014, 2019, 2024]
+ANNI = [2012, 2014, 2019, 2024]
 ALB, EXT = ["I551"], ["I552", "I553"]
 
 # Nome in regionalDataFull -> codici NUTS2 (Trentino somma le due province autonome)

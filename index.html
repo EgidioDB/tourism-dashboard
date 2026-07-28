@@ -988,6 +988,7 @@
             // per 2014, 2019 e 2024: prima il 2019 veniva stimato dagli indici e il 2014
             // usava per errore i volumi 2012 di volumeData.pre.
             const M = (anno, k) => ev[anno] ? r1(ev[anno][k] / 1e6) : null;
+            const alb12 = M(2012,'alb'), ext12 = M(2012,'ext'), pre12 = M(2012,'pre');
             const alb14 = M(2014,'alb'), ext14 = M(2014,'ext'), pre14 = M(2014,'pre');
             const alb19 = M(2019,'alb'), ext19 = M(2019,'ext'), pre19 = M(2019,'pre');
             const alb24 = M(2024,'alb'), ext24 = M(2024,'ext'), pre24 = M(2024,'pre');
@@ -1018,17 +1019,17 @@
                 </div>`}
                 <div class="data-group">
                     <div class="group-label" style="color:var(--accent)">Regione: Post-2012 ${ib('reg_post2012')}</div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${arrN(2014)}</b></div><div class='nom-r'><span>2024</span><b>${arrN(2024)}</b></div>"><span>Arrivi ${ib('arr_post2012_reg')}</span><span class="value" style="color:${clr(fmt(data.reg.arr))}">${fmt(data.reg.arr)}%</span></div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtN(pre14)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtN(pre24)} notti</b></div>"><span>Presenze</span><span class="value" style="color:${clr(fmt(data.reg.pre))}">${fmt(data.reg.pre)}%</span></div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtN(alb14)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtN(alb24)} notti</b></div>"><span>Alb ${ib('alb_post2012_reg')}</span><span class="value" style="color:${clr(fmt(data.reg.alb))}">${fmt(data.reg.alb)}%</span></div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtN(ext14)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtN(ext24)} notti</b></div>"><span>Extra-Alb</span><span class="value" style="color:${clr(fmt(data.reg.ext))}">${fmt(data.reg.ext)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2012 (base)</span><b>${arrN(2012)}</b></div><div class='nom-r'><span>2024</span><b>${arrN(2024)}</b></div>"><span>Arrivi ${ib('arr_post2012_reg')}</span><span class="value" style="color:${clr(fmt(data.reg.arr))}">${fmt(data.reg.arr)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2012 (base)</span><b>${fmtN(pre12)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtN(pre24)} notti</b></div>"><span>Presenze</span><span class="value" style="color:${clr(fmt(data.reg.pre))}">${fmt(data.reg.pre)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2012 (base)</span><b>${fmtN(alb12)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtN(alb24)} notti</b></div>"><span>Alb ${ib('alb_post2012_reg')}</span><span class="value" style="color:${clr(fmt(data.reg.alb))}">${fmt(data.reg.alb)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2012 (base)</span><b>${fmtN(ext12)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtN(ext24)} notti</b></div>"><span>Extra-Alb</span><span class="value" style="color:${clr(fmt(data.reg.ext))}">${fmt(data.reg.ext)}%</span></div>
                 </div>
                 <div class="data-group">
-                    <div class="group-label">Regione: Pre-COVID (2019 vs 2014) ${ib('reg_preCovid')}</div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${arrN(2014)}</b></div><div class='nom-r'><span>2019</span><b>${arrN(2019)}</b></div>"><span>Arrivi ${ib('arr_preCovid_reg')}</span><span class="value" style="color:${clr(sgn(data.reg.covid.arr))}">${sgn(data.reg.covid.arr)}%</span></div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtN(pre14)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtN(pre19)} notti</b></div>"><span>Presenze</span><span class="value" style="color:${clr(sgn(data.reg.covid.pre))}">${sgn(data.reg.covid.pre)}%</span></div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtN(alb14)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtN(alb19)} notti</b></div>"><span>Alb ${ib('alb_preCovid_reg')}</span><span class="value" style="color:${clr(sgn(data.reg.covid.alb))}">${sgn(data.reg.covid.alb)}%</span></div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtN(ext14)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtN(ext19)} notti</b></div>"><span>Extra-Alb</span><span class="value" style="color:${clr(sgn(data.reg.covid.ext))}">${sgn(data.reg.covid.ext)}%</span></div>
+                    <div class="group-label">Regione: Pre-COVID (2019 vs 2012) ${ib('reg_preCovid')}</div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2012 (base)</span><b>${arrN(2012)}</b></div><div class='nom-r'><span>2019</span><b>${arrN(2019)}</b></div>"><span>Arrivi ${ib('arr_preCovid_reg')}</span><span class="value" style="color:${clr(sgn(data.reg.covid.arr))}">${sgn(data.reg.covid.arr)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2012 (base)</span><b>${fmtN(pre12)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtN(pre19)} notti</b></div>"><span>Presenze</span><span class="value" style="color:${clr(sgn(data.reg.covid.pre))}">${sgn(data.reg.covid.pre)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2012 (base)</span><b>${fmtN(alb12)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtN(alb19)} notti</b></div>"><span>Alb ${ib('alb_preCovid_reg')}</span><span class="value" style="color:${clr(sgn(data.reg.covid.alb))}">${sgn(data.reg.covid.alb)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2012 (base)</span><b>${fmtN(ext12)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtN(ext19)} notti</b></div>"><span>Extra-Alb</span><span class="value" style="color:${clr(sgn(data.reg.covid.ext))}">${sgn(data.reg.covid.ext)}%</span></div>
                 </div>
                 <div class="data-group">
                     <div class="group-label" style="color:#457b9d">Regione: Post-COVID (2024 vs 2019) ${ib('postCovid_reg')}</div>
@@ -1344,18 +1345,18 @@
         Object.entries(json.regioni).forEach(([nome, y]) => {
             if (nome === 'Italia') return;
             const reg = regionalDataFull[nome] && regionalDataFull[nome].reg;
-            const a = y['2014'], b = y['2019'], c = y['2024'];
-            if (!reg || !a || !c || !a.alb || !a.ext) return;
+            const z = y['2012'], a = y['2014'], b = y['2019'], c = y['2024'];
+            if (!reg || !z || !c || !z.alb || !z.ext) return;
             // Fonde con gli arrivi gia messi da syncRegionaliFromJson, non li sovrascrive
             if (!regVolumi[nome]) regVolumi[nome] = {};
-            [[2014,a],[2019,b],[2024,c]].forEach(([y,v]) => {
+            [[2012,z],[2014,a],[2019,b],[2024,c]].forEach(([y,v]) => {
                 if (v) regVolumi[nome][y] = Object.assign({}, regVolumi[nome][y], v);
             });
-            reg.alb = r1(c.alb / a.alb * 100);
-            reg.ext = r1(c.ext / a.ext * 100);
+            reg.alb = r1(c.alb / z.alb * 100);
+            reg.ext = r1(c.ext / z.ext * 100);
             if (b) {
-                reg.covid.alb = r1((b.alb / a.alb - 1) * 100);
-                reg.covid.ext = r1((b.ext / a.ext - 1) * 100);
+                reg.covid.alb = r1((b.alb / z.alb - 1) * 100);
+                reg.covid.ext = r1((b.ext / z.ext - 1) * 100);
             }
             if (!volumeData[nome]) volumeData[nome] = { pre: [0, 0], post: [0, 0] };
             volumeData[nome].post = [r1(c.alb / 1e6), r1(c.ext / 1e6)];
@@ -1411,20 +1412,22 @@
     // alla serie di regioni.json. Lo split alb/ext non è nel JSON e resta da Eurostat.
     function syncRegionaliFromJson(regJson) {
         if (!regJson || !Array.isArray(regJson.anni) || !regJson.data) return false;
-        const i14 = regJson.anni.indexOf(2014), i19 = regJson.anni.indexOf(2019), i24 = regJson.anni.indexOf(2024);
-        if (i14 < 0 || i19 < 0 || i24 < 0) return false;
+        const i12 = regJson.anni.indexOf(2012), i14 = regJson.anni.indexOf(2014),
+              i19 = regJson.anni.indexOf(2019), i24 = regJson.anni.indexOf(2024);
+        if (i12 < 0 || i14 < 0 || i19 < 0 || i24 < 0) return false;
         Object.entries(REG_JSON_MAP).forEach(([nome, chiave]) => {
             const d = regJson.data[chiave];
             const reg = regionalDataFull[nome] && regionalDataFull[nome].reg;
             if (!d || !reg || !d.arr || !d.pre) return;
             if (!regVolumi[nome]) regVolumi[nome] = {};
-            [[2014,i14],[2019,i19],[2024,i24]].forEach(([y,ix]) => {
+            [[2012,i12],[2014,i14],[2019,i19],[2024,i24]].forEach(([y,ix]) => {
                 if (d.arr[ix] != null) regVolumi[nome][y] = Object.assign({}, regVolumi[nome][y], { arr: d.arr[ix] });
             });
-            if (d.arr[i14] && d.arr[i24] != null) reg.arr = r1(d.arr[i24] / d.arr[i14] * 100);
-            if (d.pre[i14] && d.pre[i24] != null) reg.pre = r1(d.pre[i24] / d.pre[i14] * 100);
-            if (d.arr[i14] && d.arr[i19] != null) reg.covid.arr = r1((d.arr[i19] / d.arr[i14] - 1) * 100);
-            if (d.pre[i14] && d.pre[i19] != null) reg.covid.pre = r1((d.pre[i19] / d.pre[i14] - 1) * 100);
+            // Base 2012, la stessa dei pannelli Italia e Cefalu, cosi i tre sono confrontabili
+            if (d.arr[i12] && d.arr[i24] != null) reg.arr = r1(d.arr[i24] / d.arr[i12] * 100);
+            if (d.pre[i12] && d.pre[i24] != null) reg.pre = r1(d.pre[i24] / d.pre[i12] * 100);
+            if (d.arr[i12] && d.arr[i19] != null) reg.covid.arr = r1((d.arr[i19] / d.arr[i12] - 1) * 100);
+            if (d.pre[i12] && d.pre[i19] != null) reg.covid.pre = r1((d.pre[i19] / d.pre[i12] - 1) * 100);
         });
         return true;
     }
@@ -2658,9 +2661,9 @@ const INFO = {
     arr_pre2012_reg: "<strong>Regione — Arrivi pre-2012 (2004 vs 2012)</strong>Arrivi regionali del 2004 rapportati alla base 2012: positivo = nel 2004 la regione era già sopra il livello che avrebbe avuto nel 2012. Traiettoria pre-2012 della regione come contesto per Cefalù. Clicca la riga per i valori assoluti. <em class='info-fonte'>Fonte: ISTAT DF_BULK_DCSC_TURISAREA, circoscrizioni turistiche aggregate per regione.</em>",
     alb_pre2012_reg: "<strong>Regione — Alberghiero pre-2012 (2004 vs 2012)</strong>Presenze alberghiere del 2004 rapportate alla base 2012, stessa convenzione delle altre righe del gruppo. Letto insieme all'extra-alberghiero mostra come si è spostato il mix ricettivo prima del 2012. <em class='info-fonte'>Fonte: ISTAT DF_BULK_DCSC_TURISAREA, circoscrizioni turistiche aggregate per regione.</em>",
 
-    arr_post2012_reg: "<strong>Regione — Arrivi 2014–2024 (base 2014)</strong>I dati regionali partono dal 2014 (base=100). Variazione % arrivi regionali dal 2014 al 2024. Utile per confrontare Cefalù con il trend della propria regione. Clicca la riga per gli arrivi in valore assoluto. <em class='info-fonte'>Fonte: ISTAT serie regionali 2008-2024 (regioni.json), non aggregazione dei dati comunali.</em>",
+    arr_post2012_reg: "<strong>Regione — Arrivi post-2012 (2024 vs 2012)</strong>Variazione % arrivi regionali dal 2012 al 2024. Utile per confrontare Cefalù con il trend della propria regione. Clicca la riga per gli arrivi in valore assoluto. <em class='info-fonte'>Fonte: ISTAT serie regionali 2008-2024 (regioni.json), non aggregazione dei dati comunali.</em>",
 
-    arr_preCovid_reg: "<strong>Regione — Arrivi pre-COVID (2019 vs 2014)</strong>Crescita regionale arrivi dal 2014 al 2019. Contestualizza la crescita di Cefalù pre-pandemia rispetto alla regione. Clicca la riga per gli arrivi in valore assoluto. <em class='info-fonte'>Fonte: ISTAT serie regionali 2008-2024 (regioni.json), non aggregazione dei dati comunali.</em>",
+    arr_preCovid_reg: "<strong>Regione — Arrivi pre-COVID (2019 vs 2012)</strong>Crescita regionale arrivi dal 2012 al 2019. Contestualizza la crescita di Cefalù pre-pandemia rispetto alla regione. Clicca la riga per gli arrivi in valore assoluto. <em class='info-fonte'>Fonte: ISTAT serie regionali 2008-2024 (regioni.json), non aggregazione dei dati comunali.</em>",
 
     arr_postCovid_reg: "<strong>Regione — Arrivi post-COVID (2024 vs 2019)</strong>Confronto fra gli arrivi regionali del 2019 e del 2024, entrambi da ISTAT. Misura la velocità di recupero regionale. Clicca la riga per gli arrivi in valore assoluto. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024, aggregati per regione.</em>",
 
@@ -2696,9 +2699,9 @@ const INFO = {
 
     alb_postCovid_nat: "<strong>Italia — Alberghiero post-COVID (2024 vs 2019)</strong>Variazione % alberghiero nazionale tra il 2019 e il 2024. Distingue rimbalzo ciclico da crescita strutturale; riferimento per valutare il recupero di Cefalù nel segmento. Derivato: Alb = Presenze_tot − Extra-alb. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
-    alb_post2012_reg: "<strong>Regione — Alberghiero 2014–2024 (base 2014)</strong>Crescita % presenze alberghiere regionali dal 2014 al 2024. Indica se Cefalù stia trainando la crescita alberghiera della regione o seguendo un trend diffuso. Non è derivato per differenza: è la voce alberghiera rilevata direttamente. <em class='info-fonte'>Fonte: Eurostat tour_occ_nin2, NACE I551, regioni NUTS2.</em>",
+    alb_post2012_reg: "<strong>Regione — Alberghiero post-2012 (2024 vs 2012)</strong>Crescita % presenze alberghiere regionali dal 2012 al 2024. Indica se Cefalù stia trainando la crescita alberghiera della regione o seguendo un trend diffuso. Non è derivato per differenza: è la voce alberghiera rilevata direttamente. <em class='info-fonte'>Fonte: Eurostat tour_occ_nin2, NACE I551, regioni NUTS2.</em>",
 
-    alb_preCovid_reg: "<strong>Regione — Alberghiero pre-COVID (2019 vs 2014)</strong>Crescita % presenze alberghiere regionali dal 2014 al 2019. Mostra se la fase espansiva pre-pandemia nel segmento alberghiero fosse diffusa regionalmente o concentrata in specifiche destinazioni. <em class='info-fonte'>Fonte: Eurostat tour_occ_nin2, NACE I551, regioni NUTS2.</em>",
+    alb_preCovid_reg: "<strong>Regione — Alberghiero pre-COVID (2019 vs 2012)</strong>Crescita % presenze alberghiere regionali dal 2012 al 2019. Mostra se la fase espansiva pre-pandemia nel segmento alberghiero fosse diffusa regionalmente o concentrata in specifiche destinazioni. <em class='info-fonte'>Fonte: Eurostat tour_occ_nin2, NACE I551, regioni NUTS2.</em>",
 
     alb_postCovid_reg: "<strong>Regione — Alberghiero post-COVID (2024 vs 2019)</strong>Il 2019 e un dato Eurostat reale, visibile in valore assoluto nel dettaglio. Indica se il recupero alberghiero post-pandemia sia generalizzato nella regione o concentrato in pochi comuni. Derivato. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024, aggregati per regione.</em>",
 
@@ -2720,16 +2723,16 @@ const INFO = {
 
     year_it: "<strong>Dettaglio anno — Italia</strong>Indici base 2012=100 per dati nazionali aggregati, in parallelo con Cefalù. Utile per distinguere anno eccezionale per Cefalù da andamento generale di settore. Alb derivato per differenza. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
-    pre2012_reg: "<strong>Pre-2012 — Regione (2004 vs 2012)</strong>Il valore indica il <strong>livello del 2004 rispetto alla base 2012</strong>: positivo = nel 2004 la regione stava già sopra il livello che avrebbe avuto nel 2012, quindi negli anni successivi è scesa. Stessa convenzione dei pannelli Italia e Cefalù. Clicca una riga per arrivi e notti in valore assoluto. <em class='info-fonte'>Fonte: ISTAT DF_BULK_DCSC_TURISAREA, circoscrizioni turistiche aggregate per regione.</em>",
+    pre2012_reg: "<strong>Pre-2012 — Regione (2004 vs 2012)</strong>Il valore indica il <strong>livello del 2004 rispetto alla base 2012</strong>: positivo = nel 2004 la regione stava già sopra il livello che avrebbe avuto nel 2012, quindi negli anni successivi è scesa. Stessa convenzione dei pannelli Italia e Cefalù. Clicca una riga per arrivi e notti in valore assoluto. <p style='font-size:0.9em;margin-top:8px;'>Il 2004 esiste solo nelle Circoscrizioni Turistiche, quindi il rapporto usa quella pubblicazione per entrambi gli anni. Per <strong>Lazio e Marche</strong> il suo 2012 differisce di poco da quello delle serie regionali usate nel gruppo Post-2012 (rispettivamente 0,8% e 3,5%): sono due rilevazioni ISTAT distinte, e ciascun gruppo resta coerente al proprio interno.</p><em class='info-fonte'>Fonte: ISTAT DF_BULK_DCSC_TURISAREA, circoscrizioni turistiche aggregate per regione.</em>",
     pre2012_nat: "<strong>Pre-2012 — Italia (2004 vs 2012)</strong>Benchmark nazionale per lo stesso periodo di Cefalù. Il valore indica il <strong>livello del 2004 rispetto alla base 2012</strong>: positivo = nel 2004 si stava gia sopra il 2012, quindi negli anni successivi si e sceso; negativo = si e saliti fino al 2012. Se il mercato nazionale era già in calo verso il 2012, il dato di Cefalù pre-2012 va letto in quel contesto. Alb derivato come Presenze_tot − Extra-alb. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
     post2012_nat: "<strong>Post-2012 — Italia (2024 vs 2012)</strong>Crescita % nazionale dal 2012 al 2024. Riferimento di sistema: confrontato con Cefalù dice quanto la destinazione abbia cresciuto rispetto al mercato complessivo. Alb derivato. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
     preCovid_nat: "<strong>Pre-COVID — Italia (2019 vs 2012)</strong>Crescita nazionale pre-pandemica dal 2012 al 2019. Riferimento per valutare se la crescita di Cefalù nello stesso periodo fosse in linea col sistema o eccezionale. Alb derivato. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
-    reg_post2012: "<strong>Regione: 2014–2024 (base 2014)</strong>Indice base 2014=100. Formula: (val_2024/val_2014 − 1)×100. <em class='info-fonte'>Fonte: arrivi e presenze da ISTAT serie regionali; lo split alberghiero/extra da Eurostat tour_occ_nin2 (NUTS2), perché ISTAT non lo pubblica per regione.</em>",
+    reg_post2012: "<strong>Regione: Post-2012 (2024 vs 2012)</strong>Indice base 2012=100, la stessa dei pannelli Italia e Cefalù, così i tre sono direttamente confrontabili. Formula: (val_2024/val_2012 − 1)×100. <em class='info-fonte'>Fonte: arrivi e presenze da ISTAT serie regionali; lo split alberghiero/extra da Eurostat tour_occ_nin2 (NUTS2), perché ISTAT non lo pubblica per regione.</em>",
 
-    reg_preCovid: "<strong>Regione: pre-COVID (2019 vs 2014)</strong>Crescita regionale dal 2014 al 2019 su dati ufficiali ISTAT. Permette di capire se Cefalù crescesse già più o meno della propria regione prima della pandemia. Formula: (val_2019/val_2014 − 1)×100. <em class='info-fonte'>Fonte: arrivi e presenze da ISTAT serie regionali; alberghiero ed extra da Eurostat tour_occ_nin2 (NUTS2).</em>",
+    reg_preCovid: "<strong>Regione: pre-COVID (2019 vs 2012)</strong>Crescita regionale dal 2012 al 2019 su dati ufficiali ISTAT. Permette di capire se Cefalù crescesse già più o meno della propria regione prima della pandemia. Formula: (val_2019/val_2012 − 1)×100. <em class='info-fonte'>Fonte: arrivi e presenze da ISTAT serie regionali; alberghiero ed extra da Eurostat tour_occ_nin2 (NUTS2).</em>",
 
     top_preCovid: "<strong>Top City: pre-COVID (2019 vs 2014)</strong>Crescita degli indicatori nel comune selezionato tra il 2014 e il 2019. Alberghiero ed extra sono voci rilevate direttamente nella serie comunale, non derivate. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
 
