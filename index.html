@@ -2890,7 +2890,7 @@ const INFO = {
 
             canvas.toBlob(function(blob) {
                 const file = new File([blob], filename, { type: 'image/png' });
-                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                if (window.innerWidth <= 768 && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                     navigator.share({ files: [file], title: filename }).catch(function() {
                         const a = document.createElement('a');
                         a.download = filename;
