@@ -4,9 +4,15 @@ Dashboard interattiva per l'analisi delle presenze turistiche in Italia, con foc
 
 ---
 
-## Demo
+## Come si apre
 
-Apri `index.html` direttamente nel browser — nessun server necessario, nessuna dipendenza da installare.
+La dashboard carica i propri dati dai JSON in `data/` via `fetch`, quindi va servita via HTTP: online su GitHub Pages, oppure in locale con un webserver statico. Aprire `index.html` con un doppio click **non** funziona, perché i browser bloccano `fetch` sulle origini `file://`.
+
+```bash
+python3 -m http.server 8000
+```
+
+Poi apri `http://localhost:8000`. Nessuna dipendenza da installare.
 
 ---
 
@@ -54,13 +60,17 @@ Pannello fisso con gli stessi quattro gruppi temporali a livello nazionale, con 
 ```
 tourism-dashboard/
 │
-├── index.html                          # Applicazione completa (tutto inline)
+├── index.html                          # Applicazione: solo codice, nessun dato
 │
 ├── data/
 │   ├── italia.json                     # Serie storica nazionale 1956–2024
 │   │                                   # Arrivi e presenze: totale, alb, ext, residenti/non-res
 │   ├── regioni.json                    # Serie regionale 2008–2024 (20 regioni)
 │   │                                   # Arrivi e presenze totali per anno
+│   ├── pre2012.json                    # Volumi regionali 2004/2012 + serie Cefalù 2004–2013
+│   │                                   # Copre gli anni che le serie comunali non hanno
+│   ├── eurostat_regioni.json           # Split alberghiero/extra NUTS2 per 2014, 2019, 2024
+│   │                                   # Rigenerabile: python3 scripts/fetch_eurostat.py
 │   ├── comuni_index.json               # Indice dei 5.324 comuni con dati
 │   │                                   # Metadati: cod_istat, nome, provincia, regione
 │   │                                   # Statistiche: max_arr, max_pre, growth_pre
@@ -78,6 +88,9 @@ tourism-dashboard/
 │   ├── irpef_cefalu.json               # Dati IRPEF Cefalù
 │   └── PIL/                            # Dati PIL per area
 │
+├── scripts/
+│   └── fetch_eurostat.py               # Riscarica eurostat_regioni.json dall'API Eurostat
+│
 └── DCSC_Occupancy_in_collective_accommodation/
     ├── 1. Serie storiche.xlsx          # Serie storica nazionale alb/ext 1954–2013
     ├── 2. Dati comunali 2014-2024.xlsx # Presenze comunali per tipo struttura
@@ -91,14 +104,16 @@ tourism-dashboard/
 
 ## Fonti dati
 
-| Dato | Fonte | Periodo | Note |
+| Dato | Fonte | Periodo | File |
 |------|-------|---------|------|
-| Presenze/Arrivi nazionali | ISTAT | 1956–2024 | Serie storica completa alb/ext |
-| Presenze/Arrivi regionali | ISTAT | 2008–2024 | Solo totale, no split alb/ext |
-| Presenze/Arrivi comunali | ISTAT | 2014–2024 | 5.324 comuni, split completo |
-| Volumi regionali 2024 | Eurostat `tour_occ_nin2` | 2024 | NUTS2, alb/ext separati |
-| Presenze regionali 2004/2012 | ISTAT `DF_BULK_DCSC_TURISAREA` | 2004–2013 | Per circoscrizione turistica |
+| Presenze/Arrivi nazionali | ISTAT | 1956–2024 | `italia.json` |
+| Presenze/Arrivi regionali | ISTAT | 2008–2024 | `regioni.json` — solo totali, no split alb/ext |
+| Presenze/Arrivi comunali | ISTAT | 2014–2024 | `serie/*.json` — 5.324 comuni, split completo |
+| Volumi regionali 2004/2012 e Cefalù pre-2014 | ISTAT `DF_BULK_DCSC_TURISAREA` | 2004–2013 | `pre2012.json` — per circoscrizione turistica |
+| Split alberghiero/extra regionale | Eurostat `tour_occ_nin2` | 2014, 2019, 2024 | `eurostat_regioni.json` — NUTS2 |
 | Spesa turistica pubblica | BDAP / RGS | 2019–2023 | Aggregata per ente |
+
+L'API Eurostat espone header CORS aperti, quindi sarebbe interrogabile direttamente dal browser. Il file resta comunque versionato nel repo: così la dashboard non dipende dalla disponibilità di un servizio esterno a ogni caricamento, e i dati mostrati sono riproducibili nel tempo.
 
 ### Costanti di base (2012)
 ```
@@ -111,35 +126,43 @@ Presenze alberghiero 2012:          255.610.143
 
 ## Come circolano i dati
 
-L'obiettivo è avere **una sola fonte di verità per ogni grandezza**: gli indicatori derivati vengono ricalcolati a runtime, mai memorizzati in parallelo. Aggiornare il JSON aggiorna tutta la dashboard.
+**In `index.html` non c'è nessun dato.** Le strutture partono vuote e ogni valore arriva dai JSON in `data/`, o viene derivato da quelli a runtime. Aggiornare un JSON aggiorna tutta la dashboard, e non esistono copie parallele che possano disallinearsi.
 
-### Derivati a runtime
+### Chi riempie cosa
 
-| Grandezza | Derivata da | Funzione |
-|-----------|-------------|----------|
+| Grandezza | Fonte | Funzione |
+|-----------|-------|----------|
 | `rawData.it*` (2004–2024) | `data/italia.json` | `syncItaliaFromJson()` |
-| `itAlb`, `itBenchmark`, `volumeData.Italia` | `rawData.it*` + costanti 2012 | `syncItaliaDerived()` |
+| `rawData.cef*` (2004–2013) | `data/pre2012.json` | `syncPre2012FromJson()` |
 | `rawData.cef*` (2014–2024) | `data/serie/082027.json` | patch nel `Promise.all` |
-| `cefAlb` | `rawData.cef*` + costanti Cefalù | ricalcolo in-place |
-| `reg.arr`, `reg.pre`, `reg.covid.arr/pre` | `data/regioni.json` | `syncRegionaliFromJson()` |
+| `itAlb`, `itBenchmark`, `volumeData.Italia` | `rawData.it*` + basi 2012 | `syncItaliaDerived()` |
+| `cefAlb` | `rawData.cef*` + basi Cefalù | ricalcolo in-place |
+| `preAbs`, `volumeData[reg].pre` | `data/pre2012.json` | `syncPre2012FromJson()` |
 | `reg.preArr/prePre/preAlb/preExt` | `preAbs` | `syncPre2012FromAbs()` |
-| `top.*` (Top City, 160 valori) | `data/comuni_index.json` + `data/serie/*.json` | `syncTopCity()` |
+| `reg.arr`, `reg.pre`, `reg.covid.arr/pre` | `data/regioni.json` | `syncRegionaliFromJson()` |
+| `reg.alb`, `reg.ext`, `reg.covid.alb/ext`, `regVolumi`, `volumeData[reg].post` | `data/eurostat_regioni.json` | `syncEurostatRegioni()` |
+| `top.*` (Top City) | `data/comuni_index.json` + `data/serie/*.json` | `syncTopCity()` |
 | Classifica crescita comuni | `data/comuni_index.json` | `buildLeaderboard()` |
 
 **Top City** — la città di ogni regione è scelta con lo stesso criterio della classifica crescita: massima crescita presenze 2014–2024 fra i comuni con almeno 500.000 presenze annue; dove nessuno raggiunge la soglia (Molise) si ripiega sul comune più grande. La sua serie comunale viene scaricata al primo click sulla regione e messa in cache, poi il pannello si ridisegna.
 
-I valori presenti nei letterali JS servono da **fallback** se un fetch fallisce, e vengono sovrascritti appena il JSON arriva.
+### Conseguenze sul rendering
 
-### Ancora statici (e perché)
+Siccome nulla è disponibile prima dei fetch, il disegno è governato da un flag `dataReady`:
 
-| Campo | Motivo |
-|-------|--------|
-| `preAbs` | Arrivi e presenze regionali 2004/2012 dal file XLS ISTAT: non esiste API né JSON per il pre-2014 con split alb/ext |
-| `IT_PRE_BASE`, `IT_EXT_BASE` | Basi 2012 esatte; `italia.json` le arrotonda alle migliaia e il 2012 è un anno chiuso |
-| `CEF_PRE_BASE`, `CEF_EXT_BASE` | Idem per Cefalù |
-| `rawData.*` anni 2004–2013 di Cefalù | La serie comunale JSON parte dal 2014 |
-| `reg.alb`, `reg.ext`, `covid.alb/ext` | Split alberghiero/extra da Eurostat NUTS2, non presente in `regioni.json` |
-| `volumeData[regione].post` | Volumi 2024 regionali da Eurostat NUTS2 |
+- `showTotalReport()` e `showYearlyReport()` non disegnano finché `rawData` non è pieno; chi carica i dati le richiama
+- il grafico storico nasce con tracce vuote e viene riempito con `Plotly.restyle`, che preserva layout e interazioni
+- il pannello regionale mostra *Caricamento dati…*, con un caricamento separato per la Top City che ha un fetch proprio
+- il grafico Chart.js mobile è costruito da `buildMobileChart()` a dati pronti
+
+### Le uniche costanti rimaste
+
+| Costante | Valore | Perché non è nei JSON |
+|----------|--------|------------------------|
+| `IT_PRE_BASE`, `IT_EXT_BASE` | 380.711.483 · 125.101.340 | Basi 2012 nazionali esatte; `italia.json` arrotonda alle migliaia |
+| `CEF_PRE_BASE`, `CEF_EXT_BASE` | 634.776 · 80.447 | Idem per Cefalù |
+
+Il 2012 è un anno chiuso e questi sono i valori ISTAT pieni. Entrambe le coppie sono verificate contro le rispettive fonti: coincidono con `italia.json` e con il 2012 di `pre2012.json`.
 
 ### Nota sui totali del file ISTAT circoscrizioni
 
@@ -183,10 +206,10 @@ Effetto sulle variazioni pre-2012 mostrate: essendo il 2004 leggermente sottosti
 
 ## Stack tecnico
 
-- **Zero dipendenze runtime** — HTML/CSS/JS vanilla, tutto inline in `index.html`
-- **[Plotly.js](https://plotly.com/javascript/)** (CDN) — grafici interattivi e donut chart
+- **Nessun build step** — HTML/CSS/JS vanilla, nessun bundler né package manager
+- **[Plotly.js](https://plotly.com/javascript/)** e **[Chart.js](https://www.chartjs.org/)** (CDN) — grafici desktop e mobile
 - Mappa SVG inline delle regioni italiane
-- Dati JSON caricati via `fetch` al primo render
+- Dati caricati da `data/` via `fetch`: serve un webserver, vedi *Come si apre*
 
 ---
 
