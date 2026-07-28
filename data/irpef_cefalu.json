@@ -1,0 +1,367 @@
+{
+  "fonte": "MEF - Redditi e principali variabili IRPEF su base comunale",
+  "comune": "Cefalù",
+  "istat": "082027",
+  "dati": {
+    "2007": {
+      "contribuenti": 9620,
+      "reddito_imponibile": 148115525,
+      "imposta_netta": 26629573,
+      "reddito_lavoro_dip": 62885035,
+      "reddito_pensione": 45645801,
+      "reddito_fabbricati": 9007670,
+      "reddito_autonomo": 6778914,
+      "addizionale_regionale": 1858014,
+      "addizionale_comunale": 275086,
+      "fasce": {
+        "0_10k": 4246,
+        "10k_15k": 1382,
+        "15k_26k": 2237,
+        "26k_55k": 1417,
+        "55k_75k": 165,
+        "75k_120k": 97,
+        "oltre_120k": 24
+      }
+    },
+    "2008": {
+      "contribuenti": 9607,
+      "reddito_imponibile": 151998730,
+      "imposta_netta": 27945703,
+      "reddito_lavoro_dip": null,
+      "reddito_pensione": 47066720,
+      "reddito_fabbricati": 9409197,
+      "reddito_autonomo": null,
+      "addizionale_regionale": 1929730,
+      "addizionale_comunale": 685945,
+      "fasce": {
+        "0_10k": 4034,
+        "10k_15k": 1309,
+        "15k_26k": 2336,
+        "26k_55k": 1479,
+        "55k_75k": 150,
+        "75k_120k": 127,
+        "oltre_120k": 25
+      }
+    },
+    "2009": {
+      "contribuenti": 9706,
+      "reddito_imponibile": 154119273,
+      "imposta_netta": 28673531,
+      "reddito_lavoro_dip": null,
+      "reddito_pensione": 49762918,
+      "reddito_fabbricati": 9966208,
+      "reddito_autonomo": null,
+      "addizionale_regionale": 1960626,
+      "addizionale_comunale": 695293,
+      "fasce": {
+        "0_10k": 4048,
+        "10k_15k": 1362,
+        "15k_26k": 2274,
+        "26k_55k": 1531,
+        "55k_75k": 167,
+        "75k_120k": 132,
+        "oltre_120k": 24
+      }
+    },
+    "2010": {
+      "contribuenti": 9617,
+      "reddito_imponibile": 152580631,
+      "imposta_netta": 28330571,
+      "reddito_lavoro_dip": null,
+      "reddito_pensione": 50429740,
+      "reddito_fabbricati": 10458950,
+      "reddito_autonomo": null,
+      "addizionale_regionale": 1948220,
+      "addizionale_comunale": 687890,
+      "fasce": {
+        "0_10k": 4035,
+        "10k_15k": 1314,
+        "15k_26k": 2239,
+        "26k_55k": 1540,
+        "55k_75k": 169,
+        "75k_120k": 122,
+        "oltre_120k": 25
+      }
+    },
+    "2011": {
+      "contribuenti": 9641,
+      "reddito_imponibile": 155852765,
+      "imposta_netta": 28928553,
+      "reddito_lavoro_dip": null,
+      "reddito_pensione": 52374864,
+      "reddito_fabbricati": 10532238,
+      "reddito_autonomo": null,
+      "addizionale_regionale": 2437497,
+      "addizionale_comunale": 698834,
+      "fasce": {
+        "0_10k": 3943,
+        "10k_15k": 1362,
+        "15k_26k": 2275,
+        "26k_55k": 1591,
+        "55k_75k": 175,
+        "75k_120k": 131,
+        "oltre_120k": 22
+      }
+    },
+    "2012": {
+      "contribuenti": 9652,
+      "reddito_imponibile": 152651447,
+      "imposta_netta": 27894858,
+      "reddito_lavoro_dip": null,
+      "reddito_pensione": 53987178,
+      "reddito_fabbricati": 7024885,
+      "reddito_autonomo": null,
+      "addizionale_regionale": 2393036,
+      "addizionale_comunale": 827980,
+      "fasce": {
+        "0_10k": 3872,
+        "10k_15k": 1418,
+        "15k_26k": 2193,
+        "26k_55k": 1542,
+        "55k_75k": 185,
+        "75k_120k": 119,
+        "oltre_120k": 24
+      }
+    },
+    "2013": {
+      "contribuenti": 9507,
+      "reddito_imponibile": 152823271,
+      "imposta_netta": 27688334,
+      "reddito_lavoro_dip": null,
+      "reddito_pensione": 55641082,
+      "reddito_fabbricati": 9689472,
+      "reddito_autonomo": null,
+      "addizionale_regionale": 2396943,
+      "addizionale_comunale": 830995,
+      "fasce": {
+        "0_10k": 3768,
+        "10k_15k": 1421,
+        "15k_26k": 2219,
+        "26k_55k": 1597,
+        "55k_75k": 180,
+        "75k_120k": 126,
+        "oltre_120k": 20
+      }
+    },
+    "2014": {
+      "contribuenti": 9327,
+      "reddito_imponibile": 151623304,
+      "imposta_netta": 27213301,
+      "reddito_lavoro_dip": null,
+      "reddito_pensione": 56176578,
+      "reddito_fabbricati": 9695788,
+      "reddito_autonomo": null,
+      "addizionale_regionale": 2367157,
+      "addizionale_comunale": 822460,
+      "fasce": {
+        "0_10k": 3596,
+        "10k_15k": 1434,
+        "15k_26k": 2216,
+        "26k_55k": 1583,
+        "55k_75k": 178,
+        "75k_120k": 117,
+        "oltre_120k": 25
+      }
+    },
+    "2015": {
+      "contribuenti": 9366,
+      "reddito_imponibile": 152122929,
+      "imposta_netta": 27291900,
+      "reddito_lavoro_dip": null,
+      "reddito_pensione": 56422924,
+      "reddito_fabbricati": 8930713,
+      "reddito_autonomo": null,
+      "addizionale_regionale": 2371346,
+      "addizionale_comunale": 1091795,
+      "fasce": {
+        "0_10k": 3607,
+        "10k_15k": 1415,
+        "15k_26k": 2183,
+        "26k_55k": 1644,
+        "55k_75k": 180,
+        "75k_120k": 116,
+        "oltre_120k": 27
+      }
+    },
+    "2016": {
+      "contribuenti": 9393,
+      "reddito_imponibile": 154466947,
+      "imposta_netta": 27662237,
+      "reddito_lavoro_dip": null,
+      "reddito_pensione": 57034703,
+      "reddito_fabbricati": 8953214,
+      "reddito_autonomo": null,
+      "addizionale_regionale": 2404605,
+      "addizionale_comunale": 1104914,
+      "fasce": {
+        "0_10k": 3582,
+        "10k_15k": 1393,
+        "15k_26k": 2168,
+        "26k_55k": 1701,
+        "55k_75k": 190,
+        "75k_120k": 126,
+        "oltre_120k": 25
+      }
+    },
+    "2017": {
+      "contribuenti": 9507,
+      "reddito_imponibile": 155764201,
+      "imposta_netta": 27939598,
+      "reddito_lavoro_dip": null,
+      "reddito_pensione": 57285005,
+      "reddito_fabbricati": 9234470,
+      "reddito_autonomo": null,
+      "addizionale_regionale": 2431953,
+      "addizionale_comunale": 1116620,
+      "fasce": {
+        "0_10k": 3570,
+        "10k_15k": 1379,
+        "15k_26k": 2144,
+        "26k_55k": 1735,
+        "55k_75k": 211,
+        "75k_120k": 123,
+        "oltre_120k": 31
+      }
+    },
+    "2018": {
+      "contribuenti": 9514,
+      "reddito_imponibile": 160333927,
+      "imposta_netta": 28880983,
+      "reddito_lavoro_dip": null,
+      "reddito_pensione": 58072250,
+      "reddito_fabbricati": 9080215,
+      "reddito_autonomo": null,
+      "addizionale_regionale": 2175665,
+      "addizionale_comunale": 1151822,
+      "fasce": {
+        "0_10k": 3494,
+        "10k_15k": 1426,
+        "15k_26k": 2202,
+        "26k_55k": 1837,
+        "55k_75k": 209,
+        "75k_120k": 121,
+        "oltre_120k": 36
+      }
+    },
+    "2019": {
+      "contribuenti": 9519,
+      "reddito_imponibile": 160683847,
+      "imposta_netta": 28978260,
+      "reddito_lavoro_dip": null,
+      "reddito_pensione": 59333863,
+      "reddito_fabbricati": 9015774,
+      "reddito_autonomo": null,
+      "addizionale_regionale": 1799317,
+      "addizionale_comunale": 1155305,
+      "fasce": {
+        "0_10k": 3453,
+        "10k_15k": 1421,
+        "15k_26k": 2233,
+        "26k_55k": 1822,
+        "55k_75k": 209,
+        "75k_120k": 142,
+        "oltre_120k": 30
+      }
+    },
+    "2020": {
+      "contribuenti": 9445,
+      "reddito_imponibile": 153408601,
+      "imposta_netta": 27387384,
+      "reddito_lavoro_dip": null,
+      "reddito_pensione": 61237159,
+      "reddito_fabbricati": 8355956,
+      "reddito_autonomo": null,
+      "addizionale_regionale": 1695997,
+      "addizionale_comunale": 1089253,
+      "fasce": {
+        "0_10k": 3721,
+        "10k_15k": 1336,
+        "15k_26k": 1984,
+        "26k_55k": 1768,
+        "55k_75k": 190,
+        "75k_120k": 137,
+        "oltre_120k": 28
+      }
+    },
+    "2021": {
+      "contribuenti": 9632,
+      "reddito_imponibile": 162839819,
+      "imposta_netta": 29307936,
+      "reddito_lavoro_dip": null,
+      "reddito_pensione": 62858054,
+      "reddito_fabbricati": 8746741,
+      "reddito_autonomo": null,
+      "addizionale_regionale": 1828804,
+      "addizionale_comunale": 1170646,
+      "fasce": {
+        "0_10k": 3599,
+        "10k_15k": 1326,
+        "15k_26k": 2178,
+        "26k_55k": 1874,
+        "55k_75k": 205,
+        "75k_120k": 143,
+        "oltre_120k": 39
+      }
+    },
+    "2022": {
+      "contribuenti": 9778,
+      "reddito_imponibile": 177337345,
+      "imposta_netta": 31294222,
+      "reddito_lavoro_dip": null,
+      "reddito_pensione": 65505722,
+      "reddito_fabbricati": 9357300,
+      "reddito_autonomo": null,
+      "addizionale_regionale": 2028427,
+      "addizionale_comunale": 1293389,
+      "fasce": {
+        "0_10k": 3266,
+        "10k_15k": 1419,
+        "15k_26k": 2333,
+        "26k_55k": 2043,
+        "55k_75k": 239,
+        "75k_120k": 175,
+        "oltre_120k": 55
+      }
+    },
+    "2023": {
+      "contribuenti": 9864,
+      "reddito_imponibile": 189640897,
+      "imposta_netta": 34453752,
+      "reddito_lavoro_dip": null,
+      "reddito_pensione": 70366927,
+      "reddito_fabbricati": 9803201,
+      "reddito_autonomo": null,
+      "addizionale_regionale": 2191771,
+      "addizionale_comunale": 1407305,
+      "fasce": {
+        "0_10k": 2957,
+        "10k_15k": 1349,
+        "15k_26k": 2410,
+        "26k_55k": 2341,
+        "55k_75k": 265,
+        "75k_120k": 219,
+        "oltre_120k": 63
+      }
+    },
+    "2024": {
+      "contribuenti": 9952,
+      "reddito_imponibile": 200269911,
+      "imposta_netta": 36258897,
+      "reddito_lavoro_dip": null,
+      "reddito_pensione": 74235228,
+      "reddito_fabbricati": 10482126,
+      "reddito_autonomo": null,
+      "addizionale_regionale": 2320516,
+      "addizionale_comunale": 1495748,
+      "fasce": {
+        "0_10k": 2784,
+        "10k_15k": 1333,
+        "15k_26k": 2380,
+        "26k_55k": 2598,
+        "55k_75k": 302,
+        "75k_120k": 224,
+        "oltre_120k": 73
+      }
+    }
+  }
+}
