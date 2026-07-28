@@ -24,16 +24,18 @@ Poi apri `http://localhost:8000`. Nessuna dipendenza da installare.
 - Donut chart che si aggiorna con i volumi della regione (alberghiero vs extra-alberghiero, pre/post 2012)
 
 ### Pannello regionale
-Ogni regione mostra quattro gruppi di indicatori, tutti con popup nominali (click su ogni riga):
+Ogni regione mostra quattro gruppi, tutti con valori assoluti in accordion (click su ogni riga):
 
-| Gruppo | Confronto | Metrica |
-|--------|-----------|---------|
-| Pre-2012 | 2004 vs 2012 | Arrivi, Presenze, Extra-Alb |
-| Post-2012 | 2014 → 2024 | Arrivi, Presenze, Alb, Extra-Alb |
-| Pre-COVID | 2014 → 2019 | Arrivi, Presenze, Alb, Extra-Alb |
+| Gruppo | Confronto | Metriche |
+|--------|-----------|----------|
+| Pre-2012 | 2004 → 2012 | Arrivi, Presenze, Alb, Extra-Alb |
+| Post-2012 | 2012 → 2024 | Arrivi, Presenze, Alb, Extra-Alb |
+| Pre-COVID | 2012 → 2019 | Arrivi, Presenze, Alb, Extra-Alb |
 | Post-COVID | 2019 → 2024 | Arrivi, Presenze, Alb, Extra-Alb |
 
-I popup nominali mostrano i valori assoluti (es. `13.200.000 notti`) per presenze, alberghiero ed extra-alberghiero. Sono inclusi anche i dati della **Top City** della regione (comune con maggiore crescita) e il gap rispetto alla media nazionale.
+**Tutti i gruppi si leggono nello stesso verso**: positivo (verde) = cresciuto nel periodo, negativo (rosso) = calato. Gli accordion mostrano i conteggi reali — arrivi e notti — non gli indici. Segue il pannello della **Top City** della regione, anch'esso con accordion, e il gap rispetto alla media nazionale.
+
+I pannelli Italia e Cefalù usano gli stessi quattro gruppi e la stessa base 2012, quindi le tre colonne sono direttamente confrontabili: si può dire che *Cefalù è cresciuta del 46,4% mentre l'Abruzzo è calato dell'1,1%* leggendo due numeri affiancati.
 
 ### Sintesi Italia
 Pannello fisso con gli stessi quattro gruppi temporali a livello nazionale, con valori assoluti derivati dinamicamente dai dati ISTAT (base 2012: 380.711.483 presenze totali).
@@ -69,7 +71,7 @@ tourism-dashboard/
 │   │                                   # Arrivi e presenze totali per anno
 │   ├── pre2012.json                    # Volumi regionali 2004/2012 + serie Cefalù 2004–2013
 │   │                                   # Copre gli anni che le serie comunali non hanno
-│   ├── eurostat_regioni.json           # Split alberghiero/extra NUTS2 per 2014, 2019, 2024
+│   ├── eurostat_regioni.json           # Split alberghiero/extra NUTS2: 2012, 2014, 2019, 2024
 │   │                                   # Rigenerabile: python3 scripts/fetch_eurostat.py
 │   ├── comuni_index.json               # Indice dei 5.324 comuni con dati
 │   │                                   # Metadati: cod_istat, nome, provincia, regione
@@ -81,7 +83,8 @@ tourism-dashboard/
 │   ├── province.json                   # Anagrafica province
 │   ├── ricettiva.json                  # Dati strutture ricettive
 │   ├── ricettiva_index.json            # Indice strutture ricettive
-│   ├── bilancio.json                   # Bilancio comunale generico
+│   ├── bilancio.json                   # Bilancio Cefalù 2005–2024: imposta di soggiorno,
+│   │                                   # spesa turismo, entrate tributarie
 │   ├── bilancio_cefalu_armonizzato.json
 │   ├── bilancio_cefalu_consuntivo.json
 │   ├── bilancio_cefalu_rendiconti_pdf.json
@@ -96,7 +99,7 @@ tourism-dashboard/
     ├── 2. Dati comunali 2014-2024.xlsx # Presenze comunali per tipo struttura
     ├── 3. Dati per circoscrizione turistica 2004-2013.xlsx
     │                                   # Presenze per circoscrizione turistica (pre-2014)
-    │                                   # Usato per calcolo preExt regionale 2004 vs 2012
+    │                                   # Fonte di pre2012.json
     └── 4. Dati per provenienza 2024.xlsx # Provenienza turisti per area 2024
 ```
 
@@ -110,16 +113,30 @@ tourism-dashboard/
 | Presenze/Arrivi regionali | ISTAT | 2008–2024 | `regioni.json` — solo totali, no split alb/ext |
 | Presenze/Arrivi comunali | ISTAT | 2014–2024 | `serie/*.json` — 5.324 comuni, split completo |
 | Volumi regionali 2004/2012 e Cefalù pre-2014 | ISTAT `DF_BULK_DCSC_TURISAREA` | 2004–2013 | `pre2012.json` — per circoscrizione turistica |
-| Split alberghiero/extra regionale | Eurostat `tour_occ_nin2` | 2014, 2019, 2024 | `eurostat_regioni.json` — NUTS2 |
-| Spesa turistica pubblica | BDAP / RGS | 2019–2023 | Aggregata per ente |
+| Split alberghiero/extra regionale | Eurostat `tour_occ_nin2` | 2012, 2014, 2019, 2024 | `eurostat_regioni.json` — NUTS2 |
+| Imposta di soggiorno e spesa turismo | Consuntivi comunali, BDAP / RGS | 2005–2024 | `bilancio.json` |
 
 L'API Eurostat espone header CORS aperti, quindi sarebbe interrogabile direttamente dal browser. Il file resta comunque versionato nel repo: così la dashboard non dipende dalla disponibilità di un servizio esterno a ogni caricamento, e i dati mostrati sono riproducibili nel tempo.
+
+### Perché il 2012 è l'anno zero
+
+Il 2012 non è un punto di comodo: segna l'arrivo in Italia delle piattaforme di affitto breve. L'effetto non si vede subito nei volumi — i salti anno su anno arrivano dal 2015, come da curva di adozione — ma è netto nella **pendenza** della quota di extra-alberghiero sul totale delle presenze:
+
+| periodo | quota extra | pendenza |
+|---------|-------------|----------|
+| 2004 → 2012 | 32,3% → 32,9% | +0,107 punti/anno |
+| 2012 → 2019 | 32,9% → 35,7% | +0,460 punti/anno |
+| 2012 → 2024 | 32,9% → 39,1% | +0,614 punti/anno |
+
+**Un'accelerazione di 4,3 volte.** Tutti i pannelli usano il 2012 come base, così il confronto prima/dopo è la struttura portante della dashboard.
 
 ### Costanti di base (2012)
 ```
 Presenze totali Italia 2012:        380.711.483
 Presenze extra-alberghiero 2012:    125.101.340
 Presenze alberghiero 2012:          255.610.143
+Presenze totali Cefalù 2012:            634.776
+Arrivi Cefalù 2012:                     132.746
 ```
 
 ---
@@ -141,10 +158,21 @@ Presenze alberghiero 2012:          255.610.143
 | `reg.preArr/prePre/preAlb/preExt` | `preAbs` | `syncPre2012FromAbs()` |
 | `reg.arr`, `reg.pre`, `reg.covid.arr/pre` | `data/regioni.json` | `syncRegionaliFromJson()` |
 | `reg.alb`, `reg.ext`, `reg.covid.alb/ext`, `regVolumi`, `volumeData[reg].post` | `data/eurostat_regioni.json` | `syncEurostatRegioni()` |
-| `top.*` (Top City) | `data/comuni_index.json` + `data/serie/*.json` | `syncTopCity()` |
+| `top.*` (Top City), volumi inclusi | `data/comuni_index.json` + `data/serie/*.json` | `syncTopCity()` |
+| `SOGGIORNO_DATA`, `SPESA_SOG_DATA` | `data/bilancio.json` | `syncBilancioFromJson()` |
 | Classifica crescita comuni | `data/comuni_index.json` | `buildLeaderboard()` |
 
 **Top City** — la città di ogni regione è scelta con lo stesso criterio della classifica crescita: massima crescita presenze 2014–2024 fra i comuni con almeno 500.000 presenze annue; dove nessuno raggiunge la soglia (Molise) si ripiega sul comune più grande. La sua serie comunale viene scaricata al primo click sulla regione e messa in cache, poi il pannello si ridisegna.
+
+### Convenzioni di lettura
+
+Sono la fonte di errore più frequente in questo progetto, perché un segno sbagliato non rompe nulla: mostra solo il contrario del vero.
+
+- **Tutti i gruppi periodo esprimono la variazione nel periodo**, nello stesso verso. Positivo = cresciuto, e il colore segue il segno tramite `clr()`. Vale anche per il Pre-2012, che fino a oggi mostrava invece il livello del 2004 rispetto alla base: l'extra-alberghiero di Cefalù appariva a `+112,5%` in verde mentre in quegli anni si era dimezzato.
+- **La base è il 2012 in tutti e tre i pannelli.** Italia, Cefalù e Regione sono quindi affiancabili. Il pannello regionale usava il 2014 fino a oggi, il che rendeva il confronto con Cefalù privo di significato.
+- **`showYearlyReport` fa eccezione di proposito**: mostra un singolo anno rispetto alla base, che è una posizione e non una variazione. Lì l'indice meno 100 è la lettura giusta.
+- **`indice − 100` è esatto**, non un'approssimazione, perché l'indice è già un rapporto al 2012. È `100 − indice` a essere una scorciatoia sbagliata per il verso opposto: per il pre-2012 si usa `pre12()`, cioè `100/indice − 1`.
+- **Il gap Top City confronta due indici base 2014**, non 2012: `itBenchmark` è ricalcolato apposta su quella base.
 
 ### Conseguenze sul rendering
 
@@ -215,10 +243,6 @@ Effetto sulle variazioni pre-2012 mostrate: essendo il 2004 leggermente sottosti
 
 ## Sviluppi futuri
 
-### Da fare
-
-- **Accordion per la Top City** — le righe della Top City sono le uniche del pannello regionale senza `toggleNominal`: mostrano solo percentuali, non i valori assoluti. La serie comunale è già in cache dopo il primo click (`topSerieCache`), quindi arrivi e notti 2014/2019/2024 sono disponibili senza fetch aggiuntivi. Serve solo aggiungere `onclick="toggleNominal(this)"` e `data-nominal` alle righe dei gruppi pre-COVID, post-COVID e crescita totale.
-
 ### Nuovi indicatori
 
 - Durata media del soggiorno (presenze/arrivi) per regione e anno
@@ -229,4 +253,4 @@ Effetto sulle variazioni pre-2012 mostrate: essendo il 2004 leggermente sottosti
 
 ### Valutato e scartato
 
-- **Gruppo pre-2012 per la Top City** — solo 12 delle 20 Top City esistono come circoscrizione turistica autonoma nei dati ISTAT 2004–2013. Le altre otto (Ricadi, Fiumicino, Baveno, Monopoli, Pula, Marsala, Castagneto Carducci, Courmayeur) sono aggregate in aree più ampie e non separabili, quindi il gruppo resterebbe vuoto per il 40% delle regioni. Non esiste una fonte ISTAT comunale con split alberghiero/extra prima del 2014.
+- **Gruppo pre-2012 per la Top City** — ISTAT pubblica per *circoscrizione turistica* fino al 2013 e per *comune* dal 2014, come dichiara l'indice del suo stesso pacchetto. Solo 12 delle 20 Top City coincidono con una circoscrizione; le altre otto sono dentro aggregati troppo ampi per fare da proxy: Fiumicino finirebbe sommata a 119 altri comuni, Pula a 68, Monopoli a 43. Cercare il dato presso gli osservatori regionali significherebbe mettere otto fonti diverse accanto a dodici ISTAT nello stesso gruppo, rendendo le percentuali non confrontabili fra loro — che è proprio il senso di quel confronto.
