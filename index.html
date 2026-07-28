@@ -1614,7 +1614,7 @@
             </div>
             <div class="data-group">
                 <div class="group-label" style="color:#457b9d">Post-COVID (2024 vs 2019) ${ib('postCovid_cef')}</div>
-                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${nf(CEF_ARR_BASE * rawData.cefArr[15] / 100)} arrivi</b></div><div class='nom-r'><span>2024</span><b>${nf(CEF_ARR_BASE * rawData.cefArr[20] / 100)} arrivi</b></div>"><span>Arrivi ${ib('arr_post2012_cef')}</span><span class="value" style="color:${clr(sgn((rawData.cefArr[20]/rawData.cefArr[15]-1)*100))}">${sgn((rawData.cefArr[20]/rawData.cefArr[15]-1)*100)}%</span></div>
+                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${nf(CEF_ARR_BASE * rawData.cefArr[15] / 100)} arrivi</b></div><div class='nom-r'><span>2024</span><b>${nf(CEF_ARR_BASE * rawData.cefArr[20] / 100)} arrivi</b></div>"><span>Arrivi ${ib('arr_postCovid_cef')}</span><span class="value" style="color:${clr(sgn((rawData.cefArr[20]/rawData.cefArr[15]-1)*100))}">${sgn((rawData.cefArr[20]/rawData.cefArr[15]-1)*100)}%</span></div>
                 <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${nf(c19.pre)} notti</b></div><div class='nom-r'><span>2024</span><b>${nf(c24.pre)} notti</b></div>"><span>Presenze</span><span class="value" style="color:${clr(sgn((rawData.cefPre[20]/rawData.cefPre[15]-1)*100))}">${sgn((rawData.cefPre[20]/rawData.cefPre[15]-1)*100)}%</span></div>
                 <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${nf(c19.alb)} notti</b></div><div class='nom-r'><span>2024</span><b>${nf(c24.alb)} notti</b></div>"><span>Alb ${ib('alb_postCovid_cef')}</span><span class="value" style="color:${clr(sgn((cefAlb[20]/cefAlb[15]-1)*100))}">${sgn((cefAlb[20]/cefAlb[15]-1)*100)}%</span></div>
                 <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${nf(c19.ext)} notti</b></div><div class='nom-r'><span>2024</span><b>${nf(c24.ext)} notti</b></div>"><span>Extra-Alb</span><span class="value" style="color:${clr(sgn((rawData.cefExt[20]/rawData.cefExt[15]-1)*100))}">${sgn((rawData.cefExt[20]/rawData.cefExt[15]-1)*100)}%</span></div>
@@ -2653,7 +2653,6 @@ const INFO = {
 
     gap_nat: "<strong>Confronto Media Nazionale al 2024</strong>Differenza in punti indice tra Cefalù e l'Italia nel 2024 (entrambi base 2012=100). Es: +44pp arrivi significa che Cefalù ha quasi raddoppiato la crescita media italiana nello stesso periodo. Permette di capire se Cefalù guadagni o perda posizione sul mercato turistico nazionale. <em class='info-fonte'>Fonte: ISTAT Serie Storiche + dati comunali.</em>",
 
-    arr_indice: "<strong>Perché gli Arrivi mostrano solo l'indice?</strong>Le presenze (notti) e l'extra-alberghiero hanno un valore assoluto 2012 noto (Cefalù: 634.776 notti; Italia: 380M), quindi è possibile calcolare valori nominali per ogni anno. Per gli arrivi Gli arrivi 2004-2013 provengono dalle Circoscrizioni Turistiche, dove Cefalu ha una voce propria, quindi sono disponibili anche in valore assoluto. Il valore nel dettaglio è l'indice stesso: es. 178,7 = +78,7% rispetto all'anno base. <em class='info-fonte'>Fonte: ISTAT Circoscrizioni Turistiche 2004-2013 + dati comunali 2014-2024.</em>",
 
     arr_pre2012_nat: "<strong>Italia — Arrivi pre-2012 (2004 vs 2012)</strong>Variazione % arrivi nazionali tra il 2004 e il 2012. Contesto di sistema: se anche l'Italia era in calo verso il 2012, il dato locale va letto in quel quadro. Il dettaglio mostra gli arrivi in valore assoluto. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
@@ -2692,9 +2691,7 @@ const INFO = {
 
     arr_year_nat: "<strong>Italia — Arrivi nell'anno selezionato</strong>Indice base 2012=100 su dati nazionali aggregati. Benchmark per Cefalù: se Cefalù segna 178 e l'Italia 134, Cefalù cresce quasi il doppio della media nazionale. Clicca la riga per gli arrivi in valore assoluto. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
-    alb_cef: "<strong>Alberghiero — Cefalù (metodologia)</strong>Dato non rilevato direttamente da ISTAT: calcolato come Presenze_tot − Extra-alberghiero, re-indicizzato a base 2012=100 (alb_base 2012 = 554.329 notti). <em class='info-fonte'>Fonte: ISTAT Circoscrizioni Turistiche 2004-2013 + dati comunali.</em>",
 
-    alb_it: "<strong>Alberghiero — Italia (metodologia)</strong>Dato non rilevato direttamente: calcolato come Presenze_tot − Extra-alberghiero, re-indicizzato a base 2012=100 (alb_base 2012 = 255,6M notti). <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
     alb_pre2012_nat: "<strong>Italia — Alberghiero pre-2012 (2004 vs 2012)</strong>Variazione % presenze alberghiere nazionali tra il 2004 e il 2012. Contesto di sistema per leggere il dato di Cefalù: se l'alberghiero nazionale era già in calo verso il 2012, il confronto è più significativo. Derivato: Alb = Presenze_tot − Extra-alb, base 2012=100. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
