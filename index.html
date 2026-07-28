@@ -802,7 +802,7 @@
                 <div class="group-label">Pre-2012 ${ib('pre2012_nat')}</div>
                 <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004 (indice)</span><b>${rawData.itArr[0].toFixed(1)}</b></div><div class='nom-r'><span>2012 (base)</span><b>100</b></div>"><span>Arrivi ${ib('arr_pre2012_nat')}</span><span class="value">+17.1%</span></div>
                 <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(i04.pre)} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(IT_PRE_BASE)} notti</b></div>"><span>Presenze</span><span class="value">+9.2%</span></div>
-                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(i04.alb)} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(IT_ALB_BASE)} notti</b></div>"><span>Alb ${ib('alb_pre2012_nat')}</span><span class="value">${sgn(itAlb[0]-100)}%</span></div>
+                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(i04.alb)} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(IT_ALB_BASE)} notti</b></div>"><span>Alb ${ib('alb_pre2012_nat')}</span><span class="value">${sgn(100-itAlb[0])}%</span></div>
                 <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(i04.ext)} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(IT_EXT_BASE)} notti</b></div>"><span>Extra-Alb</span><span class="value">+10.8%</span></div>
             </div>
             <div class="data-group">
