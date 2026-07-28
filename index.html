@@ -3546,25 +3546,23 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInfo();
         });
     });
 
-    // Show/hide nav on scroll
-    window.addEventListener('scroll', function() {
+    // Show/hide nav + highlight active section on scroll
+    function onScroll() {
         const scrolled = window.scrollY > SCROLL_THRESHOLD;
         nav.classList.toggle('nav-visible', scrolled);
         fab.classList.toggle('nav-visible', scrolled);
         document.body.classList.toggle('nav-open', scrolled);
-    }, { passive: true });
 
-    // Highlight active section via IntersectionObserver
-    const obs = new IntersectionObserver(function(entries) {
-        entries.forEach(function(e) {
-            if (e.isIntersecting) setActive(e.target.id);
+        // Sezione attiva = ultima il cui top è <= 120px dal bordo superiore del viewport
+        let activeId = SECTIONS[0];
+        SECTIONS.forEach(function(id) {
+            const el = document.getElementById(id);
+            if (el && el.getBoundingClientRect().top <= 120) activeId = id;
         });
-    }, { threshold: 0.15, rootMargin: '-46px 0px 0px 0px' });
-
-    SECTIONS.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) obs.observe(el);
-    });
+        setActive(activeId);
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
 })();
 </script>
 </body>
