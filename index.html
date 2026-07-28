@@ -1088,6 +1088,15 @@
     }
 
     function showTotalRegionalReport() {
+        // Come showTotalReport: senza rawData non c'è nulla da mostrare.
+        if (!dataReady) {
+            document.getElementById('regionReportContent').innerHTML =
+                `<div class="report-title">Sintesi Italia 2004-2024</div>
+                 <div class="data-group"><div class="data-row">
+                   <span style="color:var(--text-sub);font-style:italic;font-size:0.9em">Caricamento dati…</span>
+                 </div></div>`;
+            return;
+        }
         // Valori assoluti IT per anni chiave
         const i04 = { pre: Math.round(rawData.itPre[0]/100*IT_PRE_BASE), ext: Math.round(rawData.itExt[0]/100*IT_EXT_BASE) };
         i04.alb = i04.pre - i04.ext;
@@ -1099,10 +1108,10 @@
             <div class="report-title">Sintesi Italia 2004-2024</div>
             <div class="data-group">
                 <div class="group-label">Pre-2012 ${ib('pre2012_nat')}</div>
-                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004 (indice)</span><b>${rawData.itArr[0].toFixed(1)}</b></div><div class='nom-r'><span>2012 (base)</span><b>100</b></div>"><span>Arrivi ${ib('arr_pre2012_nat')}</span><span class="value">${sgn(100-rawData.itArr[0])}%</span></div>
-                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(i04.pre)} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(IT_PRE_BASE)} notti</b></div>"><span>Presenze</span><span class="value">${sgn(100-rawData.itPre[0])}%</span></div>
-                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(i04.alb)} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(IT_ALB_BASE)} notti</b></div>"><span>Alb ${ib('alb_pre2012_nat')}</span><span class="value">${sgn(100-itAlb[0])}%</span></div>
-                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(i04.ext)} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(IT_EXT_BASE)} notti</b></div>"><span>Extra-Alb</span><span class="value">${sgn(100-rawData.itExt[0])}%</span></div>
+                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004 (indice)</span><b>${rawData.itArr[0].toFixed(1)}</b></div><div class='nom-r'><span>2012 (base)</span><b>100</b></div>"><span>Arrivi ${ib('arr_pre2012_nat')}</span><span class="value">${sgn(rawData.itArr[0]-100)}%</span></div>
+                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(i04.pre)} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(IT_PRE_BASE)} notti</b></div>"><span>Presenze</span><span class="value">${sgn(rawData.itPre[0]-100)}%</span></div>
+                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(i04.alb)} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(IT_ALB_BASE)} notti</b></div>"><span>Alb ${ib('alb_pre2012_nat')}</span><span class="value">${sgn(itAlb[0]-100)}%</span></div>
+                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(i04.ext)} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(IT_EXT_BASE)} notti</b></div>"><span>Extra-Alb</span><span class="value">${sgn(rawData.itExt[0]-100)}%</span></div>
             </div>
             <div class="data-group">
                 <div class="group-label" style="color:var(--accent)">Post-2012 ${ib('post2012_nat')}</div>
@@ -1545,10 +1554,10 @@
             <div class="report-title">Sintesi Cefalù 2004-2024</div>
             <div class="data-group">
                 <div class="group-label">Pre-2012 ${ib('pre2012_cef')}</div>
-                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004 (indice)</span><b>${sgn(rawData.cefArr[0]-100)}%</b></div><div class='nom-r'><span>2012 base</span><b>100</b></div>"><span>Arrivi ${ib('arr_pre2012_cef')}</span><span class="value" style="color:#c0392b">${sgn(rawData.cefArr[0]-100)}%</span></div>
-                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(c04.pre)} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(CEF_PRE_BASE)} notti</b></div>"><span>Presenze</span><span class="value" style="color:#c0392b">${sgn(rawData.cefPre[0]-100)}%</span></div>
-                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(c04.alb)} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(CEF_ALB_BASE)} notti</b></div>"><span>Alb ${ib('alb_pre2012_cef')}</span><span class="value" style="color:#c0392b">${sgn(cefAlb[0]-100)}%</span></div>
-                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(c04.ext)} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(CEF_EXT_BASE)} notti</b></div>"><span>Extra-Alb</span><span class="value" style="color:#c0392b">${sgn(rawData.cefExt[0]-100)}%</span></div>
+                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004 (indice)</span><b>${rawData.cefArr[0].toFixed(1)}</b></div><div class='nom-r'><span>2012 (base)</span><b>100</b></div>"><span>Arrivi ${ib('arr_pre2012_cef')}</span><span class="value">${sgn(rawData.cefArr[0]-100)}%</span></div>
+                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(c04.pre)} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(CEF_PRE_BASE)} notti</b></div>"><span>Presenze</span><span class="value">${sgn(rawData.cefPre[0]-100)}%</span></div>
+                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(c04.alb)} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(CEF_ALB_BASE)} notti</b></div>"><span>Alb ${ib('alb_pre2012_cef')}</span><span class="value">${sgn(cefAlb[0]-100)}%</span></div>
+                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(c04.ext)} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(CEF_EXT_BASE)} notti</b></div>"><span>Extra-Alb</span><span class="value">${sgn(rawData.cefExt[0]-100)}%</span></div>
             </div>
             <div class="data-group">
                 <div class="group-label" style="color:var(--accent)">Post-2012 ${ib('post2012_cef')}</div>
@@ -2585,8 +2594,8 @@ const INFO = {
 
     arr_postCovid_nat: "<strong>Italia — Arrivi post-COVID (2024 vs 2019)</strong>Variazione % arrivi nazionali tra il 2019 e il 2024. Riferimento per valutare se il recupero di Cefalù sia stato più rapido della media. Dato disponibile solo come indice. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
-    arr_pre2012_reg: "<strong>Regione — Arrivi pre-2012 (2004 vs 2012)</strong>Variazione % arrivi regionali aggregati tra il 2004 e il 2012. Traiettoria pre-2012 della regione come contesto per Cefalù. Clicca la riga per i valori assoluti. <em class='info-fonte'>Fonte: ISTAT DF_BULK_DCSC_TURISAREA, circoscrizioni turistiche aggregate per regione.</em>",
-    alb_pre2012_reg: "<strong>Regione — Alberghiero pre-2012 (2004 vs 2012)</strong>Variazione % presenze in esercizi alberghieri della regione tra il 2004 e il 2012. Letto insieme all'extra-alberghiero mostra come si è spostato il mix ricettivo prima del 2012. <em class='info-fonte'>Fonte: ISTAT DF_BULK_DCSC_TURISAREA, circoscrizioni turistiche aggregate per regione.</em>",
+    arr_pre2012_reg: "<strong>Regione — Arrivi pre-2012 (2004 vs 2012)</strong>Arrivi regionali del 2004 rapportati alla base 2012: positivo = nel 2004 la regione era già sopra il livello che avrebbe avuto nel 2012. Traiettoria pre-2012 della regione come contesto per Cefalù. Clicca la riga per i valori assoluti. <em class='info-fonte'>Fonte: ISTAT DF_BULK_DCSC_TURISAREA, circoscrizioni turistiche aggregate per regione.</em>",
+    alb_pre2012_reg: "<strong>Regione — Alberghiero pre-2012 (2004 vs 2012)</strong>Presenze alberghiere del 2004 rapportate alla base 2012, stessa convenzione delle altre righe del gruppo. Letto insieme all'extra-alberghiero mostra come si è spostato il mix ricettivo prima del 2012. <em class='info-fonte'>Fonte: ISTAT DF_BULK_DCSC_TURISAREA, circoscrizioni turistiche aggregate per regione.</em>",
 
     arr_post2012_reg: "<strong>Regione — Arrivi 2014–2024 (base 2014)</strong>I dati regionali partono dal 2014 (base=100). Variazione % arrivi regionali dal 2014 al 2024. Utile per confrontare Cefalù con il trend della propria regione. Dato disponibile solo come indice. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024, aggregati per regione.</em>",
 
@@ -2650,7 +2659,7 @@ const INFO = {
 
     year_it: "<strong>Dettaglio anno — Italia</strong>Indici base 2012=100 per dati nazionali aggregati, in parallelo con Cefalù. Utile per distinguere anno eccezionale per Cefalù da andamento generale di settore. Alb derivato; arrivi solo come indice. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
-    pre2012_nat: "<strong>Pre-2012 — Italia (2004 vs 2012)</strong>Benchmark nazionale per lo stesso periodo di Cefalù. Se il mercato nazionale era già in calo verso il 2012, il dato di Cefalù pre-2012 va letto in quel contesto. Alb derivato come Presenze_tot − Extra-alb. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
+    pre2012_nat: "<strong>Pre-2012 — Italia (2004 vs 2012)</strong>Benchmark nazionale per lo stesso periodo di Cefalù. Il valore indica il <strong>livello del 2004 rispetto alla base 2012</strong>: positivo = nel 2004 si stava gia sopra il 2012, quindi negli anni successivi si e sceso; negativo = si e saliti fino al 2012. Se il mercato nazionale era già in calo verso il 2012, il dato di Cefalù pre-2012 va letto in quel contesto. Alb derivato come Presenze_tot − Extra-alb. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
     post2012_nat: "<strong>Post-2012 — Italia (2024 vs 2012)</strong>Crescita % nazionale dal 2012 al 2024. Riferimento di sistema: confrontato con Cefalù dice quanto la destinazione abbia cresciuto rispetto al mercato complessivo. Alb derivato. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
@@ -3056,6 +3065,8 @@ const INFO = {
         Plotly.restyle(chartDiv, { y: yData }, yIdx);
         if (currentHighlightYear !== null) showYearlyReport(currentHighlightYear - 2004);
         else showTotalReport();
+        // Se nessuna regione è selezionata il pannello mostra la sintesi Italia
+        if (!currentRegionName) showTotalRegionalReport();
         // Su mobile il grafico Chart.js si costruisce ora, che rawData è pieno
         buildMobileChart();
 
