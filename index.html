@@ -2207,11 +2207,8 @@
 
     // A. Stagionalità (Bar Chart) — dati caricati da stagionalita.json
     // ── IMPOSTA DI SOGGIORNO ────────────────────────────────────────
-    const SOGGIORNO_DATA = {
-        anni:  [2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024],
-        valori:[120927, 129052, 137627, 158011, 167073, 645948, 997826, 437925, 548268, 849631, 1249421, 1783223],
-        entrib:[10777268, 11021809, 10798262, 12484853, 14851635, 13523250, 15601468, 13003085, 13844658, 13738644, 13631199, 15340827]
-    };
+    // Imposta di soggiorno ed entrate tributarie del Comune, da data/bilancio.json
+    const SOGGIORNO_DATA = { anni: [], valori: [], entrib: [] };
     let currentSoggiornoYear = null;
 
     function renderSoggiorno(selYear) {
@@ -2312,9 +2309,10 @@
     }
 
     // Costruisce i bottoni anno soggiorno (una volta)
-    (function buildSoggiornoButtons() {
+    function buildSoggiornoButtons() {
         const container = document.getElementById('soggiorno-yr-btns');
         if (!container) return;
+        container.innerHTML = '';   // ricostruibile: evita bottoni doppi
         SOGGIORNO_DATA.anni.forEach(a => {
             const btn = document.createElement('button');
             btn.className = 'season-yr-btn';
@@ -2327,15 +2325,46 @@
             });
             container.appendChild(btn);
         });
-    })();
+    }
     // ── /IMPOSTA DI SOGGIORNO ───────────────────────────────────────
 
     // ── SPESA TURISMO vs IMPOSTA DI SOGGIORNO ──────────────────────
-    const SPESA_SOG_DATA = {
-        anni: [2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024],
-        spese:[567141,1693456,983352,529906,455438,441215,75037,177353,118803,0,50083,165729,574958,275404,429818,681902,764759,799763],
-        sog:  [null,null,null,null,null,null,120927,129052,137627,158011,167073,645948,997826,437925,548268,849631,1249421,1783223]
-    };
+    // Popola SOGGIORNO_DATA e SPESA_SOG_DATA dal bilancio comunale.
+    // La serie soggiorno parte dal primo anno con gettito, quella spesa da quando
+    // la voce turismo esiste nei consuntivi.
+    function syncBilancioFromJson(json) {
+        if (!json || !json.dati || !Array.isArray(json.anni)) return false;
+        const val = (a, k) => { const r = json.dati[String(a)]; const v = r && r[k]; return typeof v === 'number' ? v : null; };
+        const anni = json.anni.slice().sort((x, y) => x - y);
+
+        const sogAnni = anni.filter(a => val(a, 'imposta_soggiorno'));
+        SOGGIORNO_DATA.anni.length = 0; SOGGIORNO_DATA.valori.length = 0; SOGGIORNO_DATA.entrib.length = 0;
+        sogAnni.forEach(a => {
+            SOGGIORNO_DATA.anni.push(a);
+            SOGGIORNO_DATA.valori.push(Math.round(val(a, 'imposta_soggiorno')));
+            SOGGIORNO_DATA.entrib.push(Math.round(val(a, 'entrate_tributarie') || 0));
+        });
+
+        // Si parte dal primo anno con spesa effettiva: prima del 2007 la voce esiste a
+        // zero perche non ancora classificata. Gli zeri successivi invece sono dati veri
+        // e vanno tenuti, come il 2016 azzerato dal dissesto finanziario.
+        const primo = anni.find(a => val(a, 'spese_turismo'));
+        const spAnni = primo === undefined ? [] : anni.filter(a => a >= primo && val(a, 'spese_turismo') !== null);
+        SPESA_SOG_DATA.anni.length = 0; SPESA_SOG_DATA.spese.length = 0; SPESA_SOG_DATA.sog.length = 0;
+        spAnni.forEach(a => {
+            SPESA_SOG_DATA.anni.push(a);
+            SPESA_SOG_DATA.spese.push(Math.round(val(a, 'spese_turismo')));
+            const s = val(a, 'imposta_soggiorno');
+            SPESA_SOG_DATA.sog.push(s ? Math.round(s) : null);
+        });
+        buildSoggiornoButtons();
+        buildSpesaSogButtons();
+        return true;
+    }
+
+    // Spesa turismo e imposta di soggiorno, da data/bilancio.json.
+    // sog duplicava i valori di SOGGIORNO_DATA: ora derivano entrambi dalla stessa fonte.
+    const SPESA_SOG_DATA = { anni: [], spese: [], sog: [] };
 
     let currentSpesaSogYear = null;
 
@@ -2463,9 +2492,10 @@
     }
 
     // Costruisce i bottoni anno spesa-sog (una volta)
-    (function buildSpesaSogButtons() {
+    function buildSpesaSogButtons() {
         const container = document.getElementById('spesa-sog-yr-btns');
         if (!container) return;
+        container.innerHTML = '';   // ricostruibile: evita bottoni doppi
         SPESA_SOG_DATA.anni.forEach(a => {
             const btn = document.createElement('button');
             btn.className = 'season-yr-btn';
@@ -2478,7 +2508,7 @@
             });
             container.appendChild(btn);
         });
-    })();
+    }
     // ── /SPESA TURISMO vs IMPOSTA DI SOGGIORNO ─────────────────────
 
     function renderSeasonality(yr) {
@@ -3009,7 +3039,8 @@ const INFO = {
         fetch(DATA_PATH + 'regioni.json').then(r => r.json()).catch(() => null),
         fetch(DATA_PATH + 'pre2012.json').then(r => r.json()).catch(() => null),
         fetch(DATA_PATH + 'eurostat_regioni.json').then(r => r.json()).catch(() => null),
-    ]).then(([serie, stagData, popData, ricettivaData, ricIdx, irpefData, itaData, regData, pre12Data, euData]) => {
+        fetch(DATA_PATH + 'bilancio.json').then(r => r.json()).catch(() => null),
+    ]).then(([serie, stagData, popData, ricettivaData, ricIdx, irpefData, itaData, regData, pre12Data, euData, bilData]) => {
         popolazioneData = popData;
         if (ricIdx) ricettivaIndexData = ricIdx;
 
@@ -3085,6 +3116,8 @@ const INFO = {
         renderPressure(serie);
         if (ricettivaData) renderRicettiva(ricettivaData);
         if (ricIdx) renderOccupancy(serie.pre_tot, ricIdx);
+        // Riempie SOGGIORNO_DATA e SPESA_SOG_DATA e ricostruisce i bottoni anno
+        syncBilancioFromJson(bilData);
         renderSoggiorno();
         renderSpesaSog();
         if (irpefData) renderRedditoTurismo(irpefData, serie);
