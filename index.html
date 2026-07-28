@@ -154,16 +154,21 @@
         .nav-sub {
             position: absolute; top: 100%; left: 50%;
             transform: translateX(-50%) translateY(-6px);
-            padding-top: 6px;
-            background: var(--card-bg);
-            border: 1px solid rgba(0,0,0,0.1);
-            border-radius: 10px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.13);
-            padding: 5px;
+            padding: 5px; padding-top: 11px;
             min-width: 170px;
             opacity: 0; pointer-events: none;
             transition: opacity 0.15s, transform 0.15s;
             z-index: 2010;
+            background: transparent; border: none; box-shadow: none;
+        }
+        .nav-sub::after {
+            content: ''; position: absolute;
+            top: 6px; left: 0; right: 0; bottom: 0;
+            background: var(--card-bg);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.13);
+            z-index: -1;
         }
         .nav-tab-wrap:hover .nav-sub {
             opacity: 1; pointer-events: auto;
@@ -174,6 +179,7 @@
             font-size: 0.78em; font-weight: 500; color: var(--text-sub);
             cursor: pointer; white-space: nowrap; text-decoration: none;
             transition: background 0.12s, color 0.12s;
+            position: relative;
         }
         .nav-sub-item:hover { background: var(--accent); color: #fff; }
 
@@ -3756,7 +3762,7 @@ window.doExport = function(mode) {
         el.addEventListener('click', function() {
             const target = document.getElementById(this.dataset.target);
             if (!target) return;
-            const offset = nav.classList.contains('nav-visible') ? 54 : 0;
+            const offset = nav.offsetHeight + 8;
             const top = target.getBoundingClientRect().top + window.scrollY - offset;
             window.scrollTo({ top: top, behavior: 'smooth' });
         });
