@@ -1,0 +1,564 @@
+{
+  "comune": "Cefalù",
+  "codice_belfiore": "C421",
+  "codice_istat": "082024",
+  "fonte": "Relazione della Giunta Municipale - Rendiconti PDF da egov.comune.cefalu.pa.it (categoria 122)",
+  "nota": "Dati estratti con pypdf da PDF testuali. La serie storica (2013-2022) per entrate/spese proviene dalla tabella \"Andamento Storico\" inclusa nella Relazione Giunta 2022. I dati 2016-2018 erano finora mancanti da qualsiasi fonte pubblica: ora recuperati da questa fonte. Verificare i valori originali sui PDF per uso ufficiale.",
+  "serie_storica": {
+    "anni": [
+      "2013",
+      "2014",
+      "2015",
+      "2016",
+      "2017",
+      "2018",
+      "2019",
+      "2020",
+      "2021",
+      "2022"
+    ],
+    "descrizione": "Accertamenti entrate e impegni spese per titolo (D.Lgs. 118/2011)",
+    "entrate_accertamenti": {
+      "tit1": {
+        "label": "Entrate correnti di natura tributaria",
+        "2013": 10777268.2,
+        "2014": 11021808.8,
+        "2015": 10798261.8,
+        "2016": 12484853.1,
+        "2017": 14851635.29,
+        "2018": 13523249.94,
+        "2019": 15601467.82,
+        "2020": 13003085.1,
+        "2021": 13844657.83,
+        "2022": 13738644.42
+      },
+      "tit2": {
+        "label": "Trasferimenti correnti",
+        "2013": 4849725.1,
+        "2014": 2990772.4,
+        "2015": 2607619.7,
+        "2016": 3285062.4,
+        "2017": 3246082.03,
+        "2018": 3708926.24,
+        "2019": 5906051.39,
+        "2020": 10379916.51,
+        "2021": 6828453.46,
+        "2022": 5741822.07
+      },
+      "tit3": {
+        "label": "Entrate extratributarie",
+        "2013": 2191853.29,
+        "2014": 1444658.3,
+        "2015": 1466829.2,
+        "2016": 1943650.9,
+        "2017": 1849889.3,
+        "2018": 2251174.38,
+        "2019": 2224424.78,
+        "2020": 2602233.55,
+        "2021": 2396132.29,
+        "2022": 3177287.53
+      },
+      "tit4": {
+        "label": "Entrate in conto capitale",
+        "2013": 584393.69,
+        "2014": 1993994.8,
+        "2015": 1308739.6,
+        "2016": 3211456.4,
+        "2017": 1955902.78,
+        "2018": 1122885.09,
+        "2019": 2725544.51,
+        "2020": 1068269.35,
+        "2021": 2436002.49,
+        "2022": 1751366.87
+      },
+      "tit5": {
+        "label": "Riduzione di attività finanziarie",
+        "2013": 0.0,
+        "2014": 0.0,
+        "2015": 0.0,
+        "2016": 0.0,
+        "2017": 0.0,
+        "2018": 0.0,
+        "2019": 0.0,
+        "2020": 0.0
+      },
+      "tit6": {
+        "label": "Accensioni di prestiti",
+        "2013": 2383940.26,
+        "2014": 1738302.72,
+        "2015": 0.0,
+        "2016": 0.0,
+        "2017": 0.0,
+        "2018": 0.0,
+        "2019": 63057.0,
+        "2020": 0.0,
+        "2021": 713168.31,
+        "2022": 1200000.0
+      },
+      "tit7": {
+        "label": "Anticipazioni da istituto tesoriere",
+        "2013": 4718103.43,
+        "2014": 0.0,
+        "2015": 0.0,
+        "2016": 0.0,
+        "2017": 0.0,
+        "2018": 0.0,
+        "2019": 0.0,
+        "2020": 0.0,
+        "2021": 0.0
+      },
+      "tit9": {
+        "label": "Entrate per conto di terzi / partite di giro",
+        "2013": 1412972.8,
+        "2014": 1417333.9,
+        "2015": 3552172.7,
+        "2016": 3368761.3,
+        "2017": 9281311.66,
+        "2018": 5718337.71,
+        "2019": 6202604.09,
+        "2020": 2760858.88,
+        "2021": 2405065.42,
+        "2022": 2688591.35
+      },
+      "totale": {
+        "label": "Totale entrate",
+        "2013": 26918256.77,
+        "2014": 20606870.92,
+        "2015": 19733623.0,
+        "2016": 24293784.1,
+        "2017": 31184821.06,
+        "2018": 26324573.36,
+        "2019": 32723149.59,
+        "2020": 29814363.39,
+        "2021": 28623479.8,
+        "2022": 28297712.24
+      }
+    },
+    "spese_impegni": {
+      "tit1": {
+        "label": "Spese correnti",
+        "2013": 14530441.96,
+        "2014": 15034070.97,
+        "2015": 13956804.0,
+        "2016": 14002770.6,
+        "2017": 13590232.66,
+        "2018": 15159685.22,
+        "2019": 14984985.18,
+        "2020": 19238566.59,
+        "2021": 17252457.48,
+        "2022": 16908130.68
+      },
+      "tit2": {
+        "label": "Spese in conto capitale",
+        "2013": 864261.72,
+        "2014": 1600778.2,
+        "2015": 526980.8,
+        "2016": 2764406.5,
+        "2017": 1412265.76,
+        "2018": 758682.02,
+        "2019": 1505499.65,
+        "2020": 1702611.64,
+        "2021": 4365946.33,
+        "2022": 3079792.28
+      },
+      "tit3": {
+        "label": "Spese per incremento attività finanziarie",
+        "2013": 0.0,
+        "2014": 0.0,
+        "2015": 0.0,
+        "2016": 0.0,
+        "2017": 0.0,
+        "2018": 0.0,
+        "2019": 0.0,
+        "2020": 0.0,
+        "2021": 0.0
+      },
+      "tit4": {
+        "label": "Rimborso di prestiti",
+        "2013": 2588864.95,
+        "2014": 1954669.91,
+        "2015": 228456.59,
+        "2016": 215000.0,
+        "2017": 229310.81,
+        "2018": 490602.5,
+        "2019": 513538.93,
+        "2020": 478131.05,
+        "2021": 565089.81,
+        "2022": 622764.06
+      },
+      "tit5": {
+        "label": "Chiusura anticipazioni tesoreria",
+        "2013": 1412972.8,
+        "2014": 1417333.9,
+        "2015": 3552172.7,
+        "2016": 3368761.0,
+        "2017": 9281311.66,
+        "2018": 5718337.71,
+        "2019": 6202604.09,
+        "2020": 2760858.88,
+        "2021": 2405065.42,
+        "2022": 2688591.35
+      },
+      "totale": {
+        "label": "Totale spese",
+        "2013": 24108644.86,
+        "2014": 21026629.28,
+        "2015": 19305623.6,
+        "2016": 20350938.1,
+        "2017": 25037226.41,
+        "2018": 22659336.22,
+        "2019": 27898537.65,
+        "2020": 30176644.03,
+        "2021": 30090377.21,
+        "2022": 35458689.05
+      }
+    }
+  },
+  "risultato_amministrazione_storico": {
+    "anni": [
+      "2015",
+      "2016",
+      "2017",
+      "2018",
+      "2019",
+      "2020",
+      "2021",
+      "2022"
+    ],
+    "descrizione": "Risultato di amministrazione e sue componenti (da tabella storica Relazione Giunta 2022)",
+    "serie": {
+      "risultato_totale": {
+        "2015": 8238836.14,
+        "2016": 14320830.1,
+        "2017": 19217602.46,
+        "2018": 20761502.32,
+        "2019": 20761502.32,
+        "2020": 26176158.83,
+        "2021": 27832680.63,
+        "2022": 26468877.95
+      },
+      "accantonato": {
+        "2015": 4624075.75,
+        "2016": 11812221.7,
+        "2017": 17212939.56,
+        "2018": 17552373.82,
+        "2019": 18945371.95,
+        "2020": 22596991.33,
+        "2021": 20253142.32,
+        "2022": 21037281.03
+      },
+      "vincolato": {
+        "2015": 11614.84,
+        "2016": 1476633.03,
+        "2017": 1600782.45,
+        "2018": 2725076.71,
+        "2019": 1285837.05,
+        "2020": 2294545.57,
+        "2021": 2894710.81,
+        "2022": 1737746.78
+      },
+      "destinato": {
+        "2015": 1302518.63,
+        "2016": 627558.05,
+        "2017": 343591.18,
+        "2018": 426038.55,
+        "2019": 196201.86,
+        "2020": 0.0,
+        "2021": 0.0,
+        "2022": 134190.76
+      },
+      "disponibile": {
+        "2015": 2300626.92,
+        "2016": 404417.32,
+        "2017": 60289.26,
+        "2018": 58013.24,
+        "2019": 1588046.97,
+        "2020": 1284621.93,
+        "2021": 4684827.5,
+        "2022": 3559659.38
+      }
+    }
+  },
+  "anni": {
+    "2020": {
+      "anno": 2020,
+      "fonte_pdf": "2020_id3973_RENDICONTO.pdf",
+      "entrate_competenza": {
+        "tit1": {
+          "stanziamenti_definitivi": 13957242.06,
+          "accertamenti": 13003085.1,
+          "incassi_competenza": 6928688.21
+        },
+        "tit2": {
+          "stanziamenti_definitivi": 9271487.79,
+          "accertamenti": 10379916.51,
+          "incassi_competenza": 9380059.93
+        },
+        "tit3": {
+          "stanziamenti_definitivi": 3000579.14,
+          "accertamenti": 2602233.55,
+          "incassi_competenza": 1672434.37
+        },
+        "tit4": {
+          "stanziamenti_definitivi": 12035593.16,
+          "accertamenti": 1092381.81,
+          "incassi_competenza": 835693.99
+        },
+        "tit5": {
+          "stanziamenti_definitivi": 0.0,
+          "accertamenti": 0.0,
+          "incassi_competenza": 0.0
+        },
+        "tit6": {
+          "stanziamenti_definitivi": 500000.0,
+          "accertamenti": 0.0,
+          "incassi_competenza": 0.0
+        },
+        "tit7": {
+          "stanziamenti_definitivi": 0.0,
+          "accertamenti": 0.0,
+          "incassi_competenza": 0.0
+        },
+        "tit9": {
+          "stanziamenti_definitivi": 3873650.18,
+          "accertamenti": 2760858.88,
+          "incassi_competenza": 2525927.03
+        },
+        "totale": {
+          "stanziamenti_definitivi": 54342855.47,
+          "accertamenti": 29838475.85,
+          "incassi_competenza": 21342803.53
+        }
+      },
+      "spese_competenza": {
+        "tit1": {
+          "stanziamenti_definitivi": 28864305.29,
+          "impegni": 19238566.59,
+          "pagamenti": 12749216.97
+        },
+        "tit2": {
+          "stanziamenti_definitivi": 17547875.27,
+          "impegni": 1702611.64,
+          "pagamenti": 820341.41
+        },
+        "tit3": {
+          "stanziamenti_definitivi": 0.0,
+          "impegni": 0.0,
+          "pagamenti": null
+        },
+        "tit4": {
+          "stanziamenti_definitivi": 4057024.73,
+          "impegni": 478131.05,
+          "pagamenti": 478131.05
+        },
+        "tit5": {
+          "stanziamenti_definitivi": 0.0,
+          "impegni": 0.0,
+          "pagamenti": 0.0
+        },
+        "tit7": {
+          "stanziamenti_definitivi": 3873650.18,
+          "impegni": 2760874.66,
+          "pagamenti": 2497189.88
+        },
+        "totale": {
+          "stanziamenti_definitivi": 54342855.47,
+          "impegni": 24180183.94,
+          "pagamenti": 16544879.31
+        }
+      },
+      "risultato_amministrazione": {
+        "risultato_totale": 26176158.83,
+        "parte_accantonata": 22596991.33,
+        "parte_vincolata": 2294545.57,
+        "parte_disponibile": 1284621.93
+      }
+    },
+    "2021": {
+      "anno": 2021,
+      "fonte_pdf": "2021_id3976_RELAZIONE.pdf",
+      "entrate_competenza": {
+        "tit1": {
+          "stanziamenti_definitivi": 13304387.34,
+          "accertamenti": 13844657.83,
+          "incassi_competenza": 9876216.27
+        },
+        "tit2": {
+          "stanziamenti_definitivi": 6878359.26,
+          "accertamenti": 6828453.46,
+          "incassi_competenza": 3621458.94
+        },
+        "tit3": {
+          "stanziamenti_definitivi": 2891680.0,
+          "accertamenti": 2396132.29,
+          "incassi_competenza": 1713349.83
+        },
+        "tit4": {
+          "stanziamenti_definitivi": 11326665.58,
+          "accertamenti": 2436002.49,
+          "incassi_competenza": 1706495.01
+        },
+        "tit5": {
+          "stanziamenti_definitivi": 0.0,
+          "accertamenti": 0.0,
+          "incassi_competenza": 0.0
+        },
+        "tit6": {
+          "stanziamenti_definitivi": 746046.0,
+          "accertamenti": 713168.31,
+          "incassi_competenza": 0.0
+        },
+        "tit9": {
+          "stanziamenti_definitivi": 3302000.0,
+          "accertamenti": 2405065.42,
+          "incassi_competenza": 2386881.11
+        },
+        "totale": {
+          "stanziamenti_definitivi": 38449138.18,
+          "accertamenti": 28623479.8,
+          "incassi_competenza": 19304401.16
+        }
+      },
+      "spese_competenza": {
+        "tit1": {
+          "stanziamenti_definitivi": 26385859.64,
+          "impegni": 17252457.48,
+          "pagamenti": 14616317.85
+        },
+        "tit2": {
+          "stanziamenti_definitivi": 17935228.57,
+          "impegni": 4365946.33,
+          "pagamenti": 2047879.93
+        },
+        "tit3": {
+          "stanziamenti_definitivi": 0.0,
+          "impegni": 0.0,
+          "pagamenti": null
+        },
+        "tit4": {
+          "stanziamenti_definitivi": 3914876.58,
+          "impegni": 565089.81,
+          "pagamenti": 565089.81
+        },
+        "tit5": {
+          "stanziamenti_definitivi": 0.0,
+          "impegni": 0.0,
+          "pagamenti": 0.0
+        },
+        "tit7": {
+          "stanziamenti_definitivi": 3302000.0,
+          "impegni": 2405065.42,
+          "pagamenti": 2382856.2
+        },
+        "totale": {
+          "stanziamenti_definitivi": 51537964.79,
+          "impegni": 24588559.04,
+          "pagamenti": 19612143.79
+        }
+      },
+      "risultato_amministrazione": {
+        "risultato_totale": 27834290.63,
+        "fondo_cassa_iniziale": 20349798.48,
+        "fondo_cassa_finale": 20575264.7,
+        "parte_accantonata": 20253142.32,
+        "parte_vincolata": 2894710.81,
+        "parte_disponibile": 4686437.5
+      }
+    },
+    "2022": {
+      "anno": 2022,
+      "fonte_pdf": "2022_id4302_RELAZIONE_GIUNTA_MUNICIPALE.pdf",
+      "entrate_competenza": {
+        "tit1": {
+          "stanziamenti_definitivi": 14077604.32,
+          "accertamenti": 13738644.42,
+          "incassi_competenza": 9406120.99
+        },
+        "tit2": {
+          "stanziamenti_definitivi": 7731751.3,
+          "accertamenti": 5741822.07,
+          "incassi_competenza": 4413696.86
+        },
+        "tit3": {
+          "stanziamenti_definitivi": 3760880.0,
+          "accertamenti": 3177287.53,
+          "incassi_competenza": 3017704.02
+        },
+        "tit4": {
+          "stanziamenti_definitivi": 9038440.47,
+          "accertamenti": 1751366.87,
+          "incassi_competenza": 731907.78
+        },
+        "tit5": {
+          "stanziamenti_definitivi": 0.0,
+          "accertamenti": 0.0,
+          "incassi_competenza": 0.0
+        },
+        "tit6": {
+          "stanziamenti_definitivi": 1200000.0,
+          "accertamenti": 1200000.0,
+          "incassi_competenza": 1200000.0
+        },
+        "tit7": {
+          "stanziamenti_definitivi": 0.0,
+          "accertamenti": 0.0,
+          "incassi_competenza": 0.0
+        },
+        "tit9": {
+          "stanziamenti_definitivi": 3418400.93,
+          "accertamenti": 2688591.35,
+          "incassi_competenza": 2651139.31
+        },
+        "totale": {
+          "stanziamenti_definitivi": 50391821.15,
+          "accertamenti": 28297712.24,
+          "incassi_competenza": 21420568.96
+        }
+      },
+      "spese_competenza": {
+        "tit1": {
+          "stanziamenti_definitivi": 27957794.23,
+          "impegni": 16908130.68,
+          "pagamenti": 13974318.89
+        },
+        "tit2": {
+          "stanziamenti_definitivi": 18385246.8,
+          "impegni": 3079792.28,
+          "pagamenti": 2189622.28
+        },
+        "tit3": {
+          "stanziamenti_definitivi": 15.0,
+          "impegni": 0.0,
+          "pagamenti": null
+        },
+        "tit4": {
+          "stanziamenti_definitivi": 630364.19,
+          "impegni": 622764.06,
+          "pagamenti": 622764.06
+        },
+        "tit5": {
+          "stanziamenti_definitivi": 0.0,
+          "impegni": 0.0,
+          "pagamenti": 0.0
+        },
+        "tit7": {
+          "stanziamenti_definitivi": 3418400.93,
+          "impegni": 2688591.35,
+          "pagamenti": 2649765.56
+        },
+        "totale": {
+          "stanziamenti_definitivi": 50391821.15,
+          "impegni": 23299278.37,
+          "pagamenti": 19436470.79
+        }
+      },
+      "risultato_amministrazione": {
+        "risultato_totale": 26468877.95,
+        "parte_accantonata": 21037281.03,
+        "parte_vincolata": 1737746.78,
+        "parte_destinata_investimenti": 134190.76,
+        "parte_disponibile": 3559659.38
+      }
+    }
+  }
+}
