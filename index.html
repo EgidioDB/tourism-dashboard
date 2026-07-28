@@ -128,6 +128,52 @@
             flex-shrink: 0;
         }
         #infoBox strong { display: block; margin-bottom: 8px; font-size: 1em; }
+
+        /* ── NAVIGATION ── */
+        #main-nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 2000;
+            height: 46px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.09);
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            transform: translateY(-100%); transition: transform 0.3s ease;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        }
+        #main-nav.nav-visible { transform: translateY(0); }
+        .nav-tab {
+            padding: 6px 20px; border-radius: 20px; border: none;
+            background: none; cursor: pointer; font-size: 0.82em; font-weight: 600;
+            color: var(--text-sub); transition: background 0.15s, color 0.15s;
+            letter-spacing: 0.01em;
+        }
+        .nav-tab:hover:not(.nav-active) { background: rgba(0,0,0,0.06); color: var(--text-main); }
+        .nav-tab.nav-active { background: var(--accent); color: #fff; }
+        body.nav-open { padding-top: 46px; }
+
+        /* FAB mobile */
+        #nav-fab {
+            position: fixed; bottom: 18px; right: 14px; z-index: 2000;
+            display: flex; flex-direction: column-reverse; align-items: flex-end; gap: 10px;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        #nav-fab.nav-visible { opacity: 1; pointer-events: auto; }
+        .fab-item {
+            display: flex; align-items: center; gap: 8px;
+            background: var(--card-bg); color: var(--text-main);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 24px; padding: 8px 14px 8px 10px;
+            font-size: 0.8em; font-weight: 600; cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            white-space: nowrap; text-decoration: none;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .fab-item:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
+        .fab-item.fab-active { background: var(--accent); color: #fff; border-color: transparent; }
+        .fab-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+        @media (min-width: 769px) { #nav-fab { display: none !important; } }
+        @media (max-width: 768px) { #main-nav { display: none !important; } }
         #infoBox p strong, #infoBox li strong, #infoBox h4 strong { display: inline; margin-bottom: 0; font-size: inherit; }
         .info-fonte { display: block; font-size: 0.82em; opacity: 0.55; font-style: italic; }
         .data-row { cursor: pointer; border-radius: 3px; margin: 0 -4px; padding: 6px 4px; transition: background .1s; }
@@ -445,9 +491,23 @@
 </head>
 <body>
 
+<!-- Nav bar desktop -->
+<nav id="main-nav">
+    <button class="nav-tab nav-active" data-sec="sec-italia">Italia</button>
+    <button class="nav-tab" data-sec="sec-cefalu">Cefalù</button>
+    <button class="nav-tab" data-sec="sec-confronta">Confronta</button>
+</nav>
+
+<!-- FAB mobile -->
+<div id="nav-fab">
+    <a class="fab-item fab-active" data-sec="sec-italia"><span class="fab-dot" style="background:#457b9d"></span>Italia</a>
+    <a class="fab-item" data-sec="sec-cefalu"><span class="fab-dot" style="background:#e9c46a"></span>Cefalù</a>
+    <a class="fab-item" data-sec="sec-confronta"><span class="fab-dot" style="background:#2a9d8f"></span>Confronta</a>
+</div>
+
 <div class="main-layout">
 
-    <div class="italia-section section-anim">
+    <div class="italia-section section-anim" id="sec-italia">
     <div class="cefalu-section-label">Italia <button class="export-btn" onclick="exportSection('italia')">↓ Esporta</button></div>
 
     <div class="dashboard-row row-donuts">
@@ -499,7 +559,7 @@
     </div>
     </div><!-- /italia-section -->
 
-    <div class="cefalu-section section-anim">
+    <div class="cefalu-section section-anim" id="sec-cefalu">
     <div class="cefalu-section-label">Cefalù <button class="export-btn" onclick="exportSection('cefalu')">↓ Esporta</button></div>
 
     <div class="dashboard-row row-chart">
@@ -609,7 +669,7 @@
     </div><!-- /cefalu-section -->
 
     <!-- ── ESPLORA E CONFRONTA COMUNI ── -->
-    <div class="confronta-section section-anim">
+    <div class="confronta-section section-anim" id="sec-confronta">
     <div class="cefalu-section-label">Confronta comuni <button class="export-btn" onclick="exportSection('confronta')">↓ Esporta</button></div>
     <div class="explorer-search-row">
         <input id="explorerInput" class="explorer-input"
@@ -3460,6 +3520,52 @@ function closeInfo() {
     document.getElementById('infoOverlay').classList.remove('active');
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInfo(); });
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────
+(function() {
+    const SECTIONS = ['sec-italia', 'sec-cefalu', 'sec-confronta'];
+    const nav     = document.getElementById('main-nav');
+    const fab     = document.getElementById('nav-fab');
+    const SCROLL_THRESHOLD = 80;
+
+    function setActive(secId) {
+        document.querySelectorAll('.nav-tab, .fab-item').forEach(el => {
+            el.classList.toggle('nav-active', el.dataset.sec === secId);
+            el.classList.toggle('fab-active', el.dataset.sec === secId);
+        });
+    }
+
+    // Scroll to section on click
+    document.querySelectorAll('.nav-tab, .fab-item').forEach(el => {
+        el.addEventListener('click', function() {
+            const target = document.getElementById(this.dataset.sec);
+            if (!target) return;
+            const offset = nav.classList.contains('nav-visible') ? 54 : 0;
+            const top = target.getBoundingClientRect().top + window.scrollY - offset;
+            window.scrollTo({ top, behavior: 'smooth' });
+        });
+    });
+
+    // Show/hide nav on scroll
+    window.addEventListener('scroll', function() {
+        const scrolled = window.scrollY > SCROLL_THRESHOLD;
+        nav.classList.toggle('nav-visible', scrolled);
+        fab.classList.toggle('nav-visible', scrolled);
+        document.body.classList.toggle('nav-open', scrolled);
+    }, { passive: true });
+
+    // Highlight active section via IntersectionObserver
+    const obs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+            if (e.isIntersecting) setActive(e.target.id);
+        });
+    }, { threshold: 0.15, rootMargin: '-46px 0px 0px 0px' });
+
+    SECTIONS.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) obs.observe(el);
+    });
+})();
 </script>
 </body>
 </html>
