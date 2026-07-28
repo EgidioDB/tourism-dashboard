@@ -937,25 +937,25 @@
 
     // --- 2. DATABASE REPORT REGIONALI ---
     const regionalDataFull = {
-        "Abruzzo":        { reg: { arr: 128.2, pre: 114.2, alb: 114.0, ext: 114.7, covid: { arr: +16.4, pre:  -1.7, alb:  +1.1, ext:  -6.6 } }, top: { name: "Pescara",                        preArr:   +43.4, prePre:   +16.9, preAlb:   +7.1, preExt: +172.5, arr: 125.0, pre: 228.7, alb: 121.3, ext: 116.6 } },
+        "Abruzzo":        { reg: { arr: 128.2, pre: 114.2, alb: 114.0, ext: 114.7, covid: { arr: +16.4, pre:  -1.7, alb:  +1.1, ext:  -6.6 } }, top: { name: "Pescara",                        preArr:   +43.4, prePre:   +16.9, preAlb:   +7.1, preExt: +172.5, arr: 125.0, pre: 228.7, alb: 121.3, ext: 1946.6 } },
         "Basilicata":     { reg: { arr: 153.9, pre: 119.6, alb: 120.7, ext: 117.1, covid: { arr: +63.0, pre: +30.2, alb: +31.0, ext: +28.4 } }, top: { name: "Matera",                          preArr:  +153.7, prePre:  +198.3, preAlb: +120.4, preExt: +390.4, arr: 249.1, pre: 239.5, alb: 184.5, ext: 374.9 } },
         "Calabria":       { reg: { arr: 124.8, pre: 104.9, alb: 101.6, ext: 118.1, covid: { arr: +35.2, pre: +22.5, alb: +23.3, ext: +19.2 } }, top: { name: "Ricadi",                          preArr:   +35.0, prePre:   +14.4, preAlb:  +16.3, preExt:   +6.3, arr: 145.5, pre: 109.4, alb: 108.0, ext: 115.3 } },
         "Campania":       { reg: { arr: 132.7, pre: 118.3, alb: 111.4, ext: 152.0, covid: { arr: +35.5, pre: +21.9, alb: +15.5, ext: +53.2 } }, top: { name: "Napoli",                          preArr:   +90.3, prePre:   +30.3, preAlb:  +15.7, preExt:+1172.5, arr: 201.2, pre: 133.6, alb: 106.0, ext: 2303.4 } },
         "Emilia-Romagna": { reg: { arr: 129.2, pre: 115.3, alb: 105.6, ext: 153.9, covid: { arr: +26.1, pre: +14.1, alb: +11.7, ext: +23.5 } }, top: { name: "Bologna",                        preArr:   +44.2, prePre:   +47.6, preAlb:  +34.1, preExt: +172.5, arr: 168.0, pre: 192.0, alb: 138.2, ext: 689.9 } },
         "Friuli":         { reg: { arr: 146.6, pre: 133.4, alb: 141.7, ext: 125.3, covid: { arr: +27.8, pre: +19.0, alb: +22.6, ext: +15.5 } }, top: { name: "Trieste",                        preArr:   +36.2, prePre:   +38.8, preAlb:  +15.3, preExt: +104.4, arr: 178.7, pre: 193.5, alb: 148.7, ext: 318.5 } },
         "Lazio":          { reg: { arr: 123.3, pre: 168.0, alb: 136.6, ext: 333.3, covid: { arr: +24.0, pre: +26.7, alb:  +4.5, ext:+143.6 } }, top: { name: "Fiumicino",                      preArr:  +169.8, prePre:  +129.3, preAlb: +112.5, preExt: +695.2, arr: 326.4, pre: 420.8, alb: 387.8, ext: 1527.8 } },
-        "Liguria":        { reg: { arr: 127.4, pre: 119.7, alb: 101.1, ext: 160.6, covid: { arr: +18.0, pre: +11.9, alb:  +3.4, ext: +30.6 } }, top: { name: "La Spezia",                      preArr:   +69.2, prePre:   +90.3, preAlb:  +11.9, preExt: +296.9, arr: 211.3, pre: 252.6, alb: 128.9, ext: 168.6 } },
+        "Liguria":        { reg: { arr: 127.4, pre: 119.7, alb: 101.1, ext: 160.6, covid: { arr: +18.0, pre: +11.9, alb:  +3.4, ext: +30.6 } }, top: { name: "La Spezia",                      preArr:   +69.2, prePre:   +90.3, preAlb:  +11.9, preExt: +296.9, arr: 211.3, pre: 252.6, alb: 128.9, ext: 578.4 } },
         "Lombardia":      { reg: { arr: 132.2, pre: 131.6, alb: 110.3, ext: 204.8, covid: { arr: +24.3, pre: +18.0, alb: +12.4, ext: +37.5 } }, top: { name: "Bergamo",                        preArr:   +58.9, prePre:   +55.0, preAlb:  +27.2, preExt: +100.8, arr: 216.8, pre: 217.4, alb: 165.9, ext: 302.2 } },
         "Marche":         { reg: { arr: 116.0, pre:  92.3, alb:  95.7, ext:  89.3, covid: { arr:  +6.8, pre:  -8.7, alb: -11.1, ext:  -6.5 } }, top: { name: "Pesaro",                         preArr:   +16.3, prePre:    -3.6, preAlb:   -3.6, preExt:   -3.7, arr: 126.3, pre: 107.6, alb: 104.1, ext: 122.4 } },
         "Molise":         { reg: { arr:  94.0, pre: 108.7, alb:  91.3, ext: 146.3, covid: { arr:  -7.0, pre:  +4.8, alb:  -5.6, ext: +27.2 } }, top: { name: "Termoli",                        preArr:   +17.6, prePre:    +6.8, preAlb:   +4.7, preExt:   +9.7, arr: 104.7, pre: 101.8, alb:  95.8, ext: 110.1 } },
         "Piemonte":       { reg: { arr: 124.4, pre: 110.2, alb: 102.3, ext: 124.8, covid: { arr: +20.6, pre: +14.0, alb:  +4.2, ext: +32.3 } }, top: { name: "Baveno",                         preArr:   +20.0, prePre:   +14.4, preAlb:  +12.3, preExt:  +17.1, arr: 120.8, pre: 122.1, alb: 105.3, ext: 144.1 } },
-        "Puglia":         { reg: { arr: 156.1, pre: 134.8, alb: 118.1, ext: 161.4, covid: { arr: +30.2, pre: +16.3, alb: +13.6, ext: +20.7 } }, top: { name: "Monopoli",                       preArr:  +126.9, prePre:  +110.1, preAlb:  +67.1, preExt: +251.1, arr: 334.2, pre: 290.3, alb: 189.7, ext: 166.7 } },
+        "Puglia":         { reg: { arr: 156.1, pre: 134.8, alb: 118.1, ext: 161.4, covid: { arr: +30.2, pre: +16.3, alb: +13.6, ext: +20.7 } }, top: { name: "Monopoli",                       preArr:  +126.9, prePre:  +110.1, preAlb:  +67.1, preExt: +251.1, arr: 334.2, pre: 290.3, alb: 189.7, ext: 620.4 } },
         "Sardegna":       { reg: { arr: 161.9, pre: 137.4, alb: 120.7, ext: 184.5, covid: { arr: +44.0, pre: +33.3, alb: +27.1, ext: +50.8 } }, top: { name: "Pula",                           preArr:   +47.9, prePre:   +52.7, preAlb:  +49.7, preExt:  +75.9, arr: 176.7, pre: 168.9, alb: 159.0, ext: 245.0 } },
         "Sicilia":        { reg: { arr: 125.5, pre: 116.7, alb: 104.9, ext: 168.4, covid: { arr: +10.8, pre:  +1.7, alb:  -2.1, ext: +18.0 } }, top: { name: "Marsala",                        preArr:   +25.9, prePre:   +36.5, preAlb:  +29.8, preExt:  +66.5, arr: 168.6, pre: 342.5, alb: 360.5, ext: 262.7 } },
         "Toscana":        { reg: { arr: 121.3, pre: 107.1, alb:  92.4, ext: 123.9, covid: { arr: +15.8, pre: +11.4, alb:  +5.5, ext: +18.1 } }, top: { name: "Castagneto Carducci",            preArr:   +41.3, prePre:   +15.8, preAlb:  -28.0, preExt:  +28.6, arr: 180.8, pre: 144.6, alb: 106.5, ext: 155.7 } },
-        "Trentino":       { reg: { arr: 142.0, pre: 129.4, alb: 121.2, ext: 156.8, covid: { arr: +26.8, pre: +18.9, alb: +15.6, ext: +29.9 } }, top: { name: "Commezzadura",                  preArr:   +66.7, prePre:   +59.5, preAlb:  +62.0, preExt:  +40.2, arr: 149.9, pre: 159.0, alb: 154.6, ext: 193.2 } },
+        "Trentino":       { reg: { arr: 142.0, pre: 129.4, alb: 121.2, ext: 156.8, covid: { arr: +26.8, pre: +18.9, alb: +15.6, ext: +29.9 } }, top: { name: "Bolzano",                  preArr:   +20.8, prePre:   +28.0, preAlb:  +15.2, preExt:  +92.3, arr: 150.8, pre: 168.0, alb: 135.6, ext: 330.6 } },
         "Umbria":         { reg: { arr: 113.2, pre: 115.2, alb: 112.5, ext: 118.3, covid: { arr:  +5.0, pre:  +0.5, alb:  -0.1, ext:  +1.2 } }, top: { name: "Assisi",                         preArr:   +10.5, prePre:    +8.8, preAlb:   +8.3, preExt:   +9.5, arr: 122.5, pre: 133.0, alb: 133.0, ext: 133.1 } },
-        "Valle d'Aosta":  { reg: { arr: 136.2, pre: 123.7, alb: 121.0, ext: 131.0, covid: { arr: +28.8, pre: +21.4, alb: +17.8, ext: +31.1 } }, top: { name: "Gressan",                        preArr:   +39.5, prePre:   +38.8, preAlb:  +45.5, preExt:   +4.5, arr: 141.4, pre: 155.8, alb: 170.7, ext: 144.4 } },
+        "Valle d'Aosta":  { reg: { arr: 136.2, pre: 123.7, alb: 121.0, ext: 131.0, covid: { arr: +28.8, pre: +21.4, alb: +17.8, ext: +31.1 } }, top: { name: "Courmayeur",                        preArr:   +53.8, prePre:   +33.8, preAlb:  +28.6, preExt:   +53.0, arr: 159.9, pre: 136.4, alb: 133.1, ext: 148.8 } },
         "Veneto":         { reg: { arr: 133.8, pre: 118.8, alb: 102.7, ext: 133.7, covid: { arr: +24.2, pre: +15.2, alb: +10.1, ext: +19.8 } }, top: { name: "Verona",                         preArr:   +56.1, prePre:   +63.2, preAlb:  +11.9, preExt: +176.8, arr: 191.9, pre: 184.6, alb: 110.7, ext: 348.4 } }
     };
 
@@ -1008,7 +1008,95 @@
         }], layoutBase);
     }
 
+    // Disegna il pannello regionale. Estratto dal click handler perche viene richiamato
+    // anche quando la serie della Top City arriva dal fetch.
+    function renderRegionPanel(name) {
+            const data = regionalDataFull[name];
+            const gapArr = (data.top.arr - itBenchmark.arr).toFixed(1);
+            const gapPre = (data.top.pre - itBenchmark.pre).toFixed(1);
+            // Post-COVID regione: deriva 2019 dal covid (% vs 2014) e 2024 già disponibile
+            const pcRegArr = sgn((data.reg.arr / (100 + data.reg.covid.arr) - 1) * 100);
+            const pcRegPre = sgn((data.reg.pre / (100 + data.reg.covid.pre) - 1) * 100);
+            const pcRegAlb = sgn((data.reg.alb / (100 + data.reg.covid.alb) - 1) * 100);
+            const pcRegExt = sgn((data.reg.ext / (100 + data.reg.covid.ext) - 1) * 100);
+            // Valori assoluti per i nominali (Milioni di notti)
+            const vd = volumeData[name] || volumeData["Italia"];
+            const alb14 = vd.pre[0], ext14 = vd.pre[1], pre14 = +((alb14+ext14).toFixed(1));
+            const alb24 = vd.post[0], ext24 = vd.post[1], pre24 = +((alb24+ext24).toFixed(1));
+            const alb19 = +((alb14*(100+data.reg.covid.alb)/100).toFixed(1));
+            const ext19 = +((ext14*(100+data.reg.covid.ext)/100).toFixed(1));
+            const pre19 = +((pre14*(100+data.reg.covid.pre)/100).toFixed(1));
+            const pa = preAbs[name] || [0,0,0,0,0,0,0,0];
+            // Post-COVID Top City
+            const topHasPreCovid = data.top.preArr !== null;
+            const pcTopArr = topHasPreCovid ? sgn((data.top.arr / (100 + data.top.preArr) - 1) * 100) : null;
+            const pcTopPre = topHasPreCovid ? sgn((data.top.pre / (100 + data.top.prePre) - 1) * 100) : null;
+            const pcTopAlb = (topHasPreCovid && data.top.preAlb !== null && data.top.alb !== null) ? sgn((data.top.alb / (100 + data.top.preAlb) - 1) * 100) : null;
+            const pcTopExt = topHasPreCovid ? sgn((data.top.ext / (100 + data.top.preExt) - 1) * 100) : null;
+
+            document.getElementById('regionReportContent').innerHTML = `
+                <div class="report-title">${name}</div>
+                <div class="data-group">
+                    <div class="group-label">Regione: Pre-2012 ${ib('pre2012_nat')}</div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(pa[0])} arrivi</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(pa[4])} arrivi</b></div>"><span>Arrivi ${ib('arr_pre2012_reg')}</span><span class="value">${sgn(data.reg.preArr)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(pa[1])} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(pa[5])} notti</b></div>"><span>Presenze</span><span class="value">${sgn(data.reg.prePre)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(pa[2])} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(pa[6])} notti</b></div>"><span>Alb ${ib('alb_pre2012_reg')}</span><span class="value">${sgn(data.reg.preAlb)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(pa[3])} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(pa[7])} notti</b></div>"><span>Extra-Alb</span><span class="value">${sgn(data.reg.preExt)}%</span></div>
+                </div>
+                <div class="data-group">
+                    <div class="group-label" style="color:var(--accent)">Regione: Post-2012 ${ib('reg_post2012')}</div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>100</b></div><div class='nom-r'><span>2024 (indice)</span><b>${data.reg.arr.toFixed(1)}</b></div>"><span>Arrivi ${ib('arr_post2012_reg')}</span><span class="value">${fmt(data.reg.arr)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(pre14)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(pre24)} notti</b></div>"><span>Presenze</span><span class="value">${fmt(data.reg.pre)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(alb14)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(alb24)} notti</b></div>"><span>Alb ${ib('alb_post2012_reg')}</span><span class="value">${fmt(data.reg.alb)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(ext14)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(ext24)} notti</b></div>"><span>Extra-Alb</span><span class="value">${fmt(data.reg.ext)}%</span></div>
+                </div>
+                <div class="data-group">
+                    <div class="group-label">Regione: Pre-COVID (2019 vs 2014) ${ib('reg_preCovid')}</div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>100</b></div><div class='nom-r'><span>2019 (indice)</span><b>${(100+data.reg.covid.arr).toFixed(1)}</b></div>"><span>Arrivi ${ib('arr_preCovid_reg')}</span><span class="value">${sgn(data.reg.covid.arr)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(pre14)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtNotti(pre19)} notti</b></div>"><span>Presenze</span><span class="value">${sgn(data.reg.covid.pre)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(alb14)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtNotti(alb19)} notti</b></div>"><span>Alb ${ib('alb_preCovid_reg')}</span><span class="value">${sgn(data.reg.covid.alb)}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(ext14)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtNotti(ext19)} notti</b></div>"><span>Extra-Alb</span><span class="value">${sgn(data.reg.covid.ext)}%</span></div>
+                </div>
+                <div class="data-group">
+                    <div class="group-label" style="color:#457b9d">Regione: Post-COVID (2024 vs 2019) ${ib('postCovid_reg')}</div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019 (indice)</span><b>${(100+data.reg.covid.arr).toFixed(1)}</b></div><div class='nom-r'><span>2024 (indice)</span><b>${data.reg.arr.toFixed(1)}</b></div>"><span>Arrivi ${ib('arr_post2012_reg')}</span><span class="value">${pcRegArr}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtNotti(pre19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(pre24)} notti</b></div>"><span>Presenze</span><span class="value">${pcRegPre}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtNotti(alb19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(alb24)} notti</b></div>"><span>Alb ${ib('alb_post2012_reg')}</span><span class="value">${pcRegAlb}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtNotti(ext19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(ext24)} notti</b></div>"><span>Extra-Alb</span><span class="value">${pcRegExt}%</span></div>
+                </div>
+                <div class="data-group" style="border-left: 4px solid #457b9d; background: #f0f7ff;">
+                    <div class="group-label" style="color:#457b9d">Top City: ${data.top.name}</div>
+                    <div class="group-label" style="font-size:0.6em; margin-top:15px;">Pre-COVID (2019 vs 2014) ${ib('top_preCovid')}</div>
+                    ${data.top.preArr === null
+                        ? `<div class="data-row"><span style="color:var(--text-sub);font-style:italic;font-size:0.9em">Dati non disponibili per il 2019</span></div>`
+                        : `<div class="data-row"><span>Arrivi ${ib('arr_preCovid_top')}</span><span class="value">${data.top.preArr > 0 ? '+' : ''}${data.top.preArr}%</span></div>
+                    <div class="data-row"><span>Presenze</span><span class="value">${data.top.prePre > 0 ? '+' : ''}${data.top.prePre}%</span></div>
+                    ${data.top.preAlb === null ? '' : `<div class="data-row"><span>Alb</span><span class="value">${data.top.preAlb > 0 ? '+' : ''}${data.top.preAlb}%</span></div>`}
+                    <div class="data-row"><span>Extra-Alb</span><span class="value">${data.top.preExt > 0 ? '+' : ''}${data.top.preExt}%</span></div>`}
+                    <div class="group-label" style="font-size:0.6em; margin-top:15px; color:#457b9d">Post-COVID (2024 vs 2019) ${ib('postCovid_top')}</div>
+                    ${pcTopArr === null
+                        ? `<div class="data-row"><span style="color:var(--text-sub);font-style:italic;font-size:0.9em">Dati non disponibili</span></div>`
+                        : `<div class="data-row"><span>Arrivi ${ib('arr_postCovid_top')}</span><span class="value">${pcTopArr}%</span></div>
+                    <div class="data-row"><span>Presenze</span><span class="value">${pcTopPre}%</span></div>
+                    ${pcTopAlb === null ? '' : `<div class="data-row"><span>Alb</span><span class="value">${pcTopAlb}%</span></div>`}
+                    <div class="data-row"><span>Extra-Alb</span><span class="value">${pcTopExt}%</span></div>`}
+                    <div class="group-label" style="font-size:0.6em; margin-top:15px; color:var(--accent)">Crescita totale (2024 vs 2014) ${ib('top_post2014')}</div>
+                    <div class="data-row"><span>Arrivi ${ib('arr_post2014_top')}</span><span class="value">${fmt(data.top.arr)}%</span></div>
+                    <div class="data-row"><span>Presenze</span><span class="value">${fmt(data.top.pre)}%</span></div>
+                    ${data.top.alb === null ? '' : `<div class="data-row"><span>Alb</span><span class="value">${fmt(data.top.alb)}%</span></div>`}
+                    <div class="data-row"><span>Extra-Alb</span><span class="value">${fmt(data.top.ext)}%</span></div>
+                    <div class="group-label" style="font-size:0.6em; margin-top:15px;">Gap vs IT (2024) ${ib('top_gap')}</div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>Top City (indice 2024)</span><b>${data.top.arr.toFixed(1)}</b></div><div class='nom-r'><span>Media IT (indice 2024)</span><b>${itBenchmark.arr}</b></div>"><span>Gap Arrivi</span><span class="value" style="color:${gapArr > 0 ? 'var(--accent)' : '#c0392b'}">${gapArr > 0 ? '+' : ''}${gapArr}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>Top City (indice 2024)</span><b>${data.top.pre.toFixed(1)}</b></div><div class='nom-r'><span>Media IT (indice 2024)</span><b>${itBenchmark.pre}</b></div>"><span>Gap Presenze</span><span class="value" style="color:${gapPre > 0 ? 'var(--accent)' : '#c0392b'}">${gapPre > 0 ? '+' : ''}${gapPre}%</span></div>
+                </div>`;
+            updateDonuts(name);
+    }
+
     // --- 5. LOGICA MAPPA ED EVENTI ---
+    // Regione attualmente selezionata: evita di ridisegnare il pannello con i dati di una
+    // Top City il cui fetch si conclude dopo che l'utente ha già cambiato regione.
+    let currentRegionName = null;
+
     function animateViewBox(svg, targetViewBox, duration) {
         const startVB = svg.viewBox.baseVal;
         const start = { x: startVB.x, y: startVB.y, w: startVB.width, h: startVB.height };
@@ -1073,6 +1161,7 @@
     // 1. Funzione centralizzata per resettare la mappa (de-zoom e pulizia)
     function resetMap() {
         const svg = document.getElementById('italy-map');
+        currentRegionName = null;
         document.querySelectorAll('.region').forEach(r => r.classList.remove('active'));
         animateViewBox(svg, [0, 0, 610, 792], 600);
         showTotalRegionalReport();
@@ -1087,7 +1176,6 @@
             const svg = document.getElementById('italy-map');
             const name = this.getAttribute('title');
             const isAlreadyActive = this.classList.contains('active');
-            const fmt = (v) => (v - 100) > 0 ? '+' + (v - 100).toFixed(1) : (v - 100).toFixed(1);
 
             if (isAlreadyActive) {
                 // Se ri-clicco la stessa regione, resetta
@@ -1100,85 +1188,14 @@
                 const bbox = this.getBBox();
                 animateViewBox(svg, [bbox.x - 30, bbox.y - 30, bbox.width + 60, bbox.height + 60], 600);
                 
-                const data = regionalDataFull[name];
-                const gapArr = (data.top.arr - itBenchmark.arr).toFixed(1);
-                const gapPre = (data.top.pre - itBenchmark.pre).toFixed(1);
-                // Post-COVID regione: deriva 2019 dal covid (% vs 2014) e 2024 già disponibile
-                const pcRegArr = sgn((data.reg.arr / (100 + data.reg.covid.arr) - 1) * 100);
-                const pcRegPre = sgn((data.reg.pre / (100 + data.reg.covid.pre) - 1) * 100);
-                const pcRegAlb = sgn((data.reg.alb / (100 + data.reg.covid.alb) - 1) * 100);
-                const pcRegExt = sgn((data.reg.ext / (100 + data.reg.covid.ext) - 1) * 100);
-                // Valori assoluti per i nominali (Milioni di notti)
-                const vd = volumeData[name] || volumeData["Italia"];
-                const alb14 = vd.pre[0], ext14 = vd.pre[1], pre14 = +((alb14+ext14).toFixed(1));
-                const alb24 = vd.post[0], ext24 = vd.post[1], pre24 = +((alb24+ext24).toFixed(1));
-                const alb19 = +((alb14*(100+data.reg.covid.alb)/100).toFixed(1));
-                const ext19 = +((ext14*(100+data.reg.covid.ext)/100).toFixed(1));
-                const pre19 = +((pre14*(100+data.reg.covid.pre)/100).toFixed(1));
-                const pa = preAbs[name] || [0,0,0,0,0,0,0,0];
-                // Post-COVID Top City
-                const topHasPreCovid = data.top.preArr !== null;
-                const pcTopArr = topHasPreCovid ? sgn((data.top.arr / (100 + data.top.preArr) - 1) * 100) : null;
-                const pcTopPre = topHasPreCovid ? sgn((data.top.pre / (100 + data.top.prePre) - 1) * 100) : null;
-                const pcTopAlb = (topHasPreCovid && data.top.preAlb !== null && data.top.alb !== null) ? sgn((data.top.alb / (100 + data.top.preAlb) - 1) * 100) : null;
-                const pcTopExt = topHasPreCovid ? sgn((data.top.ext / (100 + data.top.preExt) - 1) * 100) : null;
-
-                document.getElementById('regionReportContent').innerHTML = `
-                    <div class="report-title">${name}</div>
-                    <div class="data-group">
-                        <div class="group-label">Regione: Pre-2012 ${ib('pre2012_nat')}</div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(pa[0])} arrivi</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(pa[4])} arrivi</b></div>"><span>Arrivi ${ib('arr_pre2012_reg')}</span><span class="value">${sgn(data.reg.preArr)}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(pa[1])} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(pa[5])} notti</b></div>"><span>Presenze</span><span class="value">${sgn(data.reg.prePre)}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(pa[2])} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(pa[6])} notti</b></div>"><span>Alb ${ib('alb_pre2012_reg')}</span><span class="value">${sgn(data.reg.preAlb)}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(pa[3])} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(pa[7])} notti</b></div>"><span>Extra-Alb</span><span class="value">${sgn(data.reg.preExt)}%</span></div>
-                    </div>
-                    <div class="data-group">
-                        <div class="group-label" style="color:var(--accent)">Regione: Post-2012 ${ib('reg_post2012')}</div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>100</b></div><div class='nom-r'><span>2024 (indice)</span><b>${data.reg.arr.toFixed(1)}</b></div>"><span>Arrivi ${ib('arr_post2012_reg')}</span><span class="value">${fmt(data.reg.arr)}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(pre14)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(pre24)} notti</b></div>"><span>Presenze</span><span class="value">${fmt(data.reg.pre)}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(alb14)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(alb24)} notti</b></div>"><span>Alb ${ib('alb_post2012_reg')}</span><span class="value">${fmt(data.reg.alb)}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(ext14)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(ext24)} notti</b></div>"><span>Extra-Alb</span><span class="value">${fmt(data.reg.ext)}%</span></div>
-                    </div>
-                    <div class="data-group">
-                        <div class="group-label">Regione: Pre-COVID (2019 vs 2014) ${ib('reg_preCovid')}</div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>100</b></div><div class='nom-r'><span>2019 (indice)</span><b>${(100+data.reg.covid.arr).toFixed(1)}</b></div>"><span>Arrivi ${ib('arr_preCovid_reg')}</span><span class="value">${sgn(data.reg.covid.arr)}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(pre14)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtNotti(pre19)} notti</b></div>"><span>Presenze</span><span class="value">${sgn(data.reg.covid.pre)}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(alb14)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtNotti(alb19)} notti</b></div>"><span>Alb ${ib('alb_preCovid_reg')}</span><span class="value">${sgn(data.reg.covid.alb)}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2014 (base)</span><b>${fmtNotti(ext14)} notti</b></div><div class='nom-r'><span>2019</span><b>${fmtNotti(ext19)} notti</b></div>"><span>Extra-Alb</span><span class="value">${sgn(data.reg.covid.ext)}%</span></div>
-                    </div>
-                    <div class="data-group">
-                        <div class="group-label" style="color:#457b9d">Regione: Post-COVID (2024 vs 2019) ${ib('postCovid_reg')}</div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019 (indice)</span><b>${(100+data.reg.covid.arr).toFixed(1)}</b></div><div class='nom-r'><span>2024 (indice)</span><b>${data.reg.arr.toFixed(1)}</b></div>"><span>Arrivi ${ib('arr_post2012_reg')}</span><span class="value">${pcRegArr}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtNotti(pre19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(pre24)} notti</b></div>"><span>Presenze</span><span class="value">${pcRegPre}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtNotti(alb19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(alb24)} notti</b></div>"><span>Alb ${ib('alb_post2012_reg')}</span><span class="value">${pcRegAlb}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtNotti(ext19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtNotti(ext24)} notti</b></div>"><span>Extra-Alb</span><span class="value">${pcRegExt}%</span></div>
-                    </div>
-                    <div class="data-group" style="border-left: 4px solid #457b9d; background: #f0f7ff;">
-                        <div class="group-label" style="color:#457b9d">Top City: ${data.top.name}</div>
-                        <div class="group-label" style="font-size:0.6em; margin-top:15px;">Pre-COVID (2019 vs 2014) ${ib('top_preCovid')}</div>
-                        ${data.top.preArr === null
-                            ? `<div class="data-row"><span style="color:var(--text-sub);font-style:italic;font-size:0.9em">Dati non disponibili per il 2019</span></div>`
-                            : `<div class="data-row"><span>Arrivi ${ib('arr_preCovid_top')}</span><span class="value">${data.top.preArr > 0 ? '+' : ''}${data.top.preArr}%</span></div>
-                        <div class="data-row"><span>Presenze</span><span class="value">${data.top.prePre > 0 ? '+' : ''}${data.top.prePre}%</span></div>
-                        ${data.top.preAlb === null ? '' : `<div class="data-row"><span>Alb</span><span class="value">${data.top.preAlb > 0 ? '+' : ''}${data.top.preAlb}%</span></div>`}
-                        <div class="data-row"><span>Extra-Alb</span><span class="value">${data.top.preExt > 0 ? '+' : ''}${data.top.preExt}%</span></div>`}
-                        <div class="group-label" style="font-size:0.6em; margin-top:15px; color:#457b9d">Post-COVID (2024 vs 2019) ${ib('postCovid_top')}</div>
-                        ${pcTopArr === null
-                            ? `<div class="data-row"><span style="color:var(--text-sub);font-style:italic;font-size:0.9em">Dati non disponibili</span></div>`
-                            : `<div class="data-row"><span>Arrivi ${ib('arr_postCovid_top')}</span><span class="value">${pcTopArr}%</span></div>
-                        <div class="data-row"><span>Presenze</span><span class="value">${pcTopPre}%</span></div>
-                        ${pcTopAlb === null ? '' : `<div class="data-row"><span>Alb</span><span class="value">${pcTopAlb}%</span></div>`}
-                        <div class="data-row"><span>Extra-Alb</span><span class="value">${pcTopExt}%</span></div>`}
-                        <div class="group-label" style="font-size:0.6em; margin-top:15px; color:var(--accent)">Crescita totale (2024 vs 2014) ${ib('top_post2014')}</div>
-                        <div class="data-row"><span>Arrivi ${ib('arr_post2014_top')}</span><span class="value">${fmt(data.top.arr)}%</span></div>
-                        <div class="data-row"><span>Presenze</span><span class="value">${fmt(data.top.pre)}%</span></div>
-                        ${data.top.alb === null ? '' : `<div class="data-row"><span>Alb</span><span class="value">${fmt(data.top.alb)}%</span></div>`}
-                        <div class="data-row"><span>Extra-Alb</span><span class="value">${fmt(data.top.ext)}%</span></div>
-                        <div class="group-label" style="font-size:0.6em; margin-top:15px;">Gap vs IT (2024) ${ib('top_gap')}</div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>Top City (indice 2024)</span><b>${data.top.arr.toFixed(1)}</b></div><div class='nom-r'><span>Media IT (indice 2024)</span><b>${itBenchmark.arr}</b></div>"><span>Gap Arrivi</span><span class="value" style="color:${gapArr > 0 ? 'var(--accent)' : '#c0392b'}">${gapArr > 0 ? '+' : ''}${gapArr}%</span></div>
-                        <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>Top City (indice 2024)</span><b>${data.top.pre.toFixed(1)}</b></div><div class='nom-r'><span>Media IT (indice 2024)</span><b>${itBenchmark.pre}</b></div>"><span>Gap Presenze</span><span class="value" style="color:${gapPre > 0 ? 'var(--accent)' : '#c0392b'}">${gapPre > 0 ? '+' : ''}${gapPre}%</span></div>
-                    </div>`;
-                updateDonuts(name);
+                currentRegionName = name;
+                // La Top City può non essere ancora calcolabile (indice comuni in caricamento):
+                // il pannello si disegna comunque con i valori di fallback e viene ridipinto
+                // appena la serie comunale arriva.
+                try {
+                    syncTopCity(name, () => { if (currentRegionName === name) renderRegionPanel(name); });
+                } catch (e) { /* fallback ai valori nel literal */ }
+                renderRegionPanel(name);
             }
         });
     });
@@ -1355,6 +1372,99 @@
         });
         return true;
     }
+
+    // --- TOP CITY: selezione e indici derivati dai dati comunali ---
+    // Criterio: massima crescita presenze 2014-2024 fra i comuni della regione con almeno
+    // 500.000 presenze annue, lo stesso della classifica crescita. Se nessun comune raggiunge
+    // la soglia (è il caso del Molise) si ripiega sul comune più grande della regione.
+    const TOP_CITY_MIN_PRE = 500000;
+    // Nome regione in regionalDataFull → valori del campo "regione" in comuni_index.json
+    const REG_ISTAT_MAP = {
+        "Piemonte": ["PIEMONTE"],
+        "Valle d'Aosta": ["VALLE D'AOSTA"],
+        "Liguria": ["LIGURIA"],
+        "Lombardia": ["LOMBARDIA"],
+        "Trentino": ["BOLZANO - BOZEN", "TRENTO"],
+        "Veneto": ["VENETO"],
+        "Friuli": ["FRIULI-VENEZIA GIULIA"],
+        "Emilia-Romagna": ["EMILIA-ROMAGNA"],
+        "Toscana": ["TOSCANA"],
+        "Umbria": ["UMBRIA"],
+        "Marche": ["MARCHE"],
+        "Lazio": ["LAZIO"],
+        "Abruzzo": ["ABRUZZO"],
+        "Molise": ["MOLISE"],
+        "Campania": ["CAMPANIA"],
+        "Puglia": ["PUGLIA"],
+        "Basilicata": ["BASILICATA"],
+        "Calabria": ["CALABRIA"],
+        "Sicilia": ["SICILIA"],
+        "Sardegna": ["SARDEGNA"]
+    };
+    const topSerieCache = {};
+    // Indice comuni: l'omonima variabile dell'EXPLORER è privata al suo IIFE, quindi ne
+    // teniamo una copia qui. Stessa URL, quindi la risposta arriva dalla cache del browser.
+    const TOP_DATA_PATH = 'data/';
+    let topComuniIndex = null;
+    fetch(TOP_DATA_PATH + 'comuni_index.json?v=2')
+        .then(r => r.json())
+        .then(d => {
+            topComuniIndex = d;
+            // Se una regione è già aperta, ridisegna ora che la Top City è calcolabile
+            if (currentRegionName) {
+                const n = currentRegionName;
+                syncTopCity(n, () => { if (currentRegionName === n) renderRegionPanel(n); });
+            }
+        })
+        .catch(() => {});
+
+    function pickTopCity(nome) {
+        const keys = REG_ISTAT_MAP[nome];
+        if (!keys || !Array.isArray(topComuniIndex)) return null;
+        const pool = topComuniIndex.filter(c => keys.indexOf(c.regione) > -1);
+        if (!pool.length) return null;
+        const big = pool.filter(c => (c.max_pre || 0) >= TOP_CITY_MIN_PRE);
+        return big.length
+            ? big.reduce((a, b) => ((b.growth_pre || -1e9) > (a.growth_pre || -1e9) ? b : a))
+            : pool.reduce((a, b) => ((b.max_pre || 0) > (a.max_pre || 0) ? b : a));
+    }
+
+    // Indici 2024 su base 2014 e variazioni pre-COVID (2019 vs 2014) dalla serie comunale
+    function topFromSerie(s) {
+        if (!s || !Array.isArray(s.anni)) return null;
+        const i14 = s.anni.indexOf(2014), i19 = s.anni.indexOf(2019), i24 = s.anni.indexOf(2024);
+        if (i14 < 0 || i19 < 0 || i24 < 0) return null;
+        const idx = k => (s[k] && s[k][i14]) ? r1(s[k][i24] / s[k][i14] * 100) : null;
+        const vpc = k => (s[k] && s[k][i14]) ? r1((s[k][i19] / s[k][i14] - 1) * 100) : null;
+        return {
+            arr: idx('arr_tot'), pre: idx('pre_tot'), alb: idx('pre_alb'), ext: idx('pre_ext'),
+            preArr: vpc('arr_tot'), prePre: vpc('pre_tot'), preAlb: vpc('pre_alb'), preExt: vpc('pre_ext')
+        };
+    }
+
+    // Applica la Top City calcolata; se la serie non è ancora in cache la scarica e
+    // richiama onReady per ridisegnare il pannello. I valori nel literal sono il fallback.
+    function syncTopCity(nome, onReady) {
+        const pick = pickTopCity(nome);
+        const top = regionalDataFull[nome] && regionalDataFull[nome].top;
+        if (!pick || !top) return;
+        const apply = s => {
+            const v = topFromSerie(s);
+            if (!v) return false;
+            top.name = pick.nome;
+            Object.keys(v).forEach(k => { top[k] = v[k]; });
+            return true;
+        };
+        const cached = topSerieCache[pick.cod];
+        if (cached) { apply(cached); return; }
+        if (cached === null || cached === false) return; // in volo o già fallita
+        topSerieCache[pick.cod] = null;
+        fetch(TOP_DATA_PATH + 'serie/' + pick.cod + '.json')
+            .then(r => r.json())
+            .then(s => { topSerieCache[pick.cod] = s; if (apply(s) && onReady) onReady(); })
+            .catch(() => { topSerieCache[pick.cod] = false; });
+    }
+
     const sgn = v => v >= 0 ? '+' + v.toFixed(1) : v.toFixed(1);
     const ib  = key => `<button class="info-btn" onclick="event.stopPropagation();showInfo('${key}')">i</button>`;
     const nf = n => Math.round(n).toLocaleString('it-IT');
