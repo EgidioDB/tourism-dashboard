@@ -594,6 +594,22 @@
             <div id="spesa-sog-kpi" style="display:flex; gap:16px; flex-wrap:wrap; padding:8px 4px 2px; font-size:0.78em; color:var(--text-sub);"></div>
         </div>
     </div>
+
+    <!-- ── REDDITO & TURISMO ── -->
+    <div class="dashboard-row" style="height: auto;">
+        <div class="main-panel" style="flex: 1;" id="box-reddito-turismo">
+            <div class="header-box" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <h1 style="flex:1; min-width:200px;">Reddito &amp; Turismo <button class="info-btn" onclick="showInfo('chart_reddito_turismo')">i</button></h1>
+                <div style="display:flex; gap:6px;">
+                    <button class="season-yr-btn active" id="btn-reddito-trend" onclick="setRedditoView('trend')">Trend temporale</button>
+                    <button class="season-yr-btn" id="btn-reddito-scatter" onclick="setRedditoView('scatter')">Correlazione</button>
+                </div>
+            </div>
+            <div id="chart-reddito-trend" style="height:360px;"></div>
+            <div id="chart-reddito-scatter" style="height:360px; display:none;"></div>
+            <div id="reddito-kpi-row" style="display:flex; gap:16px; flex-wrap:wrap; padding:8px 4px 2px; font-size:0.78em; color:var(--text-sub);"></div>
+        </div>
+    </div>
     </div><!-- /cefalu-section -->
 
     <!-- ── ESPLORA E CONFRONTA COMUNI ── -->
@@ -2055,6 +2071,25 @@
 </div>
 
 <script>
+function setRedditoView(view) {
+    document.getElementById('btn-reddito-trend').classList.toggle('active', view === 'trend');
+    document.getElementById('btn-reddito-scatter').classList.toggle('active', view === 'scatter');
+    const trendEl   = document.getElementById('chart-reddito-trend');
+    const scatterEl = document.getElementById('chart-reddito-scatter');
+    trendEl.style.display   = view === 'trend'   ? '' : 'none';
+    scatterEl.style.display = view === 'scatter' ? '' : 'none';
+    if (view === 'scatter' && window._irpefData && window._serieData) {
+        if (!scatterEl.querySelector('.svg-container')) {
+            window.renderRedditoScatter(window._irpefData, window._serieData);
+        } else {
+            Plotly.Plots.resize(scatterEl);
+        }
+    }
+    if (view === 'trend' && trendEl.querySelector('.svg-container')) {
+        Plotly.Plots.resize(trendEl);
+    }
+}
+
 const INFO = {
     pre2012_cef: "<strong>Pre-2012 — Cefalù (2004 vs 2012)</strong>Fotografia del turismo cefaludese prima del ciclo di crescita: mostra il livello di partenza rispetto al 2012 (base=100). Valori negativi = 2004 sotto il 2012; positivi = 2004 già sopra. <em class='info-fonte'>Fonte: ISTAT Circoscrizioni Turistiche 2004-2013.</em>",
 
@@ -2190,6 +2225,8 @@ const INFO = {
 
     postCovid_top: "<strong>Top City: post-COVID (2024 vs 2019)</strong>Variazione % dal 2019 al 2024 per il comune selezionato. Il livello 2019 è ricostruito da (100 + preArr). Rivela se il boom post-pandemia sia il principale motore della classifica o se la crescita fosse già solida prima. Non disponibile se mancano dati 2019. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
 
+    chart_reddito_turismo: "<strong>Reddito &amp; Turismo — Cefalù</strong><p>Incrocia il <strong>reddito imponibile IRPEF pro capite</strong> con le <strong>presenze turistiche</strong> (notti) per verificare se — e quanto — la performance turistica si riflette sul reddito dei residenti.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Vista Trend (doppio asse)</h4><p>Le due curve seguono un andamento sorprendentemente simile: crescita parallela fino al 2019, crollo condiviso nel 2020 (COVID), poi rimbalzo accelerato fino ai massimi storici del 2024 (+50% presenze, +32% reddito dal 2014). Dal 2022 il reddito cresce più velocemente del passato, in coincidenza con il boom turistico post-COVID — probabile effetto della rendita da affitti brevi ora più presente nei dichiarativi IRPEF.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Vista Correlazione (scatter)</h4><p>Ogni punto è un anno. L'<strong>R²</strong> (mostrato in alto a destra) misura la forza della correlazione lineare (0 = nessuna, 1 = perfetta). Il valore attuale (~0.52) indica una <strong>correlazione moderata</strong>: il turismo spiega circa metà della variazione del reddito. I punti 2023–2024 sono visibilmente sopra la linea di trend — il reddito ha accelerato oltre quanto le sole presenze prevedessero, suggerendo un salto qualitativo nell'economia locale.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Cosa significa il reddito pro capite IRPEF?</h4><p>Non è PIL: è il reddito <em>dichiarato</em> ai fini IRPEF diviso la popolazione residente. Include salari, pensioni, affitti e redditi autonomi — non i redditi d'impresa non distribuiti né l'economia informale. Per un comune a forte vocazione turistica come Cefalù riflette comunque bene l'andamento economico complessivo.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Copertura temporale</h4><p>Reddito IRPEF: 2007–2024 · Presenze ISTAT: 2014–2024. Il grafico mostra solo gli anni in comune (2014–2024).</p><em class='info-fonte'>Fonte reddito: MEF — Redditi e principali variabili IRPEF su base comunale · Fonte presenze: ISTAT dati comunali 2014–2024 · Fonte popolazione: ISTAT Demo ricostruzione intercensuaria 2002–2019 + bilancio demografico 2020–2024.</em>",
+
     chart_spesa_vs_sog: "<strong>Spesa Turismo vs Imposta di Soggiorno — Cefalù</strong><p>Confronto tra quanto il Comune <em>investe</em> in attività turistiche e quanto <em>incassa</em> dall'imposta di soggiorno. Due serie su scala comune (asse €) per capire se la tassa copre o supera la spesa.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Come leggere il grafico</h4><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li><strong>Barre blu scure</strong>: spesa turismo — anni con dato disponibile</li><li><strong>Linea arancione</strong>: imposta di soggiorno — accertamenti annui</li><li><strong>Barre semitrasparenti</strong>: classificazione DPR 194/96 (ante-riforma)</li></ul><h4 style='margin:10px 0 4px;font-size:0.95em;'>Nota metodologica</h4><p>Le serie derivano da due sistemi di classificazione diversi:</p><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li><strong>2007–2015</strong> (DPR 194/96): &quot;Funzioni nel campo turistico&quot; — Quadro 04 del consuntivo</li><li><strong>2024</strong> (D.Lgs. 118/2011 — armonizzato): Missione 07 Turismo — Conto del bilancio spese</li><li><strong>2016</strong>: € 0 (dissesto finanziario in corso)</li><li><strong>2017</strong>: € 50.082 · <strong>2018</strong>: € 165.729 (ripresa post-dissesto)</li><li><strong>2019–2023</strong>: Missione 07 Turismo — impegni da rendiconto certificato BDAP RGS</li></ul><p>Le due classificazioni coprono sostanzialmente la stessa voce di spesa e sono comparabili per analisi di tendenza, con una discontinuità metodologica al confine 2015/2016.</p><p style='font-size:0.9em;'><strong>Indicatore KPI</strong>: rapporto incasso/spesa per gli anni in cui entrambi i dati sono disponibili. Valore &gt; 1 = l'imposta supera la spesa turistica.</p><em class='info-fonte'>Fonte spesa 2007–2015: Consuntivi comunali (Quadro 04, DPR 194/96) · Fonte spesa 2016–2018: Certificati Consuntivi armonizzati (Quadro 6, Missione 07) — finanzalocale.interno.gov.it · Fonte spesa 2019–2023: BDAP RGS — openbdap.rgs.mef.gov.it · Fonte spesa 2024: Rendiconto 2024 allegati tecnici RAR (Missione 07) — egov.comune.cefalu.pa.it · Fonte imposta soggiorno: Relazioni Giunta Municipale 2020–2024.</em>",
     chart_soggiorno: "<strong>Imposta di Soggiorno — Cefalù 2013–2024</strong><p>Entrate <em>accertate</em> (competenza) dall'imposta di soggiorno: il totale iscritto a bilancio come credito maturato nell'esercizio, indipendentemente dal momento dell'incasso effettivo.</p><p>Le etichette percentuali indicano il peso dell'imposta sul totale delle entrate tributarie comunali dell'anno.</p><p>La linea verde tratteggiata sovrappone le presenze turistiche (notti) per visualizzare la correlazione tra flussi e gettito.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Fatti chiave</h4><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li>2013–2017: imposta introdotta ma con tariffa bassa e applicazione parziale</li><li>2018: primo scatto rilevante (+287% su 2017) — ampliamento a strutture extralberghiere e aumento tariffe</li><li>2019: picco pre-COVID a € 997.826</li><li>2020: crollo COVID -56%</li><li>2022: superato il picco pre-COVID con € 849.631 accertati</li><li>2023–2024: accelerazione — € 1,25M e € 1,78M. Il 2024 rappresenta il massimo storico.</li></ul><p style='font-size:0.9em;'><em>Nota: le tariffe applicate per categoria di struttura e per anno derivano da Delibere del Consiglio Comunale e non sono contenute nelle fonti finanziarie utilizzate.</em></p><em class='info-fonte'>Fonte: Rendiconto di gestione 2020–2022 (Relazioni Giunta, egov.comune.cefalu.pa.it) · Rendiconto 2024 — allegati tecnici (conto del bilancio entrate) · Valori 2023–2024 estratti da Relazione della Giunta al Rendiconto 2024. Metodo: accertamenti di competenza.</em>"
 };
@@ -2305,13 +2342,194 @@ const INFO = {
         ], { ...layout, yaxis: { ...layout.yaxis, title: { text: 'posti letto', font: { size: 11 } } } }, cfg);
     }
 
+    // ── REDDITO & TURISMO ────────────────────────────────────────────
+    window._irpefData = null; window._serieData = null;
+
+    function renderRedditoTurismo(irpef, serie) {
+        window._irpefData = irpef;
+        window._serieData = serie;
+
+        // --- dati comuni: anni dove abbiamo sia reddito che presenze ---
+        const anniTurismo = serie.anni; // 2014-2024
+        const overlapAnni = [], rpc = [], presenze = [], contribuenti = [];
+        anniTurismo.forEach((a, i) => {
+            const d = irpef.dati[String(a)];
+            if (d && d.reddito_pro_capite && serie.pre_tot[i]) {
+                overlapAnni.push(a);
+                rpc.push(d.reddito_pro_capite);
+                presenze.push(serie.pre_tot[i]);
+                contribuenti.push(d.contribuenti);
+            }
+        });
+
+        // --- KPI row ---
+        const rpc2014 = rpc[0], rpc2024 = rpc[rpc.length - 1];
+        const pre2014 = presenze[0], pre2024 = presenze[presenze.length - 1];
+        const sgn2 = v => (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
+        document.getElementById('reddito-kpi-row').innerHTML = `
+            <span>Reddito pro capite 2014: <strong>€${rpc2014.toLocaleString('it')}</strong></span>
+            <span>→ 2024: <strong>€${rpc2024.toLocaleString('it')}</strong>
+              <strong style="color:var(--green)">${sgn2((rpc2024/rpc2014-1)*100)}</strong></span>
+            <span style="margin-left:8px;">Presenze 2014: <strong>${(pre2014/1000).toFixed(0)}k</strong></span>
+            <span>→ 2024: <strong>${(pre2024/1000).toFixed(0)}k</strong>
+              <strong style="color:var(--green)">${sgn2((pre2024/pre2014-1)*100)}</strong></span>
+        `;
+
+        renderRedditoTrend(overlapAnni, rpc, presenze);
+    }
+
+    function renderRedditoTrend(anni, rpc, presenze) {
+        const isCovid = a => a === 2020;
+        const colPreTot = '#e9c46a', colRpc = '#457b9d';
+
+        const traccePresenze = {
+            x: anni, y: presenze, name: 'Presenze (notti)',
+            type: 'scatter', mode: 'lines+markers',
+            line: { color: colPreTot, width: 3 },
+            fill: 'tozeroy', fillcolor: 'rgba(233,196,106,0.10)',
+            marker: { color: anni.map(a => isCovid(a) ? '#e63946' : colPreTot), size: anni.map(a => isCovid(a) ? 10 : 7), symbol: 'circle', line: { color: '#fff', width: 1 } },
+            hovertemplate: '<b>%{x}</b><br>Presenze: %{y:,.0f}<extra></extra>',
+            yaxis: 'y1'
+        };
+        const tracceRpc = {
+            x: anni, y: rpc, name: 'Reddito pro capite (€)',
+            type: 'scatter', mode: 'lines+markers',
+            line: { color: colRpc, width: 3 },
+            marker: { color: anni.map(a => isCovid(a) ? '#e63946' : colRpc), size: anni.map(a => isCovid(a) ? 10 : 7), symbol: 'diamond', line: { color: '#fff', width: 1 } },
+            hovertemplate: '<b>%{x}</b><br>Reddito pro capite: €%{y:,.0f}<extra></extra>',
+            yaxis: 'y2'
+        };
+
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+                    || (!document.documentElement.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme:dark)').matches);
+        const gridC  = isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.07)';
+        const textC  = isDark ? '#cdd0d4' : '#444';
+        const paperC = 'rgba(0,0,0,0)';
+
+        const layout = {
+            paper_bgcolor: paperC, plot_bgcolor: paperC,
+            margin: { t: 24, b: 48, l: 70, r: 70 },
+            legend: { orientation: 'h', y: -0.20, font: { size: 12, color: textC } },
+            xaxis: { tickfont: { size: 12, color: textC }, gridcolor: gridC, zeroline: false, dtick: 2 },
+            yaxis: {
+                title: { text: 'Presenze (notti)', font: { size: 12, color: colPreTot } },
+                tickfont: { size: 11, color: colPreTot }, gridcolor: gridC, zeroline: false,
+                tickformat: ',.0f'
+            },
+            yaxis2: {
+                title: { text: 'Reddito pro capite (€)', font: { size: 12, color: colRpc } },
+                tickfont: { size: 11, color: colRpc }, overlaying: 'y', side: 'right',
+                zeroline: false, showgrid: false, tickprefix: '€', tickformat: ',.0f'
+            },
+            shapes: [{
+                type: 'rect', x0: 2019.6, x1: 2020.4, y0: 0, y1: 1, yref: 'paper',
+                fillcolor: 'rgba(230,57,70,0.08)', line: { width: 0 }
+            }, {
+                type: 'line', x0: 2020, x1: 2020, y0: 0, y1: 1, yref: 'paper',
+                line: { color: '#e63946', width: 1.5, dash: 'dot' }
+            }],
+            annotations: [{
+                x: 2020, y: 0.97, yref: 'paper', xanchor: 'center', yanchor: 'top',
+                text: 'COVID', showarrow: false,
+                font: { size: 11, color: '#e63946' }
+            }]
+        };
+
+        const el = document.getElementById('chart-reddito-trend');
+        el.style.opacity = '0';
+        el.style.transition = 'opacity 0.6s ease';
+        Plotly.newPlot(el, [traccePresenze, tracceRpc], layout, { responsive: true, displayModeBar: false });
+        requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = '1'; }));
+    }
+
+    window.renderRedditoScatter = function renderRedditoScatter(irpef, serie) {
+        const anni = serie.anni;
+        const pts = { x: [], y: [], text: [], colors: [] };
+        anni.forEach((a, i) => {
+            const d = irpef.dati[String(a)];
+            if (d && d.reddito_pro_capite && serie.pre_tot[i]) {
+                pts.x.push(serie.pre_tot[i]);
+                pts.y.push(d.reddito_pro_capite);
+                pts.text.push(String(a));
+                pts.colors.push(a === 2020 ? '#e63946' : a >= 2022 ? '#2a9d8f' : '#457b9d');
+            }
+        });
+
+        // regressione lineare
+        const n = pts.x.length;
+        const mx = pts.x.reduce((a,b)=>a+b,0)/n, my = pts.y.reduce((a,b)=>a+b,0)/n;
+        const num = pts.x.reduce((s,x,i)=>s+(x-mx)*(pts.y[i]-my),0);
+        const den = pts.x.reduce((s,x)=>s+(x-mx)**2,0);
+        const slope = num/den, intercept = my - slope*mx;
+        const xMin = Math.min(...pts.x), xMax = Math.max(...pts.x);
+        const rArr = pts.x.map((x,i)=> pts.y[i] - (slope*x+intercept));
+        const ssTot = pts.y.reduce((s,y)=>s+(y-my)**2,0);
+        const ssRes = rArr.reduce((s,r)=>s+r**2,0);
+        const r2 = 1 - ssRes/ssTot;
+
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+                    || (!document.documentElement.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme:dark)').matches);
+        const gridC = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+        const textC = isDark ? '#adb5bd' : '#555';
+
+        const traces = [
+            {
+                x: pts.x, y: pts.y, text: pts.text, mode: 'markers+text',
+                textposition: 'top center', textfont: { size: 10, color: textC },
+                marker: { color: pts.colors, size: 12, line: { color: '#fff', width: 1.5 } },
+                hovertemplate: '<b>%{text}</b><br>Presenze: %{x:,.0f}<br>Reddito p.c.: €%{y:,.0f}<extra></extra>',
+                type: 'scatter', name: 'Anno'
+            },
+            {
+                x: [xMin, xMax], y: [slope*xMin+intercept, slope*xMax+intercept],
+                mode: 'lines', name: `Trend (R²=${r2.toFixed(2)})`,
+                line: { color: '#e9c46a', width: 2, dash: 'dash' },
+                hoverinfo: 'skip'
+            }
+        ];
+
+        const layout = {
+            paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+            margin: { t: 20, b: 50, l: 70, r: 20 },
+            xaxis: { title: { text: 'Presenze totali (notti)', font: { size: 11 } }, tickfont: { size: 10, color: textC }, gridcolor: gridC, zeroline: false, tickformat: ',.0f' },
+            yaxis: { title: { text: 'Reddito pro capite (€)', font: { size: 11 } }, tickfont: { size: 10, color: textC }, gridcolor: gridC, zeroline: false, tickprefix: '€', tickformat: ',.0f' },
+            legend: { orientation: 'h', y: -0.22, font: { size: 11, color: textC } },
+            annotations: [
+                {
+                    x: pts.x[pts.text.indexOf('2020')] || xMin,
+                    y: pts.y[pts.text.indexOf('2020')] || my,
+                    xanchor: 'right', text: '← 2020 (COVID)', showarrow: false,
+                    font: { size: 10, color: '#e63946' }
+                },
+                {
+                    xref: 'paper', yref: 'paper', x: 0.98, y: 0.97,
+                    xanchor: 'right', yanchor: 'top',
+                    text: `R² = ${r2.toFixed(2)}`,
+                    showarrow: false,
+                    font: { size: 15, color: textC, family: 'monospace' },
+                    bgcolor: isDark ? 'rgba(40,40,40,0.7)' : 'rgba(255,255,255,0.75)',
+                    bordercolor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)',
+                    borderwidth: 1, borderpad: 6
+                }
+            ]
+        };
+
+        const el = document.getElementById('chart-reddito-scatter');
+        el.style.opacity = '0';
+        el.style.transition = 'opacity 0.6s ease';
+        Plotly.newPlot(el, traces, layout, { responsive: true, displayModeBar: false });
+        requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = '1'; }));
+    }
+    // ── fine REDDITO & TURISMO ─────────────────────────────────────────
+
     Promise.all([
         fetch(DATA_PATH + 'serie/082027.json').then(r => r.json()),
         fetch(DATA_PATH + 'stagionalita.json').then(r => r.json()),
         fetch(DATA_PATH + 'popolazione.json').then(r => r.json()).catch(() => null),
         fetch(DATA_PATH + 'ricettiva.json').then(r => r.json()).catch(() => null),
         fetch(DATA_PATH + 'ricettiva_index.json').then(r => r.json()).catch(() => null),
-    ]).then(([serie, stagData, popData, ricettivaData, ricIdx]) => {
+        fetch(DATA_PATH + 'irpef_cefalu.json').then(r => r.json()).catch(() => null),
+    ]).then(([serie, stagData, popData, ricettivaData, ricIdx, irpefData]) => {
         popolazioneData = popData;
         if (ricIdx) ricettivaIndexData = ricIdx;
         // Popola advancedData da JSON
@@ -2339,6 +2557,7 @@ const INFO = {
         if (ricIdx) renderOccupancy(serie.pre_tot, ricIdx);
         renderSoggiorno();
         renderSpesaSog();
+        if (irpefData) renderRedditoTurismo(irpefData, serie);
     });
 
     // Carica indice comuni
