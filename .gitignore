@@ -4,3 +4,9 @@ DCSC_Occupancy_in_collective_accommodation/
 __pycache__/
 data/italia_raw.json
 data/reg_prov_raw.json
+
+# Dati ISTAT popolazione - tutte le cartelle nazionali (troppo grandi)
+data/PIL/PopolazioneEta-SingolaArea-Comuni/
+data/PIL/PopolazioneEta-Territorio-Comuni/
+data/.DS_Store
+.DS_Store

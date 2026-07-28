@@ -21,7 +21,9 @@
         "55k_75k": 165,
         "75k_120k": 97,
         "oltre_120k": 24
-      }
+      },
+      "popolazione": 14041,
+      "reddito_pro_capite": 10549
     },
     "2008": {
       "contribuenti": 9607,
@@ -41,7 +43,9 @@
         "55k_75k": 150,
         "75k_120k": 127,
         "oltre_120k": 25
-      }
+      },
+      "popolazione": 14152,
+      "reddito_pro_capite": 10740
     },
     "2009": {
       "contribuenti": 9706,
@@ -61,7 +65,9 @@
         "55k_75k": 167,
         "75k_120k": 132,
         "oltre_120k": 24
-      }
+      },
+      "popolazione": 14174,
+      "reddito_pro_capite": 10873
     },
     "2010": {
       "contribuenti": 9617,
@@ -81,7 +87,9 @@
         "55k_75k": 169,
         "75k_120k": 122,
         "oltre_120k": 25
-      }
+      },
+      "popolazione": 14251,
+      "reddito_pro_capite": 10707
     },
     "2011": {
       "contribuenti": 9641,
@@ -101,7 +109,9 @@
         "55k_75k": 175,
         "75k_120k": 131,
         "oltre_120k": 22
-      }
+      },
+      "popolazione": 14317,
+      "reddito_pro_capite": 10886
     },
     "2012": {
       "contribuenti": 9652,
@@ -121,7 +131,9 @@
         "55k_75k": 185,
         "75k_120k": 119,
         "oltre_120k": 24
-      }
+      },
+      "popolazione": 14378,
+      "reddito_pro_capite": 10617
     },
     "2013": {
       "contribuenti": 9507,
@@ -141,7 +153,9 @@
         "55k_75k": 180,
         "75k_120k": 126,
         "oltre_120k": 20
-      }
+      },
+      "popolazione": 14376,
+      "reddito_pro_capite": 10630
     },
     "2014": {
       "contribuenti": 9327,
@@ -161,7 +175,9 @@
         "55k_75k": 178,
         "75k_120k": 117,
         "oltre_120k": 25
-      }
+      },
+      "popolazione": 14319,
+      "reddito_pro_capite": 10589
     },
     "2015": {
       "contribuenti": 9366,
@@ -181,7 +197,9 @@
         "55k_75k": 180,
         "75k_120k": 116,
         "oltre_120k": 27
-      }
+      },
+      "popolazione": 14291,
+      "reddito_pro_capite": 10645
     },
     "2016": {
       "contribuenti": 9393,
@@ -201,7 +219,9 @@
         "55k_75k": 190,
         "75k_120k": 126,
         "oltre_120k": 25
-      }
+      },
+      "popolazione": 14223,
+      "reddito_pro_capite": 10860
     },
     "2017": {
       "contribuenti": 9507,
@@ -221,7 +241,9 @@
         "55k_75k": 211,
         "75k_120k": 123,
         "oltre_120k": 31
-      }
+      },
+      "popolazione": 14115,
+      "reddito_pro_capite": 11035
     },
     "2018": {
       "contribuenti": 9514,
@@ -241,7 +263,9 @@
         "55k_75k": 209,
         "75k_120k": 121,
         "oltre_120k": 36
-      }
+      },
+      "popolazione": 14112,
+      "reddito_pro_capite": 11362
     },
     "2019": {
       "contribuenti": 9519,
@@ -261,7 +285,9 @@
         "55k_75k": 209,
         "75k_120k": 142,
         "oltre_120k": 30
-      }
+      },
+      "popolazione": 14100,
+      "reddito_pro_capite": 11396
     },
     "2020": {
       "contribuenti": 9445,
@@ -281,7 +307,9 @@
         "55k_75k": 190,
         "75k_120k": 137,
         "oltre_120k": 28
-      }
+      },
+      "popolazione": 14410,
+      "reddito_pro_capite": 10646
     },
     "2021": {
       "contribuenti": 9632,
@@ -301,7 +329,9 @@
         "55k_75k": 205,
         "75k_120k": 143,
         "oltre_120k": 39
-      }
+      },
+      "popolazione": 14270,
+      "reddito_pro_capite": 11411
     },
     "2022": {
       "contribuenti": 9778,
@@ -321,7 +351,9 @@
         "55k_75k": 239,
         "75k_120k": 175,
         "oltre_120k": 55
-      }
+      },
+      "popolazione": 14374,
+      "reddito_pro_capite": 12337
     },
     "2023": {
       "contribuenti": 9864,
@@ -341,7 +373,9 @@
         "55k_75k": 265,
         "75k_120k": 219,
         "oltre_120k": 63
-      }
+      },
+      "popolazione": 14338,
+      "reddito_pro_capite": 13226
     },
     "2024": {
       "contribuenti": 9952,
@@ -361,7 +395,35 @@
         "55k_75k": 302,
         "75k_120k": 224,
         "oltre_120k": 73
-      }
+      },
+      "popolazione": 14314,
+      "reddito_pro_capite": 13991
     }
+  },
+  "popolazione": {
+    "2002": 13800,
+    "2003": 13848,
+    "2004": 13822,
+    "2005": 13851,
+    "2006": 13878,
+    "2007": 14041,
+    "2008": 14152,
+    "2009": 14174,
+    "2010": 14251,
+    "2011": 14317,
+    "2012": 14378,
+    "2013": 14376,
+    "2014": 14319,
+    "2015": 14291,
+    "2016": 14223,
+    "2017": 14115,
+    "2018": 14112,
+    "2019": 14100,
+    "2020": 14410,
+    "2021": 14270,
+    "2022": 14374,
+    "2023": 14338,
+    "2024": 14314,
+    "2026": 13846
   }
 }
