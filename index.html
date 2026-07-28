@@ -540,7 +540,7 @@
         <div class="main-panel" style="flex: 1;">
             <div class="header-box">
                 <h1>Classifica di Crescita Nazionale <button class="info-btn" onclick="showInfo('chart_ranking')">i</button></h1>
-                <p style="font-size:0.75em; margin:0; color: var(--text-sub);">Comuni con >30k arrivi/anno (Confronto 2014 vs 2024)</p>
+                <p style="font-size:0.75em; margin:0; color: var(--text-sub);">Comuni con presenze >500k (Confronto 2014 vs 2024)</p>
             </div>
             <div id="leaderboard-content" style="margin-top: 20px;"></div>
         </div>
@@ -962,9 +962,9 @@
     };
 
     function buildLeaderboard(index) {
-        const MIN_ARR = 30000;
+        const MIN_ARR = 500000; // max presenze annue
         const sorted = index
-            .filter(c => typeof c.growth_pre === 'number' && (c.max_arr || 0) >= MIN_ARR)
+            .filter(c => typeof c.growth_pre === 'number' && (c.max_pre || 0) >= MIN_ARR)
             .sort((a, b) => b.growth_pre - a.growth_pre);
         const cefPos = sorted.findIndex(c => c.nome.toLowerCase().includes('cefal') && !c.nome.toLowerCase().includes('diana'));
         const top6 = sorted.slice(0, 6);
