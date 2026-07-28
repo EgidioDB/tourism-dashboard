@@ -1010,7 +1010,7 @@
             document.getElementById('regionReportContent').innerHTML = `
                 <div class="report-title">${name}</div>
                 ${!pa ? '' : `<div class="data-group">
-                    <div class="group-label">Regione: Pre-2012 ${ib('pre2012_nat')}</div>
+                    <div class="group-label">Regione: Pre-2012 ${ib('pre2012_reg')}</div>
                     <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(pa[0])} arrivi</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(pa[4])} arrivi</b></div>"><span>Arrivi ${ib('arr_pre2012_reg')}</span><span class="value" style="color:${clr(sgn(data.reg.preArr))}">${sgn(data.reg.preArr)}%</span></div>
                     <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(pa[1])} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(pa[5])} notti</b></div>"><span>Presenze</span><span class="value" style="color:${clr(sgn(data.reg.prePre))}">${sgn(data.reg.prePre)}%</span></div>
                     <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2004</span><b>${nf(pa[2])} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(pa[6])} notti</b></div>"><span>Alb ${ib('alb_pre2012_reg')}</span><span class="value" style="color:${clr(sgn(data.reg.preAlb))}">${sgn(data.reg.preAlb)}%</span></div>
@@ -1032,9 +1032,9 @@
                 </div>
                 <div class="data-group">
                     <div class="group-label" style="color:#457b9d">Regione: Post-COVID (2024 vs 2019) ${ib('postCovid_reg')}</div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${arrN(2019)}</b></div><div class='nom-r'><span>2024</span><b>${arrN(2024)}</b></div>"><span>Arrivi ${ib('arr_post2012_reg')}</span><span class="value" style="color:${clr(pcRegArr)}">${pcRegArr}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${arrN(2019)}</b></div><div class='nom-r'><span>2024</span><b>${arrN(2024)}</b></div>"><span>Arrivi ${ib('arr_postCovid_reg')}</span><span class="value" style="color:${clr(pcRegArr)}">${pcRegArr}%</span></div>
                     <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtN(pre19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtN(pre24)} notti</b></div>"><span>Presenze</span><span class="value" style="color:${clr(pcRegPre)}">${pcRegPre}%</span></div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtN(alb19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtN(alb24)} notti</b></div>"><span>Alb ${ib('alb_post2012_reg')}</span><span class="value" style="color:${clr(pcRegAlb)}">${pcRegAlb}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtN(alb19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtN(alb24)} notti</b></div>"><span>Alb ${ib('alb_postCovid_reg')}</span><span class="value" style="color:${clr(pcRegAlb)}">${pcRegAlb}%</span></div>
                     <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>2019</span><b>${fmtN(ext19)} notti</b></div><div class='nom-r'><span>2024</span><b>${fmtN(ext24)} notti</b></div>"><span>Extra-Alb</span><span class="value" style="color:${clr(pcRegExt)}">${pcRegExt}%</span></div>
                 </div>
                 ${!hasTop ? `<div class="data-group" style="border-left: 4px solid #457b9d; background: #f0f7ff;">
@@ -1275,9 +1275,11 @@
             const extAbs = rawData.itExt[i] * IT_EXT_BASE / 100;
             itAlb[i] = ((preAbs - extAbs) / IT_ALB_BASE) * 100;
         });
-        itBenchmark.arr = rawData.itArr[20];
-        itBenchmark.pre = rawData.itPre[20];
-        itBenchmark.ext = rawData.itExt[20];
+        // Base 2014, non 2012: serve a confrontarsi con la Top City, che e indicizzata al
+        // 2014. Usare l'indice base 2012 mescolerebbe due basi diverse nello stesso gap.
+        itBenchmark.arr = rawData.itArr[10] ? r1(rawData.itArr[20] / rawData.itArr[10] * 100) : 0;
+        itBenchmark.pre = rawData.itPre[10] ? r1(rawData.itPre[20] / rawData.itPre[10] * 100) : 0;
+        itBenchmark.ext = rawData.itExt[10] ? r1(rawData.itExt[20] / rawData.itExt[10] * 100) : 0;
         volumeData["Italia"].pre  = [r1(IT_ALB_BASE / 1e6), r1(IT_EXT_BASE / 1e6)];
         volumeData["Italia"].post = [r1(IT_ALB_BASE * itAlb[20] / 100 / 1e6), r1(IT_EXT_BASE * rawData.itExt[20] / 100 / 1e6)];
     }
@@ -2656,13 +2658,13 @@ const INFO = {
     arr_pre2012_reg: "<strong>Regione — Arrivi pre-2012 (2004 vs 2012)</strong>Arrivi regionali del 2004 rapportati alla base 2012: positivo = nel 2004 la regione era già sopra il livello che avrebbe avuto nel 2012. Traiettoria pre-2012 della regione come contesto per Cefalù. Clicca la riga per i valori assoluti. <em class='info-fonte'>Fonte: ISTAT DF_BULK_DCSC_TURISAREA, circoscrizioni turistiche aggregate per regione.</em>",
     alb_pre2012_reg: "<strong>Regione — Alberghiero pre-2012 (2004 vs 2012)</strong>Presenze alberghiere del 2004 rapportate alla base 2012, stessa convenzione delle altre righe del gruppo. Letto insieme all'extra-alberghiero mostra come si è spostato il mix ricettivo prima del 2012. <em class='info-fonte'>Fonte: ISTAT DF_BULK_DCSC_TURISAREA, circoscrizioni turistiche aggregate per regione.</em>",
 
-    arr_post2012_reg: "<strong>Regione — Arrivi 2014–2024 (base 2014)</strong>I dati regionali partono dal 2014 (base=100). Variazione % arrivi regionali dal 2014 al 2024. Utile per confrontare Cefalù con il trend della propria regione. Clicca la riga per gli arrivi in valore assoluto. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024, aggregati per regione.</em>",
+    arr_post2012_reg: "<strong>Regione — Arrivi 2014–2024 (base 2014)</strong>I dati regionali partono dal 2014 (base=100). Variazione % arrivi regionali dal 2014 al 2024. Utile per confrontare Cefalù con il trend della propria regione. Clicca la riga per gli arrivi in valore assoluto. <em class='info-fonte'>Fonte: ISTAT serie regionali 2008-2024 (regioni.json), non aggregazione dei dati comunali.</em>",
 
-    arr_preCovid_reg: "<strong>Regione — Arrivi pre-COVID (2019 vs 2014)</strong>Crescita regionale arrivi dal 2014 al 2019. Contestualizza la crescita di Cefalù pre-pandemia rispetto alla regione. Clicca la riga per gli arrivi in valore assoluto. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024, aggregati per regione.</em>",
+    arr_preCovid_reg: "<strong>Regione — Arrivi pre-COVID (2019 vs 2014)</strong>Crescita regionale arrivi dal 2014 al 2019. Contestualizza la crescita di Cefalù pre-pandemia rispetto alla regione. Clicca la riga per gli arrivi in valore assoluto. <em class='info-fonte'>Fonte: ISTAT serie regionali 2008-2024 (regioni.json), non aggregazione dei dati comunali.</em>",
 
     arr_postCovid_reg: "<strong>Regione — Arrivi post-COVID (2024 vs 2019)</strong>Confronto fra gli arrivi regionali del 2019 e del 2024, entrambi da ISTAT. Misura la velocità di recupero regionale. Clicca la riga per gli arrivi in valore assoluto. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024, aggregati per regione.</em>",
 
-    arr_preCovid_top: "<strong>Top City — Arrivi pre-COVID (2019 vs 2014)</strong>Crescita arrivi nel comune selezionato tra il 2014 e il 2019. 'Dati non disponibili' = il comune non aveva voce separata nel file ISTAT 2019. Permette di capire se la crescita totale si concentri nel pre-COVID o nel rimbalzo. Clicca la riga per gli arrivi in valore assoluto. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
+    arr_preCovid_top: "<strong>Top City — Arrivi pre-COVID (2019 vs 2014)</strong>Crescita arrivi nel comune selezionato tra il 2014 e il 2019. Permette di capire se la crescita totale si concentri nel pre-COVID o nel rimbalzo. Clicca la riga per gli arrivi in valore assoluto. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
 
     arr_postCovid_top: "<strong>Top City — Arrivi post-COVID (2024 vs 2019)</strong>Il 2019 arriva dalla stessa serie comunale del 2014 e del 2024, quindi e un dato reale. Non disponibile se mancano dati 2019 per il comune. Indica se il rimbalzo post-pandemia sia il principale motore della crescita. Clicca la riga per gli arrivi in valore assoluto. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
 
@@ -2694,9 +2696,9 @@ const INFO = {
 
     alb_postCovid_nat: "<strong>Italia — Alberghiero post-COVID (2024 vs 2019)</strong>Variazione % alberghiero nazionale tra il 2019 e il 2024. Distingue rimbalzo ciclico da crescita strutturale; riferimento per valutare il recupero di Cefalù nel segmento. Derivato: Alb = Presenze_tot − Extra-alb. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
-    alb_post2012_reg: "<strong>Regione — Alberghiero 2014–2024 (base 2014)</strong>Crescita % presenze alberghiere regionali dal 2014 al 2024. Indica se Cefalù stia trainando la crescita alberghiera della regione o seguendo un trend diffuso. Derivato: Alb = Presenze_tot − Extra-alb, base 2014=100. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024, aggregati per regione.</em>",
+    alb_post2012_reg: "<strong>Regione — Alberghiero 2014–2024 (base 2014)</strong>Crescita % presenze alberghiere regionali dal 2014 al 2024. Indica se Cefalù stia trainando la crescita alberghiera della regione o seguendo un trend diffuso. Non è derivato per differenza: è la voce alberghiera rilevata direttamente. <em class='info-fonte'>Fonte: Eurostat tour_occ_nin2, NACE I551, regioni NUTS2.</em>",
 
-    alb_preCovid_reg: "<strong>Regione — Alberghiero pre-COVID (2019 vs 2014)</strong>Crescita % presenze alberghiere regionali dal 2014 al 2019. Mostra se la fase espansiva pre-pandemia nel segmento alberghiero fosse diffusa regionalmente o concentrata in specifiche destinazioni. Derivato. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024, aggregati per regione.</em>",
+    alb_preCovid_reg: "<strong>Regione — Alberghiero pre-COVID (2019 vs 2014)</strong>Crescita % presenze alberghiere regionali dal 2014 al 2019. Mostra se la fase espansiva pre-pandemia nel segmento alberghiero fosse diffusa regionalmente o concentrata in specifiche destinazioni. <em class='info-fonte'>Fonte: Eurostat tour_occ_nin2, NACE I551, regioni NUTS2.</em>",
 
     alb_postCovid_reg: "<strong>Regione — Alberghiero post-COVID (2024 vs 2019)</strong>Il 2019 e un dato Eurostat reale, visibile in valore assoluto nel dettaglio. Indica se il recupero alberghiero post-pandemia sia generalizzato nella regione o concentrato in pochi comuni. Derivato. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024, aggregati per regione.</em>",
 
@@ -2718,21 +2720,22 @@ const INFO = {
 
     year_it: "<strong>Dettaglio anno — Italia</strong>Indici base 2012=100 per dati nazionali aggregati, in parallelo con Cefalù. Utile per distinguere anno eccezionale per Cefalù da andamento generale di settore. Alb derivato per differenza. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
+    pre2012_reg: "<strong>Pre-2012 — Regione (2004 vs 2012)</strong>Il valore indica il <strong>livello del 2004 rispetto alla base 2012</strong>: positivo = nel 2004 la regione stava già sopra il livello che avrebbe avuto nel 2012, quindi negli anni successivi è scesa. Stessa convenzione dei pannelli Italia e Cefalù. Clicca una riga per arrivi e notti in valore assoluto. <em class='info-fonte'>Fonte: ISTAT DF_BULK_DCSC_TURISAREA, circoscrizioni turistiche aggregate per regione.</em>",
     pre2012_nat: "<strong>Pre-2012 — Italia (2004 vs 2012)</strong>Benchmark nazionale per lo stesso periodo di Cefalù. Il valore indica il <strong>livello del 2004 rispetto alla base 2012</strong>: positivo = nel 2004 si stava gia sopra il 2012, quindi negli anni successivi si e sceso; negativo = si e saliti fino al 2012. Se il mercato nazionale era già in calo verso il 2012, il dato di Cefalù pre-2012 va letto in quel contesto. Alb derivato come Presenze_tot − Extra-alb. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
     post2012_nat: "<strong>Post-2012 — Italia (2024 vs 2012)</strong>Crescita % nazionale dal 2012 al 2024. Riferimento di sistema: confrontato con Cefalù dice quanto la destinazione abbia cresciuto rispetto al mercato complessivo. Alb derivato. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
     preCovid_nat: "<strong>Pre-COVID — Italia (2019 vs 2012)</strong>Crescita nazionale pre-pandemica dal 2012 al 2019. Riferimento per valutare se la crescita di Cefalù nello stesso periodo fosse in linea col sistema o eccezionale. Alb derivato. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
-    reg_post2012: "<strong>Regione: 2014–2024 (base 2014)</strong>Indice base 2014=100 calcolato sui dati ufficiali ISTAT regionali. Formula: (val_2024/val_2014 − 1)×100. <em class='info-fonte'>Fonte: ISTAT statistiche regionali del turismo 2014-2024.</em>",
+    reg_post2012: "<strong>Regione: 2014–2024 (base 2014)</strong>Indice base 2014=100. Formula: (val_2024/val_2014 − 1)×100. <em class='info-fonte'>Fonte: arrivi e presenze da ISTAT serie regionali; lo split alberghiero/extra da Eurostat tour_occ_nin2 (NUTS2), perché ISTAT non lo pubblica per regione.</em>",
 
-    reg_preCovid: "<strong>Regione: pre-COVID (2019 vs 2014)</strong>Crescita regionale dal 2014 al 2019 su dati ufficiali ISTAT. Permette di capire se Cefalù crescesse già più o meno della propria regione prima della pandemia. Formula: (val_2019/val_2014 − 1)×100. <em class='info-fonte'>Fonte: ISTAT statistiche regionali del turismo 2014-2024.</em>",
+    reg_preCovid: "<strong>Regione: pre-COVID (2019 vs 2014)</strong>Crescita regionale dal 2014 al 2019 su dati ufficiali ISTAT. Permette di capire se Cefalù crescesse già più o meno della propria regione prima della pandemia. Formula: (val_2019/val_2014 − 1)×100. <em class='info-fonte'>Fonte: arrivi e presenze da ISTAT serie regionali; alberghiero ed extra da Eurostat tour_occ_nin2 (NUTS2).</em>",
 
-    top_preCovid: "<strong>Top City: pre-COVID (2019 vs 2014)</strong>Crescita degli indicatori nel comune selezionato tra il 2014 e il 2019. 'Dati non disponibili' = il comune non aveva voce separata nel file ISTAT 2019. Alb derivato dalla colonna ISTAT diretta (alb_pre_tot). <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
+    top_preCovid: "<strong>Top City: pre-COVID (2019 vs 2014)</strong>Crescita degli indicatori nel comune selezionato tra il 2014 e il 2019. Alberghiero ed extra sono voci rilevate direttamente nella serie comunale, non derivate. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
 
     top_post2014: "<strong>Top City: crescita totale (2024 vs 2014)</strong>Indice base 2014=100. Crescita complessiva delle presenze nel comune dal 2014 al 2024. Il Top City per ogni regione è il comune con la crescita % più alta tra quelli con almeno 500.000 presenze annue: la soglia garantisce che si tratti di destinazioni con volume sufficiente a essere rappresentative. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
 
-    top_gap: "<strong>Gap vs Media Nazionale al 2024</strong>Differenza in punti indice tra il comune e l'Italia (entrambi base 2014=100). Positivo = il comune cresce più della media; negativo = sotto la media. Indica se la performance sia strutturalmente superiore al sistema o legata al rimbalzo post-COVID. <em class='info-fonte'>Fonte: ISTAT dati comunali + nazionali.</em>",
+    top_gap: "<strong>Gap vs Media Nazionale al 2024</strong>Differenza in punti indice fra il comune e l'Italia, entrambi con base 2014=100. Positivo = il comune cresce più della media; negativo = sotto la media. Indica se la performance sia strutturalmente superiore al sistema o legata al rimbalzo post-COVID. <em class='info-fonte'>Fonte: ISTAT dati comunali + nazionali.</em>",
 
     chart_donuts: "<strong>Analisi Volumi Presenze — Donut</strong>Tre grafici mostrano la composizione delle presenze (notti) per tipologia ricettiva: • Totale 2024 — distribuzione assoluta alberghiero/extra-alb. • Pre-2012 (2004) — composizione nel primo anno disponibile. • Post-2012 — confronto quote 2024 vs 2012. I valori mostrati sono presenze assolute (notti). <em class='info-fonte'>Fonte: ISTAT Circoscrizioni Turistiche 2004-2013 + dati comunali Cefalù 2014-2024.</em>",
 
@@ -2764,7 +2767,7 @@ const INFO = {
 
     postCovid_nat: "<strong>Post-COVID — Italia (2024 vs 2019)</strong>Recupero e crescita del turismo italiano dal 2019 al 2024. Benchmark per contestualizzare il rimbalzo di Cefalù: se l'Italia complessiva è già sopra il 2019, la barra è alta per valutare l'eccezionalità locale. Formula: (val_2024/val_2019 − 1)×100. Alb derivato. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
 
-    postCovid_reg: "<strong>Regione: post-COVID (2024 vs 2019)</strong>Recupero regionale dal 2019 al 2024 su dati ufficiali ISTAT. Confronto fra il 2019 e il 2024. I valori assoluti nel dettaglio sono i dati Eurostat dei due anni, non una ricostruzione. <em class='info-fonte'>Fonte: ISTAT statistiche regionali del turismo 2014-2024.</em>",
+    postCovid_reg: "<strong>Regione: post-COVID (2024 vs 2019)</strong>Recupero regionale dal 2019 al 2024 su dati ufficiali ISTAT. Confronto fra il 2019 e il 2024, entrambi dati reali: i valori assoluti nel dettaglio non sono ricostruiti. <em class='info-fonte'>Fonte: arrivi e presenze da ISTAT serie regionali; alberghiero ed extra da Eurostat tour_occ_nin2 (NUTS2).</em>",
 
     postCovid_top: "<strong>Top City: post-COVID (2024 vs 2019)</strong>Variazione % dal 2019 al 2024 per il comune selezionato. Il 2019 arriva dalla stessa serie comunale degli altri anni, quindi e un dato reale. Rivela se il boom post-pandemia sia il principale motore della classifica o se la crescita fosse già solida prima. Non disponibile se mancano dati 2019. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
 
