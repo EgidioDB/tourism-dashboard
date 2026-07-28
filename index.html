@@ -930,7 +930,6 @@
     };
 
     // --- 2. DATABASE REPORT REGIONALI ---
-    const itBenchmark = { arr: 131.1, pre: 123.4, ext: 148.4 };
     const regionalDataFull = {
         "Abruzzo":        { reg: { preArr: +15.2, prePre: +20.3, preExt: -16.6, arr: 128.2, pre: 114.2, alb: 114.0, ext: 114.7, covid: { arr: +16.4, pre:  -1.7, alb:  +1.1, ext:  -6.6 } }, top: { name: "Pescara",                        preArr:   +43.4, prePre:   +16.9, preAlb:   +7.1, preExt: +172.5, arr: 125.0, pre: 228.7, alb: 121.3, ext: 116.6 } },
         "Basilicata":     { reg: { preArr: -19.5, prePre: -11.3, preExt:  +2.8, arr: 153.9, pre: 119.6, alb: 120.7, ext: 117.1, covid: { arr: +63.0, pre: +30.2, alb: +31.0, ext: +28.4 } }, top: { name: "Matera",                          preArr:  +153.7, prePre:  +198.3, preAlb: +120.4, preExt: +390.4, arr: 249.1, pre: 239.5, alb: 184.5, ext: 374.9 } },
@@ -1258,6 +1257,7 @@
         const extAbs = rawData.itExt[i] * IT_EXT_BASE / 100;
         return ((preAbs - extAbs) / IT_ALB_BASE) * 100;
     });
+    const itBenchmark = { arr: rawData.itArr[20], pre: rawData.itPre[20], ext: rawData.itExt[20] };
     const sgn = v => v >= 0 ? '+' + v.toFixed(1) : v.toFixed(1);
     const ib  = key => `<button class="info-btn" onclick="event.stopPropagation();showInfo('${key}')">i</button>`;
     const nf = n => Math.round(n).toLocaleString('it-IT');
