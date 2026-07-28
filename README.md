@@ -123,7 +123,10 @@ L'obiettivo è avere **una sola fonte di verità per ogni grandezza**: gli indic
 | `cefAlb` | `rawData.cef*` + costanti Cefalù | ricalcolo in-place |
 | `reg.arr`, `reg.pre`, `reg.covid.arr/pre` | `data/regioni.json` | `syncRegionaliFromJson()` |
 | `reg.preArr/prePre/preAlb/preExt` | `preAbs` | `syncPre2012FromAbs()` |
+| `top.*` (Top City, 160 valori) | `data/comuni_index.json` + `data/serie/*.json` | `syncTopCity()` |
 | Classifica crescita comuni | `data/comuni_index.json` | `buildLeaderboard()` |
+
+**Top City** — la città di ogni regione è scelta con lo stesso criterio della classifica crescita: massima crescita presenze 2014–2024 fra i comuni con almeno 500.000 presenze annue; dove nessuno raggiunge la soglia (Molise) si ripiega sul comune più grande. La sua serie comunale viene scaricata al primo click sulla regione e messa in cache, poi il pannello si ridisegna.
 
 I valori presenti nei letterali JS servono da **fallback** se un fetch fallisce, e vengono sovrascritti appena il JSON arriva.
 
@@ -137,7 +140,6 @@ I valori presenti nei letterali JS servono da **fallback** se un fetch fallisce,
 | `rawData.*` anni 2004–2013 di Cefalù | La serie comunale JSON parte dal 2014 |
 | `reg.alb`, `reg.ext`, `covid.alb/ext` | Split alberghiero/extra da Eurostat NUTS2, non presente in `regioni.json` |
 | `volumeData[regione].post` | Volumi 2024 regionali da Eurostat NUTS2 |
-| `top.*` | Top City per regione, da elaborazione su `comuni_index.json` |
 
 ### Nota sui totali del file ISTAT circoscrizioni
 
