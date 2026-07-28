@@ -150,6 +150,31 @@
         .nav-tab:hover:not(.nav-active) { background: rgba(0,0,0,0.06); color: var(--text-main); }
         .nav-tab.nav-active { background: var(--accent); color: #fff; }
         body.nav-open { padding-top: 46px; }
+        .nav-tab-wrap { position: relative; display: flex; align-items: center; }
+        .nav-sub {
+            position: absolute; top: calc(100% + 4px); left: 50%;
+            transform: translateX(-50%) translateY(-6px);
+            background: var(--card-bg);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.13);
+            padding: 5px;
+            min-width: 170px;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.15s, transform 0.15s;
+            z-index: 2010;
+        }
+        .nav-tab-wrap:hover .nav-sub {
+            opacity: 1; pointer-events: auto;
+            transform: translateX(-50%) translateY(0);
+        }
+        .nav-sub-item {
+            display: block; padding: 6px 10px; border-radius: 6px;
+            font-size: 0.78em; font-weight: 500; color: var(--text-sub);
+            cursor: pointer; white-space: nowrap; text-decoration: none;
+            transition: background 0.12s, color 0.12s;
+        }
+        .nav-sub-item:hover { background: var(--accent); color: #fff; }
 
         /* FAB mobile */
         #nav-fab {
@@ -553,9 +578,33 @@
 
 <!-- Nav bar desktop -->
 <nav id="main-nav">
-    <button class="nav-tab nav-active" data-sec="sec-italia">Italia</button>
-    <button class="nav-tab" data-sec="sec-cefalu">Cefalù</button>
-    <button class="nav-tab" data-sec="sec-confronta">Confronta</button>
+    <div class="nav-tab-wrap">
+        <button class="nav-tab nav-active" data-sec="sec-italia">Italia</button>
+        <div class="nav-sub">
+            <a class="nav-sub-item" data-target="donut-total">Volumi presenze</a>
+            <a class="nav-sub-item" data-target="italy-map">Mappa geografica</a>
+        </div>
+    </div>
+    <div class="nav-tab-wrap">
+        <button class="nav-tab" data-sec="sec-cefalu">Cefalù</button>
+        <div class="nav-sub">
+            <a class="nav-sub-item" data-target="box-evol">Evoluzione storica</a>
+            <a class="nav-sub-item" data-target="chart-seasonality">Stagionalità</a>
+            <a class="nav-sub-item" data-target="chart-origin">Origine turisti</a>
+            <a class="nav-sub-item" data-target="chart-alos">Permanenza media</a>
+            <a class="nav-sub-item" data-target="chart-pressure">Pressione turistica</a>
+            <a class="nav-sub-item" data-target="chart-soggiorno">Imposta soggiorno</a>
+            <a class="nav-sub-item" data-target="box-reddito-turismo">Reddito &amp; Turismo</a>
+        </div>
+    </div>
+    <div class="nav-tab-wrap">
+        <button class="nav-tab" data-sec="sec-confronta">Confronta</button>
+        <div class="nav-sub">
+            <a class="nav-sub-item" data-target="compareChartCard">Grafico comparativo</a>
+            <a class="nav-sub-item" data-target="radarChart">Profilo destinazione</a>
+            <a class="nav-sub-item" data-target="seasonCard">Stagionalità</a>
+        </div>
+    </div>
 </nav>
 
 <!-- FAB mobile -->
@@ -641,7 +690,7 @@
     <div class="cefalu-section-label">Cefalù <button class="export-btn" onclick="exportSection('cefalu')">↓ Esporta</button></div>
 
     <div class="dashboard-row row-chart">
-        <div class="main-panel">
+        <div class="main-panel" id="box-evol">
             <div class="header-box">
                 <h1>Evoluzione Storica <button class="info-btn" onclick="showInfo('chart_evol')">i</button></h1>
             </div>
@@ -2820,10 +2869,22 @@ const INFO = {
             });
             savedRowMaps.forEach(({ node, h }) => { node.style.height = h; });
 
-            const a = document.createElement('a');
-            a.download = filename;
-            a.href = canvas.toDataURL('image/png');
-            a.click();
+            canvas.toBlob(function(blob) {
+                const file = new File([blob], filename, { type: 'image/png' });
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                    navigator.share({ files: [file], title: filename }).catch(function() {
+                        const a = document.createElement('a');
+                        a.download = filename;
+                        a.href = URL.createObjectURL(blob);
+                        a.click();
+                    });
+                } else {
+                    const a = document.createElement('a');
+                    a.download = filename;
+                    a.href = URL.createObjectURL(blob);
+                    a.click();
+                }
+            }, 'image/png');
         });
     };
 
@@ -3669,6 +3730,16 @@ window.doExport = function(mode) {
             const top = target.getBoundingClientRect().top + window.scrollY - offset;
             window.scrollTo({ top, behavior: 'smooth' });
                 fab.classList.remove('fab-open');
+        });
+    });
+
+    document.querySelectorAll('.nav-sub-item').forEach(function(el) {
+        el.addEventListener('click', function() {
+            const target = document.getElementById(this.dataset.target);
+            if (!target) return;
+            const offset = nav.classList.contains('nav-visible') ? 54 : 0;
+            const top = target.getBoundingClientRect().top + window.scrollY - offset;
+            window.scrollTo({ top: top, behavior: 'smooth' });
         });
     });
 
