@@ -3751,14 +3751,19 @@ window.doExport = function(mode) {
         return navBottom > 0 ? navBottom + 8 : 0;
     }
 
+    function layoutTop(el) {
+        let top = 0;
+        while (el) { top += el.offsetTop; el = el.offsetParent; }
+        return top;
+    }
+
     // Scroll to section on click
     document.querySelectorAll('.nav-tab, .fab-item').forEach(el => {
         el.addEventListener('click', function() {
             const target = document.getElementById(this.dataset.sec);
             if (!target) return;
-            const top = target.getBoundingClientRect().top + window.scrollY - navScrollOffset();
-            window.scrollTo({ top, behavior: 'smooth' });
-                fab.classList.remove('fab-open');
+            window.scrollTo({ top: layoutTop(target) - navScrollOffset(), behavior: 'smooth' });
+            fab.classList.remove('fab-open');
         });
     });
 
@@ -3766,8 +3771,7 @@ window.doExport = function(mode) {
         el.addEventListener('click', function() {
             const target = document.getElementById(this.dataset.target);
             if (!target) return;
-            const top = target.getBoundingClientRect().top + window.scrollY - navScrollOffset();
-            window.scrollTo({ top: top, behavior: 'smooth' });
+            window.scrollTo({ top: layoutTop(target) - navScrollOffset(), behavior: 'smooth' });
         });
     });
 
