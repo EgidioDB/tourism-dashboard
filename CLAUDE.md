@@ -67,9 +67,15 @@ contrario del vero.** Nessun test lo intercetta.
 
 ## Trappole note
 
-- **Aggregare i comuni non ricostruisce il dato regionale.** Sommando `serie/*.json` per regione la copertura
-  2014 va dal 79% (Molise) al 100%, quindi gli indici risultano gonfiati fino a 28 punti. Per le regioni usa
-  `regioni.json` ed `eurostat_regioni.json`, mai la somma dei comuni.
+- **Aggregare i comuni non ricostruisce il dato regionale, ma il motivo dipende dall'anno.** Sui *totali* il
+  2024 torna esatto: la somma di `serie/*.json` per regione fa il 100,0% di `regioni.json` in tutte le regioni,
+  e la somma nazionale fa 466.158.045 notti, cioè il valore di `italia.json` costruito da un'altra fonte. È il
+  **2014** a essere scoperto, dal 79% (Molise) al 99,9% (Umbria), ed è da lì che gli indici base 2014 risultano
+  gonfiati fino a 28 punti. Sullo *split* alberghiero/extra invece non torna nemmeno il 2024: **2.243 comuni su
+  5.324 hanno `pre_tot` valorizzato e `pre_alb`/`pre_ext` a null** per segreto statistico, quindi alb+ext copre
+  il 94,66% del totale nazionale, con uno scarto che va dallo 0,0% (Bolzano) al 17,2% (Piemonte). Non è
+  riscalabile con un fattore unico, e i comuni oscurati sono i piccoli, dove l'extra pesa più della media.
+  Per le regioni usa `regioni.json` ed `eurostat_regioni.json`, mai la somma dei comuni.
 - **Nel file ISTAT circoscrizioni il totale 2004 è inaffidabile.** Alcune righe hanno la colonna Totale a zero
   con le componenti valorizzate (Catanzaro, Vibo Valentia). In `pre2012.json` i totali sono la somma di
   alberghiero + extra, non la colonna Totale. Nel 2012 le due letture coincidono.
@@ -78,6 +84,16 @@ contrario del vero.** Nessun test lo intercetta.
   del pre-2012 regionale lo spiega. Non tentare di "riconciliarle".
 - **`DATA_PATH` e `comuniIndex` sono privati** all'IIFE dell'EXPLORER nel secondo blocco `<script>`. Il primo
   blocco ha le sue copie, `TOP_DATA_PATH` e `topComuniIndex`.
+- **Gli anni ISTAT possono avere una nota attaccata.** Nel file delle serie storiche il 1986, il 1996 e il 1999
+  sono scritti `1986(a)`, `1996(b)`, `1999(c)`: un parser che cerca quattro cifre pulite li scarta e la serie
+  sembra bucata. Non lo era. Sono le tre volte in cui ISTAT ha cambiato il perimetro dell'extra-alberghiero —
+  RTA spostate all'alberghiero nel 1986, agriturismi nel 1996, B&B nel 1999 — per cui **la quota di
+  extra-alberghiero non è confrontabile a cavallo di quegli anni**: il 39,7% del 1958 e il 39,1% del 2024
+  sono numeri quasi identici che misurano cose diverse. `renderStorico` le segna con linee tratteggiate.
+- **I donut non coprono un periodo, sono due annate.** Mostrano il 2012 (la base) e il 2024, non le ere
+  pre/post-2012: le etichette dicevano il contrario e la prima ciambella sommava le notti dei due anni
+  chiamando totale il risultato. Ora è `2012 VS 2024` con la variazione. Il pre-2012 vero non è ricostruibile:
+  le serie comunali partono dal 2014 e per le regioni esistono solo i punti 2004 e 2012.
 - **Le chiavi dei popup si sbagliano facilmente.** Due gruppi post-COVID aprivano i testi del post-2012.
   Verifica sempre gruppo per gruppo, non solo che la chiave esista.
 
