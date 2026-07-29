@@ -593,6 +593,7 @@
     <div class="nav-tab-wrap">
         <button class="nav-tab nav-active" data-sec="sec-italia">Italia</button>
         <div class="nav-sub">
+            <a class="nav-sub-item" data-target="chart-storico">Serie storica 1956</a>
             <a class="nav-sub-item" data-target="donut-total">Volumi presenze</a>
             <a class="nav-sub-item" data-target="italy-map">Mappa geografica</a>
         </div>
@@ -603,9 +604,13 @@
             <a class="nav-sub-item" data-target="box-evol">Evoluzione storica</a>
             <a class="nav-sub-item" data-target="chart-seasonality">Stagionalità</a>
             <a class="nav-sub-item" data-target="chart-origin">Origine turisti</a>
+            <a class="nav-sub-item" data-target="chart-provenienza">Da dove arrivano</a>
+            <a class="nav-sub-item" data-target="chart-tipologie">Dove dormono</a>
             <a class="nav-sub-item" data-target="chart-alos">Permanenza media</a>
+            <a class="nav-sub-item" data-target="chart-peer">Comuni simili</a>
             <a class="nav-sub-item" data-target="chart-pressure">Pressione turistica</a>
             <a class="nav-sub-item" data-target="chart-soggiorno">Imposta soggiorno</a>
+            <a class="nav-sub-item" data-target="chart-gettito">Entrate comunali</a>
             <a class="nav-sub-item" data-target="box-reddito-turismo">Reddito &amp; Turismo</a>
         </div>
     </div>
@@ -1463,6 +1468,17 @@
             'Presenze nazionali ' + A[0] + '-' + A[A.length - 1]
             + (primoIntero > 0 ? ' — extra-alberghiero rilevato dal ' + A[primoIntero] : '')
             + (mancanti.length ? ' · mancano nella fonte: ' + mancanti.join(', ') : '');
+        // Gli anni assenti dalla fonte vengono attraversati dall'area come se il dato ci
+        // fosse: si segnano con una banda, altrimenti l'interpolazione passa per un dato.
+        const bande = mancanti.map(function(y) {
+            return { type: 'rect', xref: 'x', yref: 'paper', x0: y - 0.5, x1: y + 0.5,
+                     y0: 0, y1: 1, fillcolor: '#ffffff', opacity: 0.55, line: { width: 0 },
+                     layer: 'above' };
+        });
+        const etichette = mancanti.map(function(y) {
+            return { x: y, y: 1, xref: 'x', yref: 'paper', text: '?', showarrow: false,
+                     yanchor: 'bottom', font: { size: 11, color: '#8a94a6' } };
+        });
         cefaluAnimMixed('chart-storico', [
             { x: A, y: alb, name: 'Alberghiero', type: 'scatter', mode: 'lines',
               stackgroup: 'uno', line: { color: '#457b9d', width: 0 }, fillcolor: '#457b9d',
@@ -1473,7 +1489,8 @@
         ], Object.assign({}, baseLayout, { height: 320, showlegend: true,
             legend: { orientation: 'h', y: -0.18, x: 0 },
             xaxis: { fixedrange: true, dtick: 10, tickformat: 'd', tickpad: 8 },
-            yaxis: { fixedrange: true } }),
+            yaxis: { fixedrange: true },
+            shapes: bande, annotations: etichette }),
             { responsive: true, displayModeBar: false });
         const iDa = primoIntero < 0 ? 0 : primoIntero, iA = A.length - 1;
         const tDa = (alb[iDa] || 0) + (ext[iDa] || 0), tA = (alb[iA] || 0) + (ext[iA] || 0);
