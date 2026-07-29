@@ -918,6 +918,26 @@
 </div>
 
 <script>
+    // Formato numeri italiano per tutti i grafici. Senza questo Plotly usa il separatore
+    // inglese e abbrevia in stile SI: un importo come 5.737.276 euro compariva nei tooltip
+    // come "5.737276M", che a una lettura italiana sembra un numero enorme.
+    if (window.Plotly) {
+        Plotly.register({
+            moduleType: 'locale',
+            name: 'it',
+            dictionary: {},
+            format: {
+                days: ['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'],
+                shortDays: ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'],
+                months: ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio',
+                         'Agosto','Settembre','Ottobre','Novembre','Dicembre'],
+                shortMonths: ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'],
+                decimal: ',', thousands: '.', grouping: [3], currency: ['€ ', '']
+            }
+        });
+        Plotly.setPlotConfig({ locale: 'it' });
+    }
+
     // --- 1. VOLUMI ASSOLUTI (Milioni di notti) ---
     // pre = presenze 2012 [alb, ext] · post = presenze 2024 [alb, ext].
     // L'Italia la calcola syncItaliaDerived() dalle basi ISTAT; le 20 regioni arrivano
@@ -2935,9 +2955,11 @@ function renderPeer(serie) {
         peerData.categoria + ' — ' + peerData.comuni_inclusi + ' comuni con serie completa';
     cefaluAnimMixed('chart-peer', [
         { x: A, y: yCef,  name: 'Cefalù', type: 'scatter', mode: 'lines+markers',
-          line: { color: '#e63946', width: 3 }, marker: { size: 6 } },
+          line: { color: '#e63946', width: 3 }, marker: { size: 6 },
+          hovertemplate: '<b>%{x}</b><br>Cefalù: %{y:+.1f}%<extra></extra>' },
         { x: A, y: yPeer, name: 'Comuni simili', type: 'scatter', mode: 'lines+markers',
-          line: { color: '#457b9d', width: 2.5, dash: 'dot' }, marker: { size: 5 } }
+          line: { color: '#457b9d', width: 2.5, dash: 'dot' }, marker: { size: 5 },
+          hovertemplate: '<b>%{x}</b><br>Comuni simili: %{y:+.1f}%<extra></extra>' }
     ], Object.assign({}, baseLayout, { height: 340, showlegend: true,
         legend: { orientation: 'h', y: -0.18, x: 0 },
         xaxis: { fixedrange: true, dtick: 2, tickformat: 'd', tickpad: 8 },
@@ -3001,12 +3023,16 @@ function renderGettito(bil, serie) {
         return typeof x === 'number' && x > 0 ? x : null; };
     const pre = anni.map(a => { const i = serie.anni.indexOf(a); return i < 0 ? null : serie.pre_tot[i]; });
     cefaluAnimMixed('chart-gettito', [
-        { x: anni, y: anni.map(a => v(a,'tari')), name: 'TARI', type: 'bar', marker: { color: '#457b9d' } },
-        { x: anni, y: anni.map(a => v(a,'imu')), name: 'IMU', type: 'bar', marker: { color: '#8fb8d4' } },
+        { x: anni, y: anni.map(a => v(a,'tari')), name: 'TARI', type: 'bar', marker: { color: '#457b9d' },
+          hovertemplate: '<b>%{x}</b><br>TARI: € %{y:,.0f}<extra></extra>' },
+        { x: anni, y: anni.map(a => v(a,'imu')), name: 'IMU', type: 'bar', marker: { color: '#8fb8d4' },
+          hovertemplate: '<b>%{x}</b><br>IMU: € %{y:,.0f}<extra></extra>' },
         { x: anni, y: anni.map(a => v(a,'imposta_soggiorno')), name: 'Imposta di soggiorno',
-          type: 'bar', marker: { color: '#24b27e' } },
+          type: 'bar', marker: { color: '#24b27e' },
+          hovertemplate: '<b>%{x}</b><br>Imposta di soggiorno: € %{y:,.0f}<extra></extra>' },
         { x: anni, y: pre, name: 'Presenze', type: 'scatter', mode: 'lines+markers',
-          yaxis: 'y2', line: { color: '#e63946', width: 2.5 }, marker: { size: 5 } }
+          yaxis: 'y2', line: { color: '#e63946', width: 2.5 }, marker: { size: 5 },
+          hovertemplate: '<b>%{x}</b><br>Presenze: %{y:,.0f} notti<extra></extra>' }
     ], Object.assign({}, baseLayout, { height: 340, barmode: 'group', showlegend: true,
         legend: { orientation: 'h', y: -0.18, x: 0 },
         xaxis: { fixedrange: true, dtick: 2, tickformat: 'd', tickpad: 8 },
