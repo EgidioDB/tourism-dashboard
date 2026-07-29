@@ -687,6 +687,7 @@
         <div class="main-panel" style="flex: 0 100%;">
             <div class="header-box">
                 <h1>Analisi Volumi Presenze<br class="no-display"> (Notti totali) <button class="info-btn" onclick="showInfo('chart_donuts')">i</button></h1>
+                <p id="donut-sottotitolo" style="font-size:0.75em; margin:0; color: var(--text-sub);"></p>
             </div>
             <div class="donut-container">
                 <div id="donut-total" class="donut-box"></div>
@@ -1050,6 +1051,13 @@
             height: 310, 
             paper_bgcolor: 'rgba(0,0,0,0)' 
         };
+
+        // Le ciambelle non coprono un periodo: sono due fotografie, l'anno base e l'ultimo
+        // disponibile. Senza dirlo si leggono come se sommassero tutti gli anni in mezzo.
+        const annoBase = 2012, annoUlt = years[years.length - 1];
+        const sott = document.getElementById('donut-sottotitolo');
+        if (sott) sott.textContent = 'Due fotografie a confronto: ' + annoBase
+            + ' (anno base) e ' + annoUlt + ' — non la somma del periodo';
 
         // 4. Inserisco <br><br> prima di ogni testo per spingerlo giù di ~30px dalla torta
         Plotly.react('donut-total', [{
@@ -3062,7 +3070,7 @@ const INFO = {
     cbox_precovid: "<strong>Pre-COVID 2014→2019</strong>Crescita del periodo pre-pandemia, che rappresenta il trend strutturale del turismo locale al netto degli shock esterni. Confrontare questo dato con il Post-COVID rivela se il comune ha recuperato o superato il ritmo precedente. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
     cbox_postcovid: "<strong>Post-COVID 2019→2024</strong>Variazione dal picco pre-pandemico al 2024. Un valore positivo indica che il comune ha non solo recuperato le perdite del 2020-2021 ma ha superato i livelli pre-COVID. Un valore negativo segnala una ripresa ancora incompleta. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
     cbox_dettaglio: "<strong>Dettaglio 2024</strong>Dati strutturali dell'anno più recente. <em>Permanenza media</em> (ALOS): rapporto presenze/arrivi — quante notti rimane mediamente ogni visitatore. <em>Quota stranieri</em>: percentuale di arrivi non residenti sul totale, indicatore di attrattività internazionale. <em class='info-fonte'>Fonte: ISTAT dati comunali 2024.</em>",
-    cmp_pressure: "<strong>Indice di pressione turistica 2024</strong>Rapporto tra le presenze turistiche 2024 (notti) e la popolazione residente al 1° gennaio 2024: quante notti di turismo si generano per ogni abitante. Consente di confrontare la pressione turistica tra comuni di dimensioni diverse indipendentemente dai volumi assoluti. Valori oltre 50 indicano alta pressione, oltre 100 pressione molto elevata. <em class='info-fonte'>Fonte: ISTAT dati comunali 2024 + ISTAT Anagrafe comunale (POSAS 2019-2024; 2014-2018 estrapolati).</em>",
+    cmp_pressure: "<strong>Indice di pressione turistica</strong>Rapporto fra le presenze turistiche (notti) e la popolazione residente al 1° gennaio <strong>dello stesso anno</strong>: quante notti di turismo si generano per ogni abitante. L'anno si sceglie coi pulsanti in alto, dal <strong>2014 al 2024</strong>, e cambia entrambi i termini del rapporto. Consente di confrontare la pressione turistica tra comuni di dimensioni diverse indipendentemente dai volumi assoluti. Valori oltre 50 indicano alta pressione, oltre 100 pressione molto elevata. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024 + ISTAT Anagrafe comunale (POSAS 2019-2024; 2014-2018 estrapolati).</em>",
     cmp_season: "<strong>Stagionalità — presenze mensili</strong>Distribuzione delle presenze (notti) mese per mese per ogni comune selezionato. Il colore va dal bianco (nessuna presenza) al blu scuro (picco massimo), normalizzato su ogni comune separatamente: consente di confrontare il <em>profilo stagionale</em> indipendentemente dai volumi assoluti. Seleziona l'anno (2022, 2023, 2024) per osservare variazioni interannuali. <em class='info-fonte'>Fonte: ISTAT dati mensili comunali 2022-2024.</em>",
     chart_occupancy: "<strong>Tasso di Occupazione Ricettiva</strong>Rapporto tra le presenze turistiche annuali (notti) e la capacità ricettiva teorica massima (posti letto × 365 giorni). Indica quanta parte della capacità disponibile è stata effettivamente utilizzata. Un valore del 30% significa che in media ogni posto letto ha ospitato turisti per circa 110 notti all'anno. I posti letto sono quelli censiti da ISTAT nelle strutture registrate e non includono locazioni brevi non censite. <em class='info-fonte'>Fonte: ISTAT dati comunali Cefalù 2014-2024 + ISTAT Capacità Esercizi Ricettivi 2010-2024.</em>",
     cmp_radar: "<strong>Radar — Profilo destinazione</strong>Confronto multidimensionale su 5 assi: <em>Crescita totale</em> (presenze 2014→2024), <em>Pre-COVID</em> (2014→2019), <em>Post-COVID</em> (2019→2024), <em>Permanenza media</em> (notti/arrivo 2024), <em>Stranieri%</em> (quota arrivi non residenti 2024). I valori sono normalizzati sul massimo tra i comuni selezionati: il radar mostra differenze relative, non assolute. Aggiungere o rimuovere comuni cambia la scala. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
