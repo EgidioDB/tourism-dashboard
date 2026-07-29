@@ -3247,7 +3247,7 @@ const INFO = {
         shareBtn.style.display = codici.length ? 'flex' : 'none';
     }
 
-    window.exportSection = function(which) {
+    window.exportSection = function(which, onReady) {
         let el;
         let filename;
         if (which === 'italia') {
@@ -3314,6 +3314,9 @@ const INFO = {
 
             canvas.toBlob(function(blob) {
                 const file = new File([blob], filename, { type: 'image/png' });
+                // Se chi ha chiamato vuole gestire il file da se (percorso mobile), glielo passa:
+                // su iOS navigator.share deve partire da un tap, non da una catena asincrona.
+                if (typeof onReady === 'function') { onReady(file); return; }
                 if (window.innerWidth <= 768 && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                     navigator.share({ files: [file], title: filename }).catch(function() {
                         const a = document.createElement('a');
@@ -4117,28 +4120,78 @@ window.exportSection = function(which) {
 window.closeExportSheet = function() {
     document.getElementById('export-sheet').classList.remove('active');
     _exportPending = null;
+    setTimeout(_panelRipristina, 250);   // dopo l'animazione di chiusura
 };
 
+// Salva il file: navigator.share apre il menu di sistema, da cui su iOS si sceglie
+// "Salva immagine" e l'immagine finisce in Galleria. Va invocata dentro il tap.
+function _condividiFile(file) {
+    const scarica = function() {
+        const a = document.createElement('a');
+        a.download = file.name;
+        a.href = URL.createObjectURL(file);
+        a.click();
+        setTimeout(function() { URL.revokeObjectURL(a.href); }, 4000);
+    };
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], title: file.name }).catch(function(err) {
+            // L'utente puo aver annullato: in quel caso non si scarica nulla
+            if (err && err.name === 'AbortError') return;
+            scarica();
+        });
+    } else {
+        scarica();
+    }
+}
+
+// Sostituisce il contenuto del pannello, conservando l'originale per ripristinarlo
+let _exportPanelHTML = null;
+function _panelHTML(html) {
+    const p = document.getElementById('export-panel');
+    if (_exportPanelHTML === null) _exportPanelHTML = p.innerHTML;
+    p.innerHTML = html;
+}
+function _panelRipristina() {
+    if (_exportPanelHTML !== null) {
+        document.getElementById('export-panel').innerHTML = _exportPanelHTML;
+        _exportPanelHTML = null;
+    }
+}
+
 window.doExport = function(mode) {
-    // Va letto PRIMA di chiudere il pannello: closeExportSheet azzera _exportPending,
-    // e leggerlo dopo faceva uscire la funzione senza mai esportare nulla.
     const which = _exportPending;
-    closeExportSheet();
     if (!which) return;
-    if (mode === 'mobile') { _exportSectionOrig(which); return; }
+    _panelHTML('<div id="export-sheet-title">Preparo l\'immagine…</div>'
+             + '<div style="padding:18px 0 26px;text-align:center;color:var(--text-sub);font-size:0.9em;">'
+             + 'Un istante, sto catturando la sezione.</div>');
+
+    // Il file arriva qui a cattura finita: si mostra un tasto, perche su iOS la
+    // condivisione deve partire da un gesto dell'utente e non da una promise.
+    const pronto = function(file) {
+        _panelHTML('<div id="export-sheet-title">Immagine pronta</div>'
+                 + '<button class="export-sheet-btn" id="export-save-btn">'
+                 + '<span class="export-sheet-icon">💾</span>'
+                 + '<span><strong>Salva immagine</strong><br><small>Scegli “Salva immagine” per la Galleria</small></span>'
+                 + '</button>'
+                 + '<button class="export-sheet-cancel" onclick="closeExportSheet()">Chiudi</button>');
+        document.getElementById('export-save-btn').addEventListener('click', function() {
+            _condividiFile(file);
+            closeExportSheet();
+        });
+    };
+
+    if (mode === 'mobile') { _exportSectionOrig(which, pronto); return; }
 
     // Desktop: forza larghezza 1280px temporaneamente
     const layout = document.querySelector('.main-layout');
     const origStyle = layout.getAttribute('style') || '';
     layout.style.width = '1280px';
     layout.style.maxWidth = '1280px';
-    // Forza reflow
-    layout.getBoundingClientRect();
-    _exportSectionOrig(which);
-    // Ripristina dopo che html2canvas ha catturato (leggermente dopo)
-    setTimeout(function() {
+    layout.getBoundingClientRect();   // forza reflow
+    _exportSectionOrig(which, function(file) {
         layout.setAttribute('style', origStyle);
-    }, 500);
+        pronto(file);
+    });
 };
 
 // ── NAVIGATION ────────────────────────────────────────────────────────────
