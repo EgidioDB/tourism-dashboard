@@ -2049,8 +2049,15 @@
     // Fa partire tutte le animazioni non ancora scattate e restituisce una promise che si
     // risolve quando sono finite. Le durate interne arrivano a 1200ms.
     window._cefRivelaTutto = function() {
-        var n = _cefPendenti.size;
-        _cefPendenti.clear();          // le animazioni non servono piu: si va diretti al risultato
+        // Avvia le rivelazioni ancora in sospeso: alcune non hanno uno stato finale da
+        // applicare, si limitano a scoprire il grafico togliendo un velo.
+        Array.from(_cefPendenti).forEach(function(avvia) { try { avvia(); } catch (e) {} });
+        _cefPendenti.clear();
+        // I veli sono rimossi da una transizione CSS che qui non possiamo aspettare:
+        // si tolgono direttamente, altrimenti coprono il grafico nell'immagine.
+        document.querySelectorAll('.cef-reveal-ov').forEach(function(ov) {
+            var p = ov.parentElement; ov.remove(); if (p) p.style.position = '';
+        });
         var attese = [];
         document.querySelectorAll('.js-plotly-plot').forEach(function(gd) {
             if (typeof gd.__cefFinalizza !== 'function') return;
@@ -2167,6 +2174,7 @@
     function _revealOverlay(el) {
         el.style.position = 'relative';
         var ov = document.createElement('div');
+        ov.className = 'cef-reveal-ov';
         ov.style.cssText = 'position:absolute;inset:0;background:var(--card-bg,#fff);z-index:5;pointer-events:none;';
         el.appendChild(ov);
         return ov;
