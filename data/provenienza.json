@@ -1,0 +1,315 @@
+{
+ "_fonte": "ISTAT — arrivi e presenze 2024 per luogo di residenza dei clienti, dettaglio provinciale.",
+ "_nota": "Il dato e provinciale: comprende tutta la provincia di Palermo, non il solo comune di Cefalu. Serve a leggere la composizione dei mercati, non i volumi del comune.",
+ "_rigenera": "python3 scripts/build_confronti.py",
+ "provincia": "Palermo",
+ "anno": 2024,
+ "totale_italia": 1851999,
+ "totale_estero": 2348854,
+ "regioni_italiane": {
+  "SICILIA": {
+   "arr": 307443,
+   "pre": 660702
+  },
+  "LOMBARDIA": {
+   "arr": 96137,
+   "pre": 354361
+  },
+  "CAMPANIA": {
+   "arr": 47519,
+   "pre": 151182
+  },
+  "LAZIO": {
+   "arr": 50935,
+   "pre": 139199
+  },
+  "PUGLIA": {
+   "arr": 25766,
+   "pre": 77423
+  },
+  "PIEMONTE": {
+   "arr": 25438,
+   "pre": 72025
+  },
+  "EMILIA-ROMAGNA": {
+   "arr": 25602,
+   "pre": 67826
+  },
+  "VENETO": {
+   "arr": 24084,
+   "pre": 67791
+  },
+  "TOSCANA": {
+   "arr": 21409,
+   "pre": 55013
+  },
+  "CALABRIA": {
+   "arr": 20425,
+   "pre": 45511
+  },
+  "LIGURIA": {
+   "arr": 9645,
+   "pre": 26371
+  },
+  "ABRUZZO": {
+   "arr": 6562,
+   "pre": 22865
+  },
+  "SARDEGNA": {
+   "arr": 8322,
+   "pre": 21573
+  },
+  "MARCHE": {
+   "arr": 7502,
+   "pre": 20357
+  },
+  "UMBRIA": {
+   "arr": 5971,
+   "pre": 16969
+  },
+  "FRIULI-VENEZIA GIULIA": {
+   "arr": 5704,
+   "pre": 16374
+  },
+  "BASILICATA": {
+   "arr": 4086,
+   "pre": 12988
+  },
+  "TRENTO": {
+   "arr": 3082,
+   "pre": 8716
+  },
+  "BOLZANO - BOZEN": {
+   "arr": 2751,
+   "pre": 7716
+  },
+  "MOLISE": {
+   "arr": 1522,
+   "pre": 4485
+  },
+  "VALLE D'AOSTA": {
+   "arr": 739,
+   "pre": 2552
+  }
+ },
+ "paesi_esteri": {
+  "Francia": {
+   "arr": 135184,
+   "pre": 483657
+  },
+  "Germania": {
+   "arr": 93866,
+   "pre": 322589
+  },
+  "Stati Uniti d'America": {
+   "arr": 104546,
+   "pre": 262985
+  },
+  "Regno Unito": {
+   "arr": 48129,
+   "pre": 174677
+  },
+  "Polonia": {
+   "arr": 35291,
+   "pre": 135472
+  },
+  "Spagna": {
+   "arr": 49818,
+   "pre": 107063
+  },
+  "Svizzera e Liechtenstein": {
+   "arr": 28567,
+   "pre": 90597
+  },
+  "Belgio": {
+   "arr": 20720,
+   "pre": 78177
+  },
+  "Paesi Bassi": {
+   "arr": 24923,
+   "pre": 77023
+  },
+  "Australia": {
+   "arr": 22019,
+   "pre": 52225
+  },
+  "Austria": {
+   "arr": 16000,
+   "pre": 46902
+  },
+  "Canada": {
+   "arr": 17372,
+   "pre": 46575
+  },
+  "Svezia": {
+   "arr": 11041,
+   "pre": 38706
+  },
+  "Irlanda": {
+   "arr": 8631,
+   "pre": 29911
+  },
+  "Brasile": {
+   "arr": 11558,
+   "pre": 29387
+  },
+  "Danimarca": {
+   "arr": 8598,
+   "pre": 29294
+  },
+  "Argentina": {
+   "arr": 14083,
+   "pre": 27441
+  },
+  "Repubblica Ceca": {
+   "arr": 6592,
+   "pre": 24070
+  },
+  "Ungheria": {
+   "arr": 7690,
+   "pre": 21887
+  },
+  "Romania": {
+   "arr": 6543,
+   "pre": 20198
+  },
+  "Portogallo": {
+   "arr": 7008,
+   "pre": 18665
+  },
+  "Bulgaria": {
+   "arr": 5233,
+   "pre": 17011
+  },
+  "Grecia": {
+   "arr": 7765,
+   "pre": 16741
+  },
+  "Cina": {
+   "arr": 10190,
+   "pre": 16658
+  },
+  "Malta": {
+   "arr": 5764,
+   "pre": 16596
+  },
+  "Norvegia": {
+   "arr": 5027,
+   "pre": 15522
+  },
+  "Turchia": {
+   "arr": 6048,
+   "pre": 13583
+  },
+  "Ucraina": {
+   "arr": 3977,
+   "pre": 13551
+  },
+  "Israel": {
+   "arr": 4145,
+   "pre": 13514
+  },
+  "Russia": {
+   "arr": 3567,
+   "pre": 12748
+  },
+  "Giappone": {
+   "arr": 6005,
+   "pre": 11660
+  },
+  "Slovenia": {
+   "arr": 4565,
+   "pre": 9839
+  },
+  "Finlandia": {
+   "arr": 2752,
+   "pre": 9346
+  },
+  "Corea del Sud": {
+   "arr": 4878,
+   "pre": 8298
+  },
+  "Croazia": {
+   "arr": 3171,
+   "pre": 7123
+  },
+  "Messico": {
+   "arr": 3003,
+   "pre": 6413
+  },
+  "Lituania": {
+   "arr": 2368,
+   "pre": 6295
+  },
+  "Slovacchia": {
+   "arr": 1963,
+   "pre": 6034
+  },
+  "Nuova Zelanda": {
+   "arr": 2228,
+   "pre": 5210
+  },
+  "Lussemburgo": {
+   "arr": 1133,
+   "pre": 4837
+  },
+  "Lettonia": {
+   "arr": 1875,
+   "pre": 4469
+  },
+  "India": {
+   "arr": 1615,
+   "pre": 3933
+  },
+  "Sud Africa": {
+   "arr": 791,
+   "pre": 3249
+  },
+  "Estonia": {
+   "arr": 1040,
+   "pre": 2663
+  },
+  "Islanda": {
+   "arr": 726,
+   "pre": 2551
+  },
+  "Venezuela": {
+   "arr": 534,
+   "pre": 1392
+  },
+  "Egitto": {
+   "arr": 302,
+   "pre": 1078
+  },
+  "Cipro": {
+   "arr": 434,
+   "pre": 1039
+  }
+ },
+ "tipologie": {
+  "Alberghi 5 e 4 stelle": {
+   "arr": 844626,
+   "pre": 2626094
+  },
+  "Alberghi 3 stelle e RTA": {
+   "arr": 230279,
+   "pre": 585896
+  },
+  "Alloggi in Affitto g.f.i.": {
+   "arr": 177466,
+   "pre": 450946
+  },
+  "Altri es. ricettivi": {
+   "arr": 156474,
+   "pre": 376775
+  },
+  "Campeggi": {
+   "arr": 34062,
+   "pre": 100242
+  },
+  "Alberghi 2 e 1 stella": {
+   "arr": 27015,
+   "pre": 60900
+  }
+ }
+}

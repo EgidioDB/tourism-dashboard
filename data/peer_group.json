@@ -1,0 +1,73 @@
+{
+ "_fonte": "ISTAT — classificazione dei comuni per categoria turistica prevalente, aggregata sulle serie comunali 2014-2024.",
+ "_nota": "Solo i comuni con serie completa su tutti gli anni, cosi l'indice non risente di comuni presenti a intermittenza.",
+ "_rigenera": "python3 scripts/build_confronti.py",
+ "categoria": "Comuni a vocazione marittima e con vocazione culturale, storica, artistica e paesaggistica",
+ "comuni_categoria": 239,
+ "comuni_inclusi": 212,
+ "anni": [
+  2014,
+  2015,
+  2016,
+  2017,
+  2018,
+  2019,
+  2020,
+  2021,
+  2022,
+  2023,
+  2024
+ ],
+ "arr": [
+  17520342,
+  18363830,
+  19009699,
+  20057571,
+  20844309,
+  21295125,
+  10527141,
+  14596640,
+  19963239,
+  21715112,
+  22597492
+ ],
+ "pre": [
+  75265557,
+  78174946,
+  78951471,
+  82382969,
+  82280209,
+  82704816,
+  44693121,
+  62101438,
+  78485447,
+  82577310,
+  85617693
+ ],
+ "alb": [
+  48751658,
+  49748373,
+  50677711,
+  52217369,
+  51925772,
+  51803969,
+  25424250,
+  35965914,
+  47084496,
+  49576120,
+  51737090
+ ],
+ "ext": [
+  25826581,
+  27689596,
+  27492494,
+  29442374,
+  29326081,
+  29954583,
+  18895314,
+  25170013,
+  30038944,
+  31608848,
+  32952722
+ ]
+}

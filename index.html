@@ -735,6 +735,19 @@
 
     <div class="dashboard-row" style="height: auto;">
         <div class="main-panel" style="flex: 1;">
+            <div class="header-box">
+                <h1>Da Dove Arrivano <button class="info-btn" onclick="showInfo('chart_provenienza')">i</button></h1>
+                <p id="prov-sottotitolo" style="font-size:0.75em; margin:0; color: var(--text-sub);"></p>
+            </div>
+            <div style="display:flex; gap:6px; padding:0 4px 10px;">
+                <button class="season-yr-btn" id="btn-prov-estero">Estero</button>
+                <button class="season-yr-btn" id="btn-prov-italia">Italia</button>
+            </div>
+            <div id="chart-provenienza" style="height: 340px;"></div>
+    </div>
+
+    <div class="dashboard-row" style="height: auto;">
+        <div class="main-panel" style="flex: 1;">
             <div class="header-box"><h1>Permanenza Media (Giorni) <button class="info-btn" onclick="showInfo('chart_alos')">i</button></h1></div>
             <div id="chart-alos" style="height: 320px;"></div> </div>
         <div class="main-panel" style="flex: 1;">
@@ -743,6 +756,17 @@
                 <p style="font-size:0.75em; margin:0; color: var(--text-sub);">Comuni con presenze >500k (Confronto 2014 vs 2024)</p>
             </div>
             <div id="leaderboard-content" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <div class="dashboard-row" style="height: auto;">
+        <div class="main-panel" style="flex: 1;">
+            <div class="header-box">
+                <h1>Cefalù e i Comuni Simili <button class="info-btn" onclick="showInfo('chart_peer')">i</button></h1>
+                <p id="peer-sottotitolo" style="font-size:0.75em; margin:0; color: var(--text-sub);"></p>
+            </div>
+            <div id="chart-peer" style="height: 340px;"></div>
+            <div id="peer-kpi" style="display:flex; gap:16px; flex-wrap:wrap; padding:8px 4px 2px; font-size:0.78em; color:var(--text-sub);"></div>
         </div>
     </div>
 
@@ -787,6 +811,17 @@
             </div>
             <div id="chart-spesa-sog" style="height: 340px;"></div>
             <div id="spesa-sog-kpi" style="display:flex; gap:16px; flex-wrap:wrap; padding:8px 4px 2px; font-size:0.78em; color:var(--text-sub);"></div>
+        </div>
+    </div>
+
+    <div class="dashboard-row" style="height: auto;">
+        <div class="main-panel" style="flex: 1;">
+            <div class="header-box">
+                <h1>Quanto Rende il Turismo al Comune <button class="info-btn" onclick="showInfo('chart_gettito')">i</button></h1>
+                <p style="font-size:0.75em; margin:0; color: var(--text-sub);">TARI, IMU e imposta di soggiorno a confronto con le presenze</p>
+            </div>
+            <div id="chart-gettito" style="height: 340px;"></div>
+            <div id="gettito-kpi" style="display:flex; gap:16px; flex-wrap:wrap; padding:8px 4px 2px; font-size:0.78em; color:var(--text-sub);"></div>
         </div>
     </div>
 
@@ -2809,6 +2844,9 @@ const INFO = {
     chart_ricettiva_est: "<strong>Capacità Ricettiva — Numero Esercizi</strong>Numero totale di strutture ricettive registrate nel comune di Cefalù per anno. La linea verde mostra il totale; le barre mostrano la composizione per B&B e case vacanza in affitto gestite in forma imprenditoriale. Non include locazioni brevi occasionali (es. Airbnb non registrati). <em class='info-fonte'>Fonte: ISTAT — Rilevazione sulla Capacità degli Esercizi Ricettivi, 2010-2024.</em>",
     chart_ricettiva_pl: "<strong>Capacità Ricettiva — Posti Letto</strong>Numero totale di posti letto disponibili nelle strutture ricettive registrate a Cefalù. La linea verde indica il totale complessivo; le barre la composizione tra B&B e case vacanza. La crescita delle case vacanza riflette in parte l'espansione del mercato short-term rental. <em class='info-fonte'>Fonte: ISTAT — Rilevazione sulla Capacità degli Esercizi Ricettivi, 2010-2024.</em>",
 
+    chart_peer: "<strong>Cefalù e i Comuni Simili</strong><p>Confronto con le destinazioni della stessa <strong>categoria turistica ISTAT</strong> di Cefalù: <em>comuni a vocazione marittima e con vocazione culturale, storica, artistica e paesaggistica</em>. Sono 239 in Italia, e la serie aggrega quelli con dati completi su tutti gli anni.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Perché non il confronto con l’Italia</h4><p>La media nazionale comprende Roma, Milano, le località montane e i comuni non turistici: dire che Cefalù cresce più dell’Italia significa poco. Il paragone con destinazioni dello stesso tipo, mare più patrimonio storico, misura la performance a parità di vocazione.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Come si legge</h4><p>Entrambe le serie sono variazioni percentuali rispetto al 2014, quindi partono da zero. Il divario in fondo dice di quanti punti Cefalù ha superato o mancato i suoi pari.</p><p style='font-size:0.9em;'>Il panel è bilanciato: si contano solo i comuni presenti in tutti gli anni, altrimenti l’indice risentirebbe di destinazioni che entrano ed escono dalla rilevazione.</p><em class='info-fonte'>Fonte: ISTAT — classificazione dei comuni per categoria turistica prevalente, aggregata sulle serie comunali 2014-2024.</em>",
+    chart_provenienza: "<strong>Da Dove Arrivano</strong><p>Composizione dei mercati di origine: i primi dodici per notti vendute, con la quota sul totale della rispettiva vista.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Attenzione al livello del dato</h4><p>ISTAT pubblica la provenienza dei clienti <strong>per provincia</strong>, non per comune. I numeri riguardano quindi tutta la provincia di Palermo e non il solo comune di Cefalù. Servono a leggere la <em>composizione</em> dei mercati, non i volumi locali.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Le due viste</h4><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li><strong>Estero</strong>: paesi di residenza dei clienti stranieri</li><li><strong>Italia</strong>: regioni di residenza dei clienti italiani</li></ul><p>Il file ISTAT le mette sulla stessa colonna, distinguendole solo perché le regioni sono scritte in maiuscolo. Qui sono separate, perché sommarle renderebbe le percentuali prive di significato.</p><em class='info-fonte'>Fonte: ISTAT — arrivi e presenze 2024 per luogo di residenza dei clienti, dettaglio provinciale.</em>",
+    chart_gettito: "<strong>Quanto Rende il Turismo al Comune</strong><p>Le tre entrate comunali che il turismo alimenta, messe accanto alle presenze.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Perché proprio queste tre</h4><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li><strong>TARI</strong>: la tassa rifiuti scala con le presenze, non con i residenti. È la voce che più direttamente misura il carico del turismo sui servizi</li><li><strong>IMU</strong>: intercetta le seconde case, che in una località balneare pesano molto più che altrove</li><li><strong>Imposta di soggiorno</strong>: l’unica pagata direttamente dal turista</li></ul><h4 style='margin:10px 0 4px;font-size:0.95em;'>Come si legge</h4><p>Le barre sono in euro sull’asse sinistro, la linea rossa sono le notti sull’asse destro. L’indicatore <em>per notte venduta</em> divide il gettito complessivo per le presenze dell’anno.</p><p style='font-size:0.9em;'>Va letto insieme al grafico della spesa turistica: quello mostra quanto il Comune investe, questo quanto incassa. TARI e IMU però non sono destinate al turismo, finanziano servizi generali di cui beneficiano anche i residenti.</p><em class='info-fonte'>Fonte: rendiconti del Comune di Cefalù, voci TARI, IMU e imposta di soggiorno.</em>",
     chart_ranking: "<strong>Classifica di Crescita Nazionale</strong>Graduatoria dei comuni italiani con almeno 500.000 presenze annue, ordinati per crescita % 2024 vs 2014. La soglia esclude comuni con volumi troppo bassi dove una singola struttura può gonfiare artificialmente le percentuali. Cefalù è evidenziata. La posizione indica se la crescita locale sia eccezionale rispetto a destinazioni di peso comparabile nel panorama turistico nazionale. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
     cbox_crescita: "<strong>Crescita complessiva 2014→2024</strong>Variazione percentuale di arrivi e presenze tra il primo e l'ultimo anno disponibile. Gli <em>arrivi</em> contano i visitatori, le <em>presenze</em> le notti trascorse. Tocca un valore per vedere i numeri assoluti di partenza e arrivo. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
     cbox_precovid: "<strong>Pre-COVID 2014→2019</strong>Crescita del periodo pre-pandemia, che rappresenta il trend strutturale del turismo locale al netto degli shock esterni. Confrontare questo dato con il Post-COVID rivela se il comune ha recuperato o superato il ritmo precedente. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
@@ -2833,6 +2871,103 @@ const INFO = {
     chart_spesa_vs_sog: "<strong>Spesa Turismo vs Imposta di Soggiorno — Cefalù</strong><p>Confronto tra quanto il Comune <em>investe</em> in attività turistiche e quanto <em>incassa</em> dall'imposta di soggiorno. Due serie su scala comune (asse €) per capire se la tassa copre o supera la spesa.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Come leggere il grafico</h4><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li><strong>Barre blu scure</strong>: spesa turismo — anni con dato disponibile</li><li><strong>Linea arancione</strong>: imposta di soggiorno — accertamenti annui</li><li><strong>Barre semitrasparenti</strong>: classificazione DPR 194/96 (ante-riforma)</li></ul><h4 style='margin:10px 0 4px;font-size:0.95em;'>Nota metodologica</h4><p>Le serie derivano da due sistemi di classificazione diversi:</p><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li><strong>2007–2015</strong> (DPR 194/96): &quot;Funzioni nel campo turistico&quot; — Quadro 04 del consuntivo</li><li><strong>2024</strong> (D.Lgs. 118/2011 — armonizzato): Missione 07 Turismo — Conto del bilancio spese</li><li><strong>2016</strong>: € 0 (dissesto finanziario in corso)</li><li><strong>2017</strong>: € 50.082 · <strong>2018</strong>: € 165.729 (ripresa post-dissesto)</li><li><strong>2019–2023</strong>: Missione 07 Turismo — impegni da rendiconto certificato BDAP RGS</li></ul><p>Le due classificazioni coprono sostanzialmente la stessa voce di spesa e sono comparabili per analisi di tendenza, con una discontinuità metodologica al confine 2015/2016.</p><p style='font-size:0.9em;'><strong>Indicatore KPI</strong>: rapporto incasso/spesa per gli anni in cui entrambi i dati sono disponibili. Valore &gt; 1 = l'imposta supera la spesa turistica.</p><em class='info-fonte'>Fonte spesa 2007–2015: Consuntivi comunali (Quadro 04, DPR 194/96) · Fonte spesa 2016–2018: Certificati Consuntivi armonizzati (Quadro 6, Missione 07) — finanzalocale.interno.gov.it · Fonte spesa 2019–2023: BDAP RGS — openbdap.rgs.mef.gov.it · Fonte spesa 2024: Rendiconto 2024 allegati tecnici RAR (Missione 07) — egov.comune.cefalu.pa.it · Fonte imposta soggiorno: Relazioni Giunta Municipale 2020–2024.</em>",
     chart_soggiorno: "<strong>Imposta di Soggiorno — Cefalù 2013–2024</strong><p>Entrate <em>accertate</em> (competenza) dall'imposta di soggiorno: il totale iscritto a bilancio come credito maturato nell'esercizio, indipendentemente dal momento dell'incasso effettivo.</p><p>Le etichette percentuali indicano il peso dell'imposta sul totale delle entrate tributarie comunali dell'anno.</p><p>La linea verde tratteggiata sovrappone le presenze turistiche (notti) per visualizzare la correlazione tra flussi e gettito.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Fatti chiave</h4><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li>2013–2017: imposta introdotta ma con tariffa bassa e applicazione parziale</li><li>2018: primo scatto rilevante (+287% su 2017) — ampliamento a strutture extralberghiere e aumento tariffe</li><li>2019: picco pre-COVID a € 997.826</li><li>2020: crollo COVID -56%</li><li>2022: superato il picco pre-COVID con € 849.631 accertati</li><li>2023–2024: accelerazione — € 1,25M e € 1,78M. Il 2024 rappresenta il massimo storico.</li></ul><p style='font-size:0.9em;'><em>Nota: le tariffe applicate per categoria di struttura e per anno derivano da Delibere del Consiglio Comunale e non sono contenute nelle fonti finanziarie utilizzate.</em></p><em class='info-fonte'>Fonte: Rendiconto di gestione 2020–2022 (Relazioni Giunta, egov.comune.cefalu.pa.it) · Rendiconto 2024 — allegati tecnici (conto del bilancio entrate) · Valori 2023–2024 estratti da Relazione della Giunta al Rendiconto 2024. Metodo: accertamenti di competenza.</em>"
 };
+
+// ── CONFRONTI AGGIUNTIVI ──────────────────────────────────────────────────
+let peerData = null, provData = null, provVista = 'estero';
+
+// Cefalu contro i comuni della sua stessa categoria turistica ISTAT. Il confronto con la
+// media nazionale dice poco: dentro ci sono Roma e Milano. Qui il paragone e con
+// destinazioni dello stesso tipo, indicizzate al 2014 come Cefalu.
+function renderPeer(serie) {
+    const el = document.getElementById('chart-peer');
+    if (!el || !peerData || !serie) return;
+    const A = peerData.anni;
+    const bp = peerData.pre[0], bc = serie.pre_tot[serie.anni.indexOf(A[0])];
+    if (!bp || !bc) return;
+    const yPeer = peerData.pre.map(v => v / bp * 100 - 100);
+    const yCef  = A.map(a => serie.pre_tot[serie.anni.indexOf(a)] / bc * 100 - 100);
+    document.getElementById('peer-sottotitolo').textContent =
+        peerData.categoria + ' — ' + peerData.comuni_inclusi + ' comuni con serie completa';
+    cefaluAnimMixed('chart-peer', [
+        { x: A, y: yCef,  name: 'Cefalù', type: 'scatter', mode: 'lines+markers',
+          line: { color: '#e63946', width: 3 }, marker: { size: 6 } },
+        { x: A, y: yPeer, name: 'Comuni simili', type: 'scatter', mode: 'lines+markers',
+          line: { color: '#457b9d', width: 2.5, dash: 'dot' }, marker: { size: 5 } }
+    ], Object.assign({}, baseLayout, { height: 340, showlegend: true,
+        legend: { orientation: 'h', y: -0.18, x: 0 },
+        xaxis: { fixedrange: true, dtick: 2, tickformat: 'd', tickpad: 8 },
+        yaxis: { fixedrange: true, ticksuffix: '%' } }),
+        { responsive: true, displayModeBar: false });
+    const last = A.length - 1;
+    const gap = yCef[last] - yPeer[last];
+    document.getElementById('peer-kpi').innerHTML =
+        '<span>Cefalù <b style="color:#e63946">' + sgn(yCef[last]) + '%</b></span>'
+      + '<span>Comuni simili <b style="color:#457b9d">' + sgn(yPeer[last]) + '%</b></span>'
+      + '<span>Divario <b style="color:' + clr(gap) + '">' + sgn(gap) + ' punti</b></span>';
+}
+
+// Provenienza dei clienti, provincia di Palermo. Il file ISTAT mette regioni italiane e
+// paesi esteri sulla stessa colonna: qui restano due viste separate.
+function renderProvenienza(vista) {
+    if (vista) provVista = vista;
+    const el = document.getElementById('chart-provenienza');
+    if (!el || !provData) return;
+    const estero = provVista === 'estero';
+    const fonte = estero ? provData.paesi_esteri : provData.regioni_italiane;
+    const tot = estero ? provData.totale_estero : provData.totale_italia;
+    const voci = Object.entries(fonte).slice(0, 12).reverse();
+    const nomi = voci.map(v => estero ? v[0] : v[0].charAt(0) + v[0].slice(1).toLowerCase());
+    document.getElementById('prov-sottotitolo').textContent =
+        'Provincia di ' + provData.provincia + ', ' + provData.anno + ' — '
+        + (estero ? 'mercati esteri' : 'regioni italiane') + ', ' + nf(tot) + ' notti in totale';
+    ['estero','italia'].forEach(function(v) {
+        const b = document.getElementById('btn-prov-' + v);
+        if (b) b.classList.toggle('active', v === provVista);
+    });
+    // Niente cefaluAnimBars qui: azzera la serie y per l'animazione, ma in un grafico a
+    // barre orizzontali la y contiene le etichette e verrebbero cancellate.
+    Plotly.react('chart-provenienza', [{
+        x: voci.map(v => v[1].pre), y: nomi, type: 'bar', orientation: 'h',
+        marker: { color: estero ? '#457b9d' : '#24b27e' },
+        text: voci.map(v => (v[1].pre / tot * 100).toFixed(1) + '%'),
+        textposition: 'auto', hovertemplate: '%{y}: %{x:,} notti<extra></extra>'
+    }], Object.assign({}, baseLayout, { height: 340, margin: { l: 130, r: 20, t: 10, b: 40 },
+        xaxis: { fixedrange: true }, yaxis: { fixedrange: true, automargin: true } }),
+        { responsive: true, displayModeBar: false });
+}
+
+// Cosa incassa il Comune dal turismo. La TARI scala con le presenze e non con i residenti,
+// l'IMU intercetta le seconde case: insieme all'imposta di soggiorno danno il quadro che
+// la sola spesa turistica non mostra.
+function renderGettito(bil, serie) {
+    const el = document.getElementById('chart-gettito');
+    if (!el || !bil || !bil.dati || !serie) return;
+    const anni = (bil.anni || []).filter(a => a >= 2014 && a <= 2024);
+    const v = function(a, k) { const r = bil.dati[String(a)]; const x = r && r[k];
+        return typeof x === 'number' && x > 0 ? x : null; };
+    const pre = anni.map(a => { const i = serie.anni.indexOf(a); return i < 0 ? null : serie.pre_tot[i]; });
+    cefaluAnimMixed('chart-gettito', [
+        { x: anni, y: anni.map(a => v(a,'tari')), name: 'TARI', type: 'bar', marker: { color: '#457b9d' } },
+        { x: anni, y: anni.map(a => v(a,'imu')), name: 'IMU', type: 'bar', marker: { color: '#8fb8d4' } },
+        { x: anni, y: anni.map(a => v(a,'imposta_soggiorno')), name: 'Imposta di soggiorno',
+          type: 'bar', marker: { color: '#24b27e' } },
+        { x: anni, y: pre, name: 'Presenze', type: 'scatter', mode: 'lines+markers',
+          yaxis: 'y2', line: { color: '#e63946', width: 2.5 }, marker: { size: 5 } }
+    ], Object.assign({}, baseLayout, { height: 340, barmode: 'group', showlegend: true,
+        legend: { orientation: 'h', y: -0.18, x: 0 },
+        xaxis: { fixedrange: true, dtick: 2, tickformat: 'd', tickpad: 8 },
+        yaxis: { fixedrange: true },
+        yaxis2: { fixedrange: true, overlaying: 'y', side: 'right', showgrid: false } }),
+        { responsive: true, displayModeBar: false });
+    const ult = anni[anni.length - 1];
+    const tot = (v(ult,'tari')||0) + (v(ult,'imu')||0) + (v(ult,'imposta_soggiorno')||0);
+    const p = pre[pre.length - 1];
+    document.getElementById('gettito-kpi').innerHTML =
+        '<span>' + ult + ' · gettito considerato <b>€ ' + nf(tot) + '</b></span>'
+      + (p ? '<span>per notte venduta <b>€ ' + (tot/p).toFixed(2).replace('.',',') + '</b></span>' : '')
+      + '<span>di cui imposta di soggiorno <b>'
+      + ((v(ult,'imposta_soggiorno')||0)/tot*100).toFixed(1) + '%</b></span>';
+}
 
 // ── EXPLORER ─────────────────────────────────────────────────────────────
 (function() {
@@ -3129,7 +3264,9 @@ const INFO = {
         fetch(DATA_PATH + 'pre2012.json').then(r => r.json()).catch(() => null),
         fetch(DATA_PATH + 'eurostat_regioni.json').then(r => r.json()).catch(() => null),
         fetch(DATA_PATH + 'bilancio.json').then(r => r.json()).catch(() => null),
-    ]).then(([serie, stagData, popData, ricettivaData, ricIdx, irpefData, itaData, regData, pre12Data, euData, bilData]) => {
+        fetch(DATA_PATH + 'peer_group.json').then(r => r.json()).catch(() => null),
+        fetch(DATA_PATH + 'provenienza.json').then(r => r.json()).catch(() => null),
+    ]).then(([serie, stagData, popData, ricettivaData, ricIdx, irpefData, itaData, regData, pre12Data, euData, bilData, peerJson, provJson]) => {
         popolazioneData = popData;
         if (ricIdx) ricettivaIndexData = ricIdx;
 
@@ -3209,6 +3346,15 @@ const INFO = {
         syncBilancioFromJson(bilData);
         renderSoggiorno();
         renderSpesaSog();
+        // Confronti aggiuntivi
+        peerData = peerJson; provData = provJson;
+        renderPeer(serie);
+        renderProvenienza();
+        renderGettito(bilData, serie);
+        ['estero','italia'].forEach(function(v) {
+            const b = document.getElementById('btn-prov-' + v);
+            if (b) b.addEventListener('click', function() { renderProvenienza(v); });
+        });
         if (irpefData) renderRedditoTurismo(irpefData, serie);
     });
 
