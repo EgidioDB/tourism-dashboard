@@ -4120,9 +4120,11 @@ window.closeExportSheet = function() {
 };
 
 window.doExport = function(mode) {
-    closeExportSheet();
-    if (!_exportPending) return;
+    // Va letto PRIMA di chiudere il pannello: closeExportSheet azzera _exportPending,
+    // e leggerlo dopo faceva uscire la funzione senza mai esportare nulla.
     const which = _exportPending;
+    closeExportSheet();
+    if (!which) return;
     if (mode === 'mobile') { _exportSectionOrig(which); return; }
 
     // Desktop: forza larghezza 1280px temporaneamente
