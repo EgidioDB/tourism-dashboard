@@ -247,6 +247,10 @@
             transform: translateY(100%); transition: transform 0.32s cubic-bezier(0.32,0.72,0,1);
         }
         #export-sheet.active #export-panel { transform: translateY(0); }
+        .export-state-title { font-size: 1.05em; font-weight: 700; color: var(--text-main);
+            text-align: center; margin: 2px 0 6px; letter-spacing: -0.01em; }
+        .export-state-note { font-size: 0.92em; line-height: 1.5; color: var(--text-sub);
+            text-align: center; margin: 0 0 14px; }
         #export-sheet-title {
             font-size: 0.8em; font-weight: 600; color: var(--text-sub);
             text-transform: uppercase; letter-spacing: 0.06em;
@@ -3311,6 +3315,14 @@ const INFO = {
                 node.style.opacity = opacity;
                 node.style.transform = transform;
             });
+            // I contenitori sono stati allargati per la cattura: senza questo i grafici
+            // restano disegnati con le dimensioni di allora, e serve ricaricare la pagina.
+            if (window.Plotly && Plotly.Plots) {
+                document.querySelectorAll('.js-plotly-plot').forEach(function(gd) {
+                    try { Plotly.Plots.resize(gd); } catch (e) {}
+                });
+            }
+            window.dispatchEvent(new Event('resize'));
 
             canvas.toBlob(function(blob) {
                 const file = new File([blob], filename, { type: 'image/png' });
@@ -4163,9 +4175,8 @@ function _panelRipristina() {
 window.doExport = function(mode) {
     const which = _exportPending;
     if (!which) return;
-    _panelHTML('<div id="export-sheet-title">Preparo l\'immagine…</div>'
-             + '<div style="padding:18px 0 26px;text-align:center;color:var(--text-sub);font-size:0.9em;">'
-             + 'Un istante, sto catturando la sezione.</div>');
+    _panelHTML('<div class="export-state-title">Preparo l\'immagine…</div>'
+             + '<div class="export-state-note">Un istante, sto catturando la sezione.</div>');
 
     // Il file arriva qui a cattura finita: si mostra un tasto, perche su iOS la
     // condivisione deve partire da un gesto dell'utente e non da una promise.
@@ -4176,7 +4187,7 @@ window.doExport = function(mode) {
         // un file che finirebbe sepolto nei Download.
         const puoCondividere = !!(navigator.share && navigator.canShare && navigator.canShare({ files: [file] }));
         if (puoCondividere) {
-            _panelHTML('<div id="export-sheet-title">Immagine pronta</div>'
+            _panelHTML('<div class="export-state-title">Immagine pronta</div>'
                      + '<button class="export-sheet-btn" id="export-save-btn">'
                      + '<span class="export-sheet-icon">💾</span>'
                      + '<span><strong>Salva immagine</strong><br><small>Scegli “Salva immagine” per la Galleria</small></span>'
@@ -4189,9 +4200,8 @@ window.doExport = function(mode) {
             return;
         }
         const url = URL.createObjectURL(file);
-        _panelHTML('<div id="export-sheet-title">Tieni premuta l\'immagine</div>'
-                 + '<div style="padding:0 0 10px;text-align:center;color:var(--text-sub);font-size:0.85em;line-height:1.5;">'
-                 + 'Poi scegli <strong>Salva immagine</strong>.<br>'
+        _panelHTML('<div class="export-state-title">Tieni premuta l\'immagine</div>'
+                 + '<div class="export-state-note">Poi scegli <strong>Salva immagine</strong>.<br>'
                  + 'Il salvataggio diretto in Galleria richiede una connessione sicura (https).</div>'
                  + '<img src="' + url + '" alt="' + file.name + '" '
                  + 'style="width:100%;max-height:46vh;object-fit:contain;border-radius:10px;'
