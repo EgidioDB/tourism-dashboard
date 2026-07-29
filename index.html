@@ -2028,13 +2028,43 @@
     const baseLayout = { margin: { l: 40, r: 15, t: 15, b: 45 }, height: 320, plot_bgcolor: '#ffffff', paper_bgcolor: 'rgba(0,0,0,0)', showlegend: false, dragmode: false, displayModeBar: false, xaxis: { tickpad: 8} };
 
     // ── Animazioni scroll Cefalù ──────────────────────────────────────────
+    // Ogni grafico animato si disegna a zero e si riempie quando entra in vista. In fase di
+    // esportazione questo e un problema: le sezioni piu in basso non sono mai state scrollate,
+    // quindi verrebbero catturate vuote. Qui si tiene traccia delle animazioni ancora in
+    // sospeso, cosi _cefRivelaTutto() puo farle partire tutte prima dello scatto.
+    var _cefPendenti = new Set();
     function _cefObs(el, fn) {
+        var avvia = function() {
+            if (!_cefPendenti.has(avvia)) return;   // gia partita
+            _cefPendenti.delete(avvia);
+            fn();
+        };
+        _cefPendenti.add(avvia);
         var obs = new IntersectionObserver(function(e) {
             if (!e[0].isIntersecting) return;
-            obs.disconnect(); fn();
+            obs.disconnect(); avvia();
         }, { threshold: 0.25 });
         obs.observe(el);
     }
+    // Fa partire tutte le animazioni non ancora scattate e restituisce una promise che si
+    // risolve quando sono finite. Le durate interne arrivano a 1200ms.
+    window._cefRivelaTutto = function() {
+        var n = _cefPendenti.size;
+        _cefPendenti.clear();          // le animazioni non servono piu: si va diretti al risultato
+        var attese = [];
+        document.querySelectorAll('.js-plotly-plot').forEach(function(gd) {
+            if (typeof gd.__cefFinalizza !== 'function') return;
+            try { var p = gd.__cefFinalizza(); if (p && p.then) attese.push(p); } catch (e) {}
+        });
+        // Sblocca anche le righe della classifica, animate via CSS
+        document.querySelectorAll('#leaderboard-content .lb-anim').forEach(function(r) {
+            r.style.animationPlayState = 'running';
+            r.style.animationDelay = '0s';
+        });
+        return Promise.all(attese).then(function() {
+            return new Promise(function(res) { setTimeout(res, attese.length ? 120 : 0); });
+        });
+    };
     function cefaluAnimBars(elId, traces, layout, cfg) {
         var el = document.getElementById(elId);
         if (!el) return;
@@ -2056,6 +2086,9 @@
         var animTraces = traces.map(function(t) { return Object.assign({}, t, { text: undefined, textposition: undefined }); });
         var zero = animTraces.map(function(t) { return Object.assign({}, t, { y: (t.y||[]).map(function(){ return 0; }) }); });
         Plotly.newPlot(elId, zero, fixedLayout, cfg);
+        // Stato finale immediato, senza animazione: serve all'esportazione, dove non si puo
+        // aspettare requestAnimationFrame e i grafici finirebbero nell'immagine vuoti.
+        el.__cefFinalizza = function() { return Plotly.react(elId, traces, fixedLayout, cfg); };
         _cefObs(el, function() {
             var start = null, DUR = 750;
             function fr(ts) {
@@ -2186,6 +2219,13 @@
         hideStyle.textContent = '#' + elId + ' .scatterlayer .trace .lines path, #' + elId + ' .scatterlayer .trace .points path { opacity: 0 !important; }';
         document.head.appendChild(hideStyle);
 
+        el.__cefFinalizza = function() {
+            return Plotly.react(elId, traces, fixedLayout, cfg).then(function() {
+                hideStyle.remove();
+                el.querySelectorAll('.scatterlayer .trace .lines path, .scatterlayer .trace .points path')
+                  .forEach(function(p) { p.style.opacity = ''; p.style.strokeDasharray = ''; p.style.strokeDashoffset = ''; });
+            });
+        };
         Plotly.newPlot(elId, zeroTraces, fixedLayout, cfg).then(function() {
             _cefObs(el, function() {
 
@@ -3302,6 +3342,10 @@ const INFO = {
             }
         });
 
+        // Prima dello scatto fa partire le animazioni ancora in sospeso: senza questo i
+        // grafici delle sezioni mai scrollate finiscono nell'immagine vuoti, con i soli assi.
+        const pronte = (window._cefRivelaTutto ? window._cefRivelaTutto() : Promise.resolve());
+        pronte.then(function() {
         html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#f8f9fb' }).then(canvas => {
             // Ripristina stili
             saved.forEach(({ node, oy, ov, h, mh }) => {
@@ -3343,6 +3387,7 @@ const INFO = {
                     a.click();
                 }
             }, 'image/png');
+        });
         });
     };
 
