@@ -767,8 +767,8 @@
             <div id="chart-origin" style="height: 320px;"></div> </div>
     </div>
 
-    <div class="sezione-prov" id="sez-provincia">
-      <button class="sez-prov-toggle" onclick="togglePannelloProvincia()" aria-expanded="true">
+    <div class="sezione-prov chiusa" id="sez-provincia">
+      <button class="sez-prov-toggle" onclick="togglePannelloProvincia()" aria-expanded="false">
         <span class="sez-prov-chevron">▾</span>
         <span>Provincia di Palermo — chi arriva e dove dorme</span>
         <em>fotografia 2024, non serie storica</em>
@@ -792,7 +792,8 @@
                 <p id="tip-sottotitolo" style="font-size:0.75em; margin:0; color: var(--text-sub);"></p>
             </div>
             <div id="chart-tipologie" style="height: 340px;"></div>
-            <div id="tip-kpi" style="display:flex; gap:16px; flex-wrap:wrap; padding:8px 4px 2px; font-size:0.78em; color:var(--text-sub);"></div>
+            <div id="tip-legenda" style="display:flex; gap:6px 14px; flex-wrap:wrap; padding:10px 4px 2px; font-size:0.78em; color:var(--text-main);"></div>
+            <div id="tip-kpi" style="display:flex; gap:16px; flex-wrap:wrap; padding:6px 4px 2px; font-size:0.78em; color:var(--text-sub); border-top:1px solid #eef1f5; margin-top:6px;"></div>
         </div>
     </div>
       </div>
@@ -3193,17 +3194,28 @@ function renderTipologie() {
         marker: { colors: voci.map(v => colore(v[0])), line: { width: 2, color: '#ffffff' } },
         textinfo: 'label+percent root',
         textfont: { color: '#ffffff', size: 13 },
+        insidetextfont: { color: '#ffffff', size: 13 },
         customdata: voci.map(v => [v[1].pre, v[1].pre / v[1].arr]),
         hovertemplate: '<b>%{label}</b><br>%{customdata[0]:,.0f} notti'
                      + '<br>permanenza %{customdata[1]:.1f} notti<extra></extra>',
         branchvalues: 'remainder', sort: true, pathbar: { visible: false }
     }];
-    const lay = Object.assign({}, baseLayout, { height: 340, margin: { l: 4, r: 4, t: 4, b: 4 } });
+    // Sotto una certa dimensione l'etichetta non ci sta e Plotly la ruota o la taglia:
+    // meglio nasconderla, tanto la legenda qui sotto elenca tutte le voci.
+    const lay = Object.assign({}, baseLayout, { height: 300, margin: { l: 4, r: 4, t: 4, b: 4 },
+        uniformtext: { minsize: 12, mode: 'hide' } });
     const cfg = { responsive: true, displayModeBar: false };
     // Il treemap non ha assi da animare: si disegna e basta, la rivelazione la fa il fade
     // del pannello. Va pero registrato come gia finalizzato per l'export.
     Plotly.react('chart-tipologie', tracce, lay, cfg);
     el.__cefAnimato = true;
+    // Legenda esplicita: e l'unico posto dove si leggono anche le voci piccole.
+    document.getElementById('tip-legenda').innerHTML = voci.map(function(v) {
+        return '<span style="display:inline-flex;align-items:center;gap:6px;">'
+             + '<i style="width:10px;height:10px;border-radius:2px;flex:none;background:'
+             + colore(v[0]) + '"></i>' + nome(v[0]) + ' <b>'
+             + (v[1].pre / tot * 100).toFixed(1).replace('.', ',') + '%</b></span>';
+    }).join('');
     const alto = voci.filter(v => /5 e 4 stelle/.test(v[0])).reduce((s,v)=>s+v[1].pre,0);
     const extra = voci.filter(v => /Alloggi|Altri|Campeggi/.test(v[0])).reduce((s,v)=>s+v[1].pre,0);
     document.getElementById('tip-kpi').innerHTML =
