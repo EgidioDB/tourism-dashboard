@@ -2451,8 +2451,12 @@
             fixedLayout.yaxis2 = Object.assign({}, layout.yaxis2, { fixedrange: true });
         }
 
+        // Le aree impilate non hanno un tracciato da disegnare (line.width 0): la loro
+        // rivelazione e la stessa delle barre, il valore che sale da zero.
+        function scalabile(t) { return t.type === 'bar' || !!t.stackgroup; }
+
         var zeroTraces = traces.map(function(t) {
-            if (t.type === 'bar') {
+            if (scalabile(t)) {
                 return Object.assign({}, t, {
                     y: (t.y || []).map(function() { return 0; }),
                     text: undefined, textposition: undefined
@@ -2483,7 +2487,7 @@
                     var e = 1 - Math.pow(1 - p, 3);
                     var isLast = p >= 1;
                     var currentTraces = traces.map(function(t) {
-                        if (t.type !== 'bar') return t;
+                        if (!scalabile(t)) return t;
                         return Object.assign({}, t, {
                             y: (t.y || []).map(function(v) { return v != null ? v * e : null; }),
                             text: isLast ? t.text : undefined,
