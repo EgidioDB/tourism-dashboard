@@ -792,8 +792,7 @@
                 <p id="tip-sottotitolo" style="font-size:0.75em; margin:0; color: var(--text-sub);"></p>
             </div>
             <div id="chart-tipologie" style="height: 340px;"></div>
-            <div id="tip-legenda" style="display:flex; gap:6px 14px; flex-wrap:wrap; padding:10px 4px 2px; font-size:0.78em; color:var(--text-main);"></div>
-            <div id="tip-kpi" style="display:flex; gap:16px; flex-wrap:wrap; padding:6px 4px 2px; font-size:0.78em; color:var(--text-sub); border-top:1px solid #eef1f5; margin-top:6px;"></div>
+            <div id="tip-kpi" style="display:flex; gap:16px; flex-wrap:wrap; padding:8px 4px 2px; font-size:0.78em; color:var(--text-sub);"></div>
         </div>
     </div>
       </div>
@@ -3179,48 +3178,35 @@ function renderTipologie() {
     document.getElementById('tip-sottotitolo').textContent =
         'Provincia di ' + provData.provincia + ', ' + provData.anno
         + ' — ripartizione delle ' + nf(tot) + ' notti';
-    // Non e una classifica ma la ripartizione di un totale unico: il treemap lo dice
-    // subito, e distingue questo pannello dalle barre della provenienza qui accanto.
+    // Provato il treemap: con sei voci di cui due sotto il 3% le tessere piccole restano
+    // mute e le tre extra-alberghiere hanno lo stesso verde. Le barre si leggono e basta.
+    // A distinguere il pannello dal resto ci pensa la sezione richiudibile.
     const nome = v => v.replace('Alloggi in Affitto g.f.i.', 'Alloggi in affitto')
                        .replace('Altri es. ricettivi', 'Altri esercizi');
     const colore = v => /5 e 4 stelle/.test(v) ? '#1d3557'
                       : /3 stelle/.test(v) ? '#457b9d'
-                      : /2 e 1 stella/.test(v) ? '#8fb8d4' : '#24b27e';
+                      : /2 e 1 stella/.test(v) ? '#8fb8d4'
+                      : /Alloggi/.test(v) ? '#24b27e'
+                      : /Altri/.test(v) ? '#5cc79b' : '#9adcc0';
     const tracce = [{
-        type: 'treemap',
-        labels: voci.map(v => nome(v[0])),
-        parents: voci.map(() => ''),
-        values: voci.map(v => v[1].pre),
-        marker: { colors: voci.map(v => colore(v[0])), line: { width: 2, color: '#ffffff' } },
-        textinfo: 'label+percent root',
-        textfont: { color: '#ffffff', size: 13 },
-        insidetextfont: { color: '#ffffff', size: 13 },
-        customdata: voci.map(v => [v[1].pre, v[1].pre / v[1].arr]),
-        hovertemplate: '<b>%{label}</b><br>%{customdata[0]:,.0f} notti'
-                     + '<br>permanenza %{customdata[1]:.1f} notti<extra></extra>',
-        branchvalues: 'remainder', sort: true, pathbar: { visible: false }
+        x: ord.map(v => v[1].pre), y: ord.map(v => nome(v[0])),
+        type: 'bar', orientation: 'h',
+        marker: { color: ord.map(v => colore(v[0])) },
+        text: ord.map(v => (v[1].pre / tot * 100).toFixed(1).replace('.', ',') + '%'),
+        textposition: 'auto', cliponaxis: false,
+        customdata: ord.map(v => v[1].pre / v[1].arr),
+        hovertemplate: '<b>%{y}</b><br>%{x:,.0f} notti<br>permanenza %{customdata:.1f} notti<extra></extra>'
     }];
-    // Sotto una certa dimensione l'etichetta non ci sta e Plotly la ruota o la taglia:
-    // meglio nasconderla, tanto la legenda qui sotto elenca tutte le voci.
-    const lay = Object.assign({}, baseLayout, { height: 300, margin: { l: 4, r: 4, t: 4, b: 4 },
-        uniformtext: { minsize: 12, mode: 'hide' } });
+    const lay = Object.assign({}, baseLayout, { height: 300, margin: { l: 140, r: 40, t: 10, b: 40 },
+        xaxis: { fixedrange: true }, yaxis: { fixedrange: true, automargin: true } });
     const cfg = { responsive: true, displayModeBar: false };
-    // Il treemap non ha assi da animare: si disegna e basta, la rivelazione la fa il fade
-    // del pannello. Va pero registrato come gia finalizzato per l'export.
-    Plotly.react('chart-tipologie', tracce, lay, cfg);
-    el.__cefAnimato = true;
-    // Legenda esplicita: e l'unico posto dove si leggono anche le voci piccole.
-    document.getElementById('tip-legenda').innerHTML = voci.map(function(v) {
-        return '<span style="display:inline-flex;align-items:center;gap:6px;">'
-             + '<i style="width:10px;height:10px;border-radius:2px;flex:none;background:'
-             + colore(v[0]) + '"></i>' + nome(v[0]) + ' <b>'
-             + (v[1].pre / tot * 100).toFixed(1).replace('.', ',') + '%</b></span>';
-    }).join('');
+    if (!el.__cefAnimato) { el.__cefAnimato = true; cefaluAnimBarsH('chart-tipologie', tracce, lay, cfg); }
+    else { Plotly.react('chart-tipologie', tracce, lay, cfg); }
     const alto = voci.filter(v => /5 e 4 stelle/.test(v[0])).reduce((s,v)=>s+v[1].pre,0);
     const extra = voci.filter(v => /Alloggi|Altri|Campeggi/.test(v[0])).reduce((s,v)=>s+v[1].pre,0);
     document.getElementById('tip-kpi').innerHTML =
-        '<span>Alberghi 4 e 5 stelle <b>' + (alto/tot*100).toFixed(1) + '%</b></span>'
-      + '<span>Extra-alberghiero <b>' + (extra/tot*100).toFixed(1) + '%</b></span>';
+        '<span>Alberghi 4 e 5 stelle <b>' + (alto/tot*100).toFixed(1).replace('.', ',') + '%</b></span>'
+      + '<span>Extra-alberghiero <b>' + (extra/tot*100).toFixed(1).replace('.', ',') + '%</b></span>';
 }
 
 // Cosa incassa il Comune dal turismo. La TARI scala con le presenze e non con i residenti,
