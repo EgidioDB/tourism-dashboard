@@ -457,6 +457,24 @@
             max-height:260px; overflow-y:auto; display:none;
         }
         .explorer-dropdown.open { display:block; }
+        /* I due grafici sulla provincia non sono serie storiche su Cefalu: stanno dentro
+           una sezione dichiarata e richiudibile, per non farli leggere come il resto. */
+        /* .cefalu-section e un flex: senza base esplicita la sezione si stringe sul bordo. */
+        .sezione-prov { margin: 0 0 20px; border: 1px dashed #d6dbe3; border-radius: 12px;
+            background: rgba(255,255,255,0.35); flex: 1 1 100%; width: 100%;
+            box-sizing: border-box; align-self: stretch; }
+        .sez-prov-toggle { display:flex; align-items:center; gap:10px; width:100%;
+            background:none; border:0; cursor:pointer; padding:12px 16px; text-align:left;
+            font-family:inherit; font-size:0.85em; font-weight:700; letter-spacing:.04em;
+            text-transform:uppercase; color:var(--text-sub); }
+        .sez-prov-toggle em { font-weight:400; text-transform:none; letter-spacing:0;
+            opacity:.8; font-size:0.92em; }
+        .sez-prov-chevron { transition: transform .2s; display:inline-block; }
+        .sezione-prov.chiusa .sez-prov-chevron { transform: rotate(-90deg); }
+        .sezione-prov.chiusa .sez-prov-corpo { display:none; }
+        .sez-prov-corpo { padding: 0 12px 4px; }
+        /* Senza min-width:0 il treemap si prende piu spazio delle barre accanto. */
+        .sez-prov-corpo .main-panel { flex: 1 1 0 !important; min-width: 0; }
         .drop-item {
             padding:9px 13px; cursor:pointer; font-size:0.85em;
             display:flex; justify-content:space-between; align-items:center;
@@ -749,6 +767,13 @@
             <div id="chart-origin" style="height: 320px;"></div> </div>
     </div>
 
+    <div class="sezione-prov" id="sez-provincia">
+      <button class="sez-prov-toggle" onclick="togglePannelloProvincia()" aria-expanded="true">
+        <span class="sez-prov-chevron">▾</span>
+        <span>Provincia di Palermo — chi arriva e dove dorme</span>
+        <em>fotografia 2024, non serie storica</em>
+      </button>
+      <div class="sez-prov-corpo">
     <div class="dashboard-row" style="height: auto;">
         <div class="main-panel" style="flex: 1;">
             <div class="header-box">
@@ -769,6 +794,8 @@
             <div id="chart-tipologie" style="height: 340px;"></div>
             <div id="tip-kpi" style="display:flex; gap:16px; flex-wrap:wrap; padding:8px 4px 2px; font-size:0.78em; color:var(--text-sub);"></div>
         </div>
+    </div>
+      </div>
     </div>
 
     <div class="dashboard-row" style="height: auto;">
@@ -2201,6 +2228,13 @@
         // applicare, si limitano a scoprire il grafico togliendo un velo.
         Array.from(_cefPendenti).forEach(function(avvia) { try { avvia(); } catch (e) {} });
         _cefPendenti.clear();
+        // Una sezione richiusa dall'utente uscirebbe vuota dall'immagine: si riapre.
+        document.querySelectorAll('.sezione-prov.chiusa').forEach(function(sez) {
+            sez.classList.remove('chiusa');
+            sez.querySelectorAll('.js-plotly-plot').forEach(function(gd) {
+                try { Plotly.Plots.resize(gd); } catch (e) {}
+            });
+        });
         // I veli sono rimossi da una transizione CSS che qui non possiamo aspettare:
         // si tolgono direttamente, altrimenti coprono il grafico nell'immagine.
         document.querySelectorAll('.cef-reveal-ov').forEach(function(ov) {
@@ -3122,6 +3156,19 @@ function renderProvenienza(vista) {
 // Composizione della domanda per tipologia ricettiva. E una fotografia del 2024 e
 // riguarda la provincia: il file ISTAT sulla provenienza non ha ne altri anni ne il
 // dettaglio comunale. Dice pero dove finiscono davvero le notti vendute.
+// Plotly dimensiona sul contenitore: riaprendo la sezione i grafici sono larghi 0
+// finche non si forza il resize.
+function togglePannelloProvincia() {
+    const sez = document.getElementById('sez-provincia');
+    if (!sez) return;
+    const chiusa = sez.classList.toggle('chiusa');
+    const btn = sez.querySelector('.sez-prov-toggle');
+    if (btn) btn.setAttribute('aria-expanded', String(!chiusa));
+    if (!chiusa) sez.querySelectorAll('.js-plotly-plot').forEach(function(gd) {
+        try { Plotly.Plots.resize(gd); } catch (e) {}
+    });
+}
+
 function renderTipologie() {
     const el = document.getElementById('chart-tipologie');
     if (!el || !provData || !provData.tipologie) return;
@@ -3131,24 +3178,32 @@ function renderTipologie() {
     document.getElementById('tip-sottotitolo').textContent =
         'Provincia di ' + provData.provincia + ', ' + provData.anno
         + ' — ripartizione delle ' + nf(tot) + ' notti';
+    // Non e una classifica ma la ripartizione di un totale unico: il treemap lo dice
+    // subito, e distingue questo pannello dalle barre della provenienza qui accanto.
+    const nome = v => v.replace('Alloggi in Affitto g.f.i.', 'Alloggi in affitto')
+                       .replace('Altri es. ricettivi', 'Altri esercizi');
+    const colore = v => /5 e 4 stelle/.test(v) ? '#1d3557'
+                      : /3 stelle/.test(v) ? '#457b9d'
+                      : /2 e 1 stella/.test(v) ? '#8fb8d4' : '#24b27e';
     const tracce = [{
-        x: ord.map(v => v[1].pre),
-        y: ord.map(v => v[0].replace('Alloggi in Affitto g.f.i.', 'Alloggi in affitto')
-                            .replace('Altri es. ricettivi', 'Altri esercizi')),
-        type: 'bar', orientation: 'h',
-        marker: { color: ord.map(v => /5 e 4 stelle/.test(v[0]) ? '#1d3557'
-                        : /3 stelle/.test(v[0]) ? '#457b9d'
-                        : /2 e 1 stella/.test(v[0]) ? '#8fb8d4' : '#24b27e') },
-        text: ord.map(v => (v[1].pre / tot * 100).toFixed(1) + '%'),
-        textposition: 'auto',
-        customdata: ord.map(v => v[1].pre / v[1].arr),
-        hovertemplate: '<b>%{y}</b><br>%{x:,.0f} notti<br>permanenza %{customdata:.1f} notti<extra></extra>'
+        type: 'treemap',
+        labels: voci.map(v => nome(v[0])),
+        parents: voci.map(() => ''),
+        values: voci.map(v => v[1].pre),
+        marker: { colors: voci.map(v => colore(v[0])), line: { width: 2, color: '#ffffff' } },
+        textinfo: 'label+percent root',
+        textfont: { color: '#ffffff', size: 13 },
+        customdata: voci.map(v => [v[1].pre, v[1].pre / v[1].arr]),
+        hovertemplate: '<b>%{label}</b><br>%{customdata[0]:,.0f} notti'
+                     + '<br>permanenza %{customdata[1]:.1f} notti<extra></extra>',
+        branchvalues: 'remainder', sort: true, pathbar: { visible: false }
     }];
-    const lay = Object.assign({}, baseLayout, { height: 340, margin: { l: 140, r: 20, t: 10, b: 40 },
-        xaxis: { fixedrange: true }, yaxis: { fixedrange: true, automargin: true } });
+    const lay = Object.assign({}, baseLayout, { height: 340, margin: { l: 4, r: 4, t: 4, b: 4 } });
     const cfg = { responsive: true, displayModeBar: false };
-    if (!el.__cefAnimato) { el.__cefAnimato = true; cefaluAnimBarsH('chart-tipologie', tracce, lay, cfg); }
-    else { Plotly.react('chart-tipologie', tracce, lay, cfg); }
+    // Il treemap non ha assi da animare: si disegna e basta, la rivelazione la fa il fade
+    // del pannello. Va pero registrato come gia finalizzato per l'export.
+    Plotly.react('chart-tipologie', tracce, lay, cfg);
+    el.__cefAnimato = true;
     const alto = voci.filter(v => /5 e 4 stelle/.test(v[0])).reduce((s,v)=>s+v[1].pre,0);
     const extra = voci.filter(v => /Alloggi|Altri|Campeggi/.test(v[0])).reduce((s,v)=>s+v[1].pre,0);
     document.getElementById('tip-kpi').innerHTML =
