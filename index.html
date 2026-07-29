@@ -1039,7 +1039,6 @@
         const data = volumeData[name] || volumeData["Italia"];
         const sumPre = data.pre[0] + data.pre[1];
         const sumPost = data.post[0] + data.post[1];
-        const sumTot = sumPre + sumPost;
 
         const layoutBase = { 
             showlegend: true, 
@@ -1060,22 +1059,27 @@
             + ' (anno base) e ' + annoUlt + ' — non la somma del periodo';
 
         // 4. Inserisco <br><br> prima di ogni testo per spingerlo giù di ~30px dalla torta
+        // Le due annate non si sommano in un totale che voglia dire qualcosa: al posto
+        // della somma si mostra la variazione fra l'una e l'altra.
+        const varTot = sumPre ? (sumPost / sumPre - 1) * 100 : null;
+        const segnoVar = varTot == null ? 'n.d.'
+            : (varTot >= 0 ? '+' : '') + varTot.toFixed(1).replace('.', ',') + '%';
         Plotly.react('donut-total', [{
-            values: [sumPre, sumPost], labels: ['Pre-2012', 'Post-2012'],
+            values: [sumPre, sumPost], labels: [String(annoBase), String(annoUlt)],
             type: 'pie', hole: .6, marker: { colors: ['#99aab5', '#457b9d'] },
-            title: { text: `<br><br><b>CONFRONTO ERE</b><br><span style="font-size:10px">${formatNotti(sumTot)}</span>`, position: 'bottom center' }
+            title: { text: `<br><br><b>${annoBase} VS ${annoUlt}</b><br><span style="font-size:10px">${segnoVar}</span>`, position: 'bottom center' }
         }], layoutBase);
 
         Plotly.react('donut-pre', [{
             values: data.pre, labels: ['Alberghiero', 'Extra-Alb'],
             type: 'pie', hole: .6, marker: { colors: ['#5b6b7a', '#7a8a99'] },
-            title: { text: `<br><br><b>DETTAGLIO PRE-2012</b><br><span style="font-size:10px">${formatNotti(sumPre)}</span>`, position: 'bottom center' }
+            title: { text: `<br><br><b>DETTAGLIO ${annoBase}</b><br><span style="font-size:10px">${formatNotti(sumPre)}</span>`, position: 'bottom center' }
         }], layoutBase);
 
         Plotly.react('donut-post', [{
             values: data.post, labels: ['Alberghiero', 'Extra-Alb'],
             type: 'pie', hole: .6, marker: { colors: ['#457b9d', '#24b27e'] },
-            title: { text: `<br><br><b>DETTAGLIO POST-2012</b><br><span style="font-size:10px">${formatNotti(sumPost)}</span>`, position: 'bottom center' }
+            title: { text: `<br><br><b>DETTAGLIO ${annoUlt}</b><br><span style="font-size:10px">${formatNotti(sumPost)}</span>`, position: 'bottom center' }
         }], layoutBase);
     }
 
@@ -3045,7 +3049,7 @@ const INFO = {
 
     top_gap: "<strong>Gap vs Media Nazionale al 2024</strong>Differenza in punti indice fra il comune e l'Italia, entrambi con base 2014=100. Positivo = il comune cresce più della media; negativo = sotto la media. Indica se la performance sia strutturalmente superiore al sistema o legata al rimbalzo post-COVID. <em class='info-fonte'>Fonte: ISTAT dati comunali + nazionali.</em>",
 
-    chart_donuts: "<strong>Analisi Volumi Presenze — Donut</strong>Tre grafici mostrano la composizione delle presenze (notti) per tipologia ricettiva: • Totale 2024 — distribuzione assoluta alberghiero/extra-alb. • Pre-2012 (2004) — composizione nel primo anno disponibile. • Post-2012 — confronto quote 2024 vs 2012. I valori mostrati sono presenze assolute (notti). <em class='info-fonte'>Fonte: ISTAT Circoscrizioni Turistiche 2004-2013 + dati comunali Cefalù 2014-2024.</em>",
+    chart_donuts: "<strong>Analisi Volumi Presenze</strong><p>Tre ciambelle sulla composizione delle presenze (notti) per tipologia ricettiva. Non coprono un periodo: sono <strong>due sole annate</strong>, il 2012 che fa da base a tutta la dashboard e il 2024, l'ultimo disponibile.</p><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li><strong>2012 vs 2024</strong> — il peso relativo delle due annate, con sotto la variazione fra l'una e l'altra</li><li><strong>Dettaglio 2012</strong> — alberghiero ed extra-alberghiero nell'anno base</li><li><strong>Dettaglio 2024</strong> — la stessa ripartizione oggi</li></ul><p>Gli anni intermedi non entrano in questi grafici: per l'andamento anno per anno ci sono le serie sopra. La prima ciambella mostrava la somma delle due annate, che non e una quantita con un significato, ed e stata sostituita dalla variazione.</p><em class='info-fonte'>Fonte: ISTAT Circoscrizioni Turistiche 2004-2013 + dati comunali 2014-2024 · per le regioni Eurostat per lo split alberghiero/extra.</em>",
 
     chart_map: "<strong>Analisi Geografica — Mappa Italia</strong>Clicca su una regione per visualizzare: dati Pre-2012, Post-2012 e Pre-COVID regionali (indice base 2014=100) e il comune con la maggiore crescita % di presenze 2024 vs 2014 tra quelli con almeno 500.000 presenze annue (Top City). La soglia di 500k esclude comuni con volumi troppo bassi per costituire una destinazione turistica strutturata. I dati regionali provengono dalle statistiche ufficiali ISTAT. <em class='info-fonte'>Fonte: ISTAT dati comunali e regionali 2014-2024.</em>",
 
