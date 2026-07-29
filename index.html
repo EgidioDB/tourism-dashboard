@@ -3354,6 +3354,16 @@ const INFO = {
         // grafici delle sezioni mai scrollate finiscono nell'immagine vuoti, con i soli assi.
         const pronte = (window._cefRivelaTutto ? window._cefRivelaTutto() : Promise.resolve());
         pronte.then(function() {
+            // Il contenitore puo essere stato allargato da chi ha chiamato (vista desktop) e
+            // i grafici sarebbero rimasti disegnati alla larghezza precedente: piccoli dentro
+            // un riquadro largo. Vanno ridisegnati adesso, prima dello scatto.
+            if (window.Plotly && Plotly.Plots) {
+                el.querySelectorAll('.js-plotly-plot').forEach(function(gd) {
+                    try { Plotly.Plots.resize(gd); } catch (e) {}
+                });
+            }
+            return new Promise(function(r) { setTimeout(r, 120); });
+        }).then(function() {
         html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#f8f9fb' }).then(canvas => {
             // Ripristina stili
             saved.forEach(({ node, oy, ov, h, mh }) => {
@@ -4275,6 +4285,17 @@ window.doExport = function(mode) {
     layout.getBoundingClientRect();   // forza reflow
     _exportSectionOrig(which, function(file) {
         layout.setAttribute('style', origStyle);
+        // Il resize dentro exportSection e avvenuto con la larghezza ancora forzata: senza
+        // questo secondo passaggio i grafici resterebbero disegnati a 1226px in un riquadro
+        // stretto, e servirebbe ricaricare la pagina.
+        // Il ridisegno va differito: chiamato subito trova i contenitori non ancora
+        // rifluiti e lascia gli SVG alla larghezza della cattura.
+        setTimeout(function() {
+            if (!window.Plotly || !Plotly.Plots) return;
+            document.querySelectorAll('.js-plotly-plot').forEach(function(gd) {
+                try { Plotly.Plots.resize(gd); } catch (e) {}
+            });
+        }, 60);
         pronto(file);
     });
 };
