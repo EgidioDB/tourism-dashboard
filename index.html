@@ -4152,6 +4152,8 @@ function _panelHTML(html) {
     p.innerHTML = html;
 }
 function _panelRipristina() {
+    const p0 = document.getElementById('export-panel');
+    if (p0 && p0.dataset.blobUrl) { URL.revokeObjectURL(p0.dataset.blobUrl); delete p0.dataset.blobUrl; }
     if (_exportPanelHTML !== null) {
         document.getElementById('export-panel').innerHTML = _exportPanelHTML;
         _exportPanelHTML = null;
@@ -4168,16 +4170,36 @@ window.doExport = function(mode) {
     // Il file arriva qui a cattura finita: si mostra un tasto, perche su iOS la
     // condivisione deve partire da un gesto dell'utente e non da una promise.
     const pronto = function(file) {
-        _panelHTML('<div id="export-sheet-title">Immagine pronta</div>'
-                 + '<button class="export-sheet-btn" id="export-save-btn">'
-                 + '<span class="export-sheet-icon">💾</span>'
-                 + '<span><strong>Salva immagine</strong><br><small>Scegli “Salva immagine” per la Galleria</small></span>'
-                 + '</button>'
+        // La Web Share API esiste solo in contesto sicuro: su https o localhost si apre il
+        // menu di sistema e si salva in Galleria. Via http in rete locale non e disponibile,
+        // e allora conviene mostrare l'immagine qui, da tenere premuta, invece di scaricare
+        // un file che finirebbe sepolto nei Download.
+        const puoCondividere = !!(navigator.share && navigator.canShare && navigator.canShare({ files: [file] }));
+        if (puoCondividere) {
+            _panelHTML('<div id="export-sheet-title">Immagine pronta</div>'
+                     + '<button class="export-sheet-btn" id="export-save-btn">'
+                     + '<span class="export-sheet-icon">💾</span>'
+                     + '<span><strong>Salva immagine</strong><br><small>Scegli “Salva immagine” per la Galleria</small></span>'
+                     + '</button>'
+                     + '<button class="export-sheet-cancel" onclick="closeExportSheet()">Chiudi</button>');
+            document.getElementById('export-save-btn').addEventListener('click', function() {
+                _condividiFile(file);
+                closeExportSheet();
+            });
+            return;
+        }
+        const url = URL.createObjectURL(file);
+        _panelHTML('<div id="export-sheet-title">Tieni premuta l\'immagine</div>'
+                 + '<div style="padding:0 0 10px;text-align:center;color:var(--text-sub);font-size:0.85em;line-height:1.5;">'
+                 + 'Poi scegli <strong>Salva immagine</strong>.<br>'
+                 + 'Il salvataggio diretto in Galleria richiede una connessione sicura (https).</div>'
+                 + '<img src="' + url + '" alt="' + file.name + '" '
+                 + 'style="width:100%;max-height:46vh;object-fit:contain;border-radius:10px;'
+                 + 'border:1px solid #e0e6ed;background:#fff;">'
                  + '<button class="export-sheet-cancel" onclick="closeExportSheet()">Chiudi</button>');
-        document.getElementById('export-save-btn').addEventListener('click', function() {
-            _condividiFile(file);
-            closeExportSheet();
-        });
+        // Il blob resta valido finche il pannello e aperto
+        const p = document.getElementById('export-panel');
+        p.dataset.blobUrl = url;
     };
 
     if (mode === 'mobile') { _exportSectionOrig(which, pronto); return; }
