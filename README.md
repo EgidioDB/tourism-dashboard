@@ -21,7 +21,7 @@ Poi apri `http://localhost:8000`. Nessuna dipendenza da installare.
 ### Mappa interattiva d'Italia
 - Click su una regione per aprire il pannello di analisi regionale
 - Zoom automatico sulla regione selezionata
-- Donut chart che si aggiorna con i volumi della regione (alberghiero vs extra-alberghiero, pre/post 2012)
+- Donut chart che si aggiorna con i volumi della regione (alberghiero vs extra-alberghiero, 2012 e 2024)
 
 ### Pannello regionale
 Ogni regione mostra quattro gruppi, tutti con valori assoluti in accordion (click su ogni riga):
@@ -37,6 +37,13 @@ Ogni regione mostra quattro gruppi, tutti con valori assoluti in accordion (clic
 
 I pannelli Italia e Cefalù usano gli stessi quattro gruppi e la stessa base 2012, quindi le tre colonne sono direttamente confrontabili: si può dire che *Cefalù è cresciuta del 46,4% mentre l'Abruzzo è calato dell'1,1%* leggendo due numeri affiancati.
 
+### Settant'anni di turismo italiano
+Serie nazionale completa **1956–2024** in valore assoluto, alberghiero ed extra-alberghiero impilati. È l'unico grafico non indicizzato: su settant'anni interessa la scala della trasformazione, non il rapporto a un anno base.
+
+Tre linee tratteggiate segnano i **cambi di definizione ISTAT** dell'extra-alberghiero: 1986 (le residenze turistiche alberghiere passano all'alberghiero), 1996 (entrano gli agriturismi), 1999 (entrano i bed and breakfast). Sono la ragione per cui **la quota di extra-alberghiero non è confrontabile a cavallo di quegli anni**: il 39,7% del 1958 e il 39,1% del 2024 sono numeri quasi identici che misurano cose diverse.
+
+Il 1956 e il 1957 hanno il solo alberghiero, quindi l'indicatore di crescita parte dal 1958: 110 milioni di notti contro i 466 del 2024, **4,2 volte**. Confrontare il totale di oggi con i soli hotel del 1956 darebbe 9 volte.
+
 ### Sintesi Italia
 Pannello fisso con gli stessi quattro gruppi temporali a livello nazionale, con valori assoluti derivati dinamicamente dai dati ISTAT (base 2012: 380.711.483 presenze totali).
 
@@ -51,8 +58,17 @@ Pannello fisso con gli stessi quattro gruppi temporali a livello nazionale, con 
 - Filtro per soglia minima presenze (>500k)
 - Ordinabile per crescita totale, pre-COVID, post-COVID
 
+### Provincia di Palermo — chi arriva e dove dorme
+Due pannelli in una sezione **richiudibile, chiusa di default**: sono gli unici dati su base **provinciale** dentro una pagina che parla del comune di Cefalù, e sono una fotografia del 2024, non una serie storica. La sezione lo dichiara per non farli leggere come il resto.
+
+- **Da dove arrivano** — i primi 12 mercati esteri o le prime 12 regioni italiane, con quota sul totale
+- **Dove dormono** — le 4,2 milioni di notti provinciali per tipologia ricettiva, con la permanenza media di ciascuna
+
 ### Sezione Confronta
 - Confronto diretto tra Cefalù e qualsiasi altro comune italiano (5.324 disponibili)
+- Radar del profilo destinazione, posizione nel ranking nazionale, heatmap di stagionalità
+- **Indice di pressione turistica** (notti per abitante) con anno selezionabile dal 2014 al 2024: presenze e popolazione dello stesso anno
+- Capacità ricettiva 2010–2024, esercizi e posti letto
 - Dataset scaricabile in CSV
 
 ---
@@ -65,9 +81,10 @@ tourism-dashboard/
 ├── index.html                          # Applicazione: solo codice, nessun dato
 │
 ├── data/
-│   ├── italia.json                     # Serie storica nazionale 1956–2024 (66 anni; la
-│   │                                   # dashboard ne usa 2004–2024, il resto non è esposto)
-│   │                                   # Arrivi e presenze: totale, alb, ext, residenti/non-res
+│   ├── italia.json                     # Serie storica nazionale 1956–2024 (69 anni, nessun
+│   │                                   # buco). Arrivi e presenze: totale, alb, ext, res/non-res
+│   │                                   # Campo _discontinuita: i cambi di definizione ISTAT
+│   │                                   # Rigenerabile: python3 scripts/build_italia.py
 │   ├── regioni.json                    # Serie regionale 2008–2024 (20 regioni)
 │   │                                   # Arrivi e presenze totali per anno
 │   ├── pre2012.json                    # Volumi regionali 2004/2012 + serie Cefalù 2004–2013
@@ -79,6 +96,10 @@ tourism-dashboard/
 │   │                                   # Statistiche: max_arr, max_pre, growth_pre
 │   ├── serie/                          # 5.324 file JSON, uno per comune
 │   │   └── {cod_istat}.json            # Serie 2014–2024: arr/pre × tot/alb/ext × res/nres
+│   ├── peer_group.json                 # Panel bilanciato dei comuni della stessa categoria
+│   │                                   # turistica di Cefalù, solo serie complete 2014–2024
+│   ├── provenienza.json                # Provincia di Palermo 2024: 48 paesi esteri,
+│   │                                   # 21 regioni italiane, 6 tipologie ricettive
 │   ├── stagionalita.json               # Dati di stagionalità
 │   ├── popolazione.json                # Dati popolazione comunale
 │   ├── province.json                   # Anagrafica province
@@ -93,7 +114,9 @@ tourism-dashboard/
 │   └── PIL/                            # Dati PIL per area
 │
 ├── scripts/
-│   └── fetch_eurostat.py               # Riscarica eurostat_regioni.json dall'API Eurostat
+│   ├── fetch_eurostat.py               # Riscarica eurostat_regioni.json dall'API Eurostat
+│   ├── build_italia.py                 # Rigenera italia.json dal file XLS delle serie storiche
+│   └── build_confronti.py              # Rigenera peer_group.json e provenienza.json
 │
 └── DCSC_Occupancy_in_collective_accommodation/
     ├── 1. Serie storiche.xlsx          # Serie storica nazionale alb/ext 1954–2013
@@ -115,6 +138,8 @@ tourism-dashboard/
 | Presenze/Arrivi comunali | ISTAT | 2014–2024 | `serie/*.json` — 5.324 comuni, split completo |
 | Volumi regionali 2004/2012 e Cefalù pre-2014 | ISTAT `DF_BULK_DCSC_TURISAREA` | 2004–2013 | `pre2012.json` — per circoscrizione turistica |
 | Split alberghiero/extra regionale | Eurostat `tour_occ_nin2` | 2012, 2014, 2019, 2024 | `eurostat_regioni.json` — NUTS2 |
+| Provenienza e tipologia ricettiva | ISTAT — arrivi e presenze per luogo di residenza dei clienti | 2024 | `provenienza.json` — dettaglio provinciale, non comunale |
+| Comuni della stessa categoria turistica | ISTAT — classificazione per categoria turistica prevalente | 2014–2024 | `peer_group.json` — panel bilanciato |
 | Imposta di soggiorno e spesa turismo | Consuntivi comunali, BDAP / RGS | 2005–2024 | `bilancio.json` |
 
 L'API Eurostat espone header CORS aperti, quindi sarebbe interrogabile direttamente dal browser. Il file resta comunque versionato nel repo: così la dashboard non dipende dalla disponibilità di un servizio esterno a ogni caricamento, e i dati mostrati sono riproducibili nel tempo.
@@ -225,6 +250,22 @@ I valori 2004 coincidono **all'unità** con la somma delle circoscrizioni del fi
 | Alberghiero 2004 | 233.626.738 | 233.626.738 |
 | Extra-alberghiero 2004 | 110.754.336 | 110.754.336 |
 
+### Aggregare i comuni: quando si può e quando no
+
+Sommando i 5.324 file di `serie/` per regione, i **totali del 2024 tornano esatti al 100,0% in tutte le regioni** rispetto a `regioni.json`, e la somma nazionale fa 466.158.045 notti — cioè il valore di `italia.json`, che è prodotto da una fonte diversa. Il **2014** invece è scoperto, dal 79,4% del Molise al 99,9% dell'Umbria: è da lì che nascono gli indici gonfiati, non dall'aggregazione in sé.
+
+Sullo **split alberghiero/extra** non torna nemmeno il 2024. **2.243 comuni su 5.324 hanno le presenze totali valorizzate e la ripartizione a `null`**, per segreto statistico: scatta dove le strutture sono poche. Alberghiero + extra copre quindi il 94,66% del totale nazionale, con uno scarto che va dallo 0,0% (Bolzano) al 17,2% (Piemonte).
+
+| | notti 2024 | coperte dallo split | scoperto |
+|---|---|---|---|
+| Piemonte | 14.395.737 | 11.916.509 | 17,2% |
+| Lombardia | 45.130.529 | 38.351.507 | 15,0% |
+| Sicilia | 17.348.238 | 15.410.451 | 11,2% |
+| Lazio | 51.753.567 | 51.449.144 | 0,6% |
+| **Italia** | **466.158.045** | **441.266.245** | **5,34%** |
+
+Non è correggibile con un fattore unico, e i comuni oscurati sono i piccoli, dove l'extra-alberghiero pesa più della media: riscalare al totale ufficiale significherebbe attribuire loro il mix dei grandi. Per lo split regionale resta quindi `eurostat_regioni.json`, che è completo.
+
 ### Residuo noto nel 2004
 
 Nel 2004 il totale nazionale ISTAT è più alto della somma delle circoscrizioni: ~1,2M di presenze (0,36%) non risultano attribuite ad alcuna circoscrizione. **È un residuo presente nella fonte ISTAT stessa** — nel file 3 la riga "ITALIA" riporta 345.616.227 presenze contro 343.271.993 della somma delle righe — non un errore di estrazione. Nel 2012 il residuo non esiste.
@@ -246,14 +287,20 @@ Effetto sulle variazioni pre-2012 mostrate: essendo il 2004 leggermente sottosti
 
 ### Nuovi indicatori
 
-- **Vista storica lunga** — `italia.json` contiene la serie nazionale dal 1956, 45 anni che la dashboard non espone. Basterebbe un grafico a parte per mostrare il turismo italiano dal dopoguerra, senza scaricare nulla di nuovo. Attenzione ai tre anni mancanti nel file: 1986, 1996 e 1999.
-
 - Durata media del soggiorno (presenze/arrivi) per regione e anno
 - Split residenti/non-residenti per regione (turismo internazionale vs domestico)
 - Indice di stagionalità regionale (dati mensili ISTAT disponibili)
 - Tasso di occupazione alberghiera (Eurostat `tour_occ_occh2`, NUTS2)
 - Benchmark europeo: confronto con regioni NUTS2 di Spagna, Francia, Grecia
 
+### Fatto, con quello che si è imparato
+
+- **Vista storica lunga** — realizzata: vedi *Settant'anni di turismo italiano*. I **tre anni che sembravano mancanti** — 1986, 1996, 1999 — non mancavano affatto: nel file XLS sono scritti `1986(a)`, `1996(b)`, `1999(c)` e un parser che cerca quattro cifre pulite li scarta. Sono esattamente le tre note metodologiche di ISTAT sui cambi di definizione dell'extra-alberghiero. `italia.json` è passato da 66 a 69 anni senza buchi.
+
+- **Etichette dei donut** — dicevano *pre-2012* e *post-2012*, ma sono due singole annate: il 2012 e il 2024. La prima ciambella sommava le notti dei due anni e chiamava totale il risultato. Ora sono `2012 VS 2024` con la variazione, `Dettaglio 2012` e `Dettaglio 2024`. Un vero pre-2012 non è ricostruibile: le serie comunali partono dal 2014 e per le regioni esistono solo i punti 2004 e 2012.
+
 ### Valutato e scartato
+
+- **Treemap per la ripartizione ricettiva** — provato e rimosso. Con sei voci di cui due sotto il 3%, le tessere piccole restano senza etichetta comunque le si giri, e le tre categorie extra-alberghiere condividono la stessa famiglia di colore. Una legenda esterna non risolve: se il grafico ha bisogno di una legenda per dire cose che le barre dicono da sole, sono le barre la forma giusta.
 
 - **Gruppo pre-2012 per la Top City** — ISTAT pubblica per *circoscrizione turistica* fino al 2013 e per *comune* dal 2014, come dichiara l'indice del suo stesso pacchetto. Solo 12 delle 20 Top City coincidono con una circoscrizione; le altre otto sono dentro aggregati troppo ampi per fare da proxy: Fiumicino finirebbe sommata a 119 altri comuni, Pula a 68, Monopoli a 43. Cercare il dato presso gli osservatori regionali significherebbe mettere otto fonti diverse accanto a dodici ISTAT nello stesso gruppo, rendendo le percentuali non confrontabili fra loro — che è proprio il senso di quel confronto.
