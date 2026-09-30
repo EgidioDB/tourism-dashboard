@@ -113,6 +113,11 @@ contrario del vero.** Nessun test lo intercetta.
   nominale: 2014–2024 +36% nominale, +11% reale con l'IPCA Eurostat.
 - **Le chiavi dei popup si sbagliano facilmente.** Due gruppi post-COVID aprivano i testi del post-2012.
   Verifica sempre gruppo per gruppo, non solo che la chiave esista.
+- **I popup invecchiano in silenzio.** Contengono cifre, fonti e descrizioni dei grafici scritte a mano: quando
+  cambi un calcolo, un dato o un grafico, cerca nell'oggetto `INFO` cosa lo cita. Il 30/09 ne sono emersi una
+  ventina fuori sincrono: la mappa descriveva ancora la base 2014, il pre-2012 di Cefalù il verso di segno vecchio,
+  la spesa turistica una trasparenza delle barre invertita, due fonti regionali "comuni aggregati", e l'imposta
+  di soggiorno diceva "2022: superato il picco pre-COVID" con un valore sotto il 2019.
 
 ## Fonti dei dati
 

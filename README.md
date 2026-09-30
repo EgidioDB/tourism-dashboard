@@ -325,6 +325,8 @@ Effetto sulle variazioni pre-2012 mostrate: essendo il 2004 leggermente sottosti
 
 - **Popup Reddito & Turismo riscritto sui dati** — diceva che reddito e presenze crescevano in parallelo fino al 2019 (+27% le presenze, +8% il reddito) e crollavano insieme nel 2020 (−62% contro −4%). Attribuiva l'accelerazione recente agli affitti brevi, che però con la cedolare secca restano fuori dal reddito imponibile IRPEF per definizione MEF. Non diceva che il reddito è nominale: +36% dal 2014, circa +11% al netto dell'inflazione.
 
+- **Audit dei popup** — ricontrollati tutti gli 81 testi informativi contro i dati e il codice. Una ventina erano rimasti indietro o sbagliati: la mappa descriveva ancora tre gruppi a base 2014, il pre-2012 di Cefalù spiegava il segno al contrario, due popup regionali davano come fonte i comuni aggregati, la spesa turistica descriveva al contrario la trasparenza delle barre, la capacità ricettiva una linea verde che non esiste, l'imposta di soggiorno un 2022 "sopra il picco pre-COVID" che era sotto. Ogni grafico con il 2015 segnato ora lo spiega, e le classifiche spiegano il ⚠.
+
 ### Valutato e scartato
 
 - **Treemap per la ripartizione ricettiva** — provato e rimosso. Con sei voci di cui due sotto il 3%, le tessere piccole restano senza etichetta comunque le si giri, e le tre categorie extra-alberghiere condividono la stessa famiglia di colore. Una legenda esterna non risolve: se il grafico ha bisogno di una legenda per dire cose che le barre dicono da sole, sono le barre la forma giusta.
