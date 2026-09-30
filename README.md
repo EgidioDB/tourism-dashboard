@@ -322,6 +322,42 @@ L'accertato 2024 è 1.783.223 €, cioè 2,01 € per ogni notte di stagione reg
 
 Un segnale diverso viene da SIOPE: l'imposta riscossa a seguito di verifica e controllo è zero dal 2020 al 2023, compare a ottobre 2024 e arriva a 95.443 € nel 2025. I recuperi sono partiti, quindi imposta non versata ce n'era; quanta ne resti non si sa.
 
+## Analisi: le presenze mese per mese del 2020 e del 2021
+
+Il grafico dell'imposta mese per mese ha gli incassi SIOPE dal 2020, ma la linea delle presenze solo dal 2022 al 2024. Il 2020 e il 2021 sono gli anni in cui la stagione è stata più deformata, e sarebbe utile vederla. Questa è una stima: non è nella dashboard perché un dato stimato accanto a dati misurati si legge come uno di loro.
+
+**Perché il dato non c'è.** Il file comunale ISTAT ha il mensile solo per il 2022–2024, nel foglio *Dati Mensili*: è da lì che viene `stagionalita.json`. Nella banca dati ISTAT i dataset mensili arrivano al massimo alla provincia. La Regione Siciliana pubblica file mensili solo provinciali, e avverte che non sono validati da ISTAT. Esiste invece il mensile della **provincia di Palermo, validato da ISTAT, dal 2016**, con lo split alberghiero/extra-alberghiero e residenti/non residenti:
+
+```
+https://esploradati.istat.it/SDMXWS/rest/data/IT1,122_54_DF_DCSC_TUR_3,1.0/M.ITG12.NI.N.ALL.551_553.WORLD.ALL.ALL.ALL.TOT?startPeriod=2016-01
+```
+
+**Il metodo.** Nel 2022–2024 Cefalù pesa sulla provincia fra il 2 e il 3,5% a dicembre, gennaio e febbraio, e fra il 23 e il 31% da giugno a ottobre; lo stesso mese cambia al massimo di sei punti da un anno all'altro. Le quote medie dei tre anni, applicate al mensile provinciale, danno una prima stima. Questa viene poi riportata al totale annuo vero di Cefalù, che le serie comunali hanno.
+
+**Quanto regge.** Prima della correzione, la stima indovina il totale annuo del 2020 al **+2,0%** e quello del 2021 al **−6,3%**. La struttura delle quote ha tenuto anche negli anni del COVID; nel 2016–2019 la stima sta sotto il vero del 4–9%, perché allora Cefalù pesava un po' di più nella provincia. Rifatta sul 2022–2024 stimando ogni anno con le quote degli altri due, sbaglia i mesi da aprile a ottobre al massimo del 13% e quelli da novembre a marzo fino al 60%, su poche migliaia di notti. L'errore complessivo va dal 6,2 al 7,5% del totale annuo.
+
+| mese | Cefalù 2020, stima | Cefalù 2021, stima | provincia 2020 sul 2019 | provincia 2021 sul 2019 |
+|---|---:|---:|---:|---:|
+| gennaio | 2.000 | 1.000 | +5% | −68% |
+| febbraio | 3.000 | 1.000 | −5% | −64% |
+| marzo | 2.000 | 3.000 | −83% | −71% |
+| aprile | 1.000 | 7.000 | −98% | −88% |
+| maggio | 3.000 | 15.000 | −96% | −82% |
+| giugno | 14.000 | 63.000 | −87% | −44% |
+| luglio | 62.000 | 135.000 | −53% | −8% |
+| agosto | 107.000 | 163.000 | −25% | +5% |
+| settembre | 67.000 | 96.000 | −34% | −13% |
+| ottobre | 30.000 | 61.000 | −51% | −10% |
+| novembre | 3.000 | 10.000 | −72% | −11% |
+| dicembre | 1.000 | 3.000 | −71% | −1% |
+| **anno (vero)** | **295.317** | **556.558** | | |
+
+Le stime sono arrotondate alle migliaia: con questi errori le cifre sotto non significano niente.
+
+**Cosa dice.** Nel 2020 la stagione si è compressa in tre mesi: luglio, agosto e settembre fanno l'80% delle notti dell'anno, contro il 50–57% del 2022–2024. Nel 2021 il 71%. Da gennaio a maggio c'è quasi niente, il 4–5% dell'anno contro il 17–21%. Torna con la cassa dell'imposta: nel 2020 il primo incasso arriva a maggio, 204 €, e il 92% dell'anno entra fra agosto e novembre.
+
+Il punto più incerto sono i mesi di lockdown, marzo-maggio 2020 e l'inizio del 2021. La città di Palermo fa quasi metà delle notti della provincia (il 47% nel 2020), e in quei mesi le poche notti rimaste sono con ogni probabilità viaggi di lavoro o di necessità, più in città che in una località balneare. Le 1.000–3.000 notti al mese stimate per Cefalù sono probabilmente troppe.
+
 ## Stack tecnico
 
 - **Nessun build step** — HTML/CSS/JS vanilla, nessun bundler né package manager
@@ -337,7 +373,7 @@ Un segnale diverso viene da SIOPE: l'imposta riscossa a seguito di verifica e co
 
 - Durata media del soggiorno (presenze/arrivi) per regione e anno
 - Split residenti/non-residenti per regione (turismo internazionale vs domestico)
-- Indice di stagionalità regionale (dati mensili ISTAT disponibili)
+- Indice di stagionalità regionale (dati mensili ISTAT disponibili fino alla provincia, dataset `122_54_DF_DCSC_TUR_3`; il 2025 non è confrontabile, vedi CLAUDE.md)
 - Tasso di occupazione alberghiera (Eurostat `tour_occ_occh2`, NUTS2)
 - Benchmark europeo: confronto con regioni NUTS2 di Spagna, Francia, Grecia
 

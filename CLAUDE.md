@@ -134,6 +134,17 @@ contrario del vero.** Nessun test lo intercetta.
   Il codice ente si cerca per codice fiscale e comparto COMUNE: lo stesso CF ha anche la gestione commissariale.
 - **Nei file SIOPE un comune assente non ha incassato zero: manca.** Nel 2023 non ci sono righe per 378 comuni,
   quasi tutta la Sardegna. `soggiorno_comuni.json` mette `null`, e la dashboard dice «assente da SIOPE».
+- **Il mensile per comune esiste solo per il 2022–2024**, nel foglio *Dati Mensili* del file comunale: è la fonte di
+  `stagionalita.json`, e il motivo per cui il grafico mensile dell'imposta non ha presenze nel 2020–2021. Nella
+  banca dati ISTAT il mensile arriva alla provincia (`122_54_DF_DCSC_TUR_3`, dal 2016); la Regione Siciliana ha solo
+  file provinciali non validati. La stima di Cefalù per quote provinciali regge (errore entro il 13% da aprile a
+  ottobre) ed è nel README come analisi: l'utente l'ha voluta fuori dalla dashboard.
+- **Il 2025 della banca dati ISTAT non è confrontabile col 2024 nell'extra-alberghiero.** Italia +14,9% (extra
+  +35,7%, alberghiero +1,5%), Sicilia extra +136%, provincia di Palermo extra +200%. Il
+  [comunicato ISTAT sul 2025](https://www.istat.it/wp-content/uploads/2026/03/Stat_Flash_IV_Trim_2025.pdf) dà le
+  presenze a +2,3% e dichiara di escludere gli «Altri alloggi privati», cioè gli affitti brevi: con ogni probabilità
+  la banca dati dal 2025 li comprende. Quando esce il 2025 comunale, verificarlo prima di aggiungerlo: se Cefalù
+  fa lo stesso salto è una rottura di serie, da segnalare come il flag a.
 - **Un comune che cambia provincia cambia codice ISTAT, e le serie lo spezzavano in due.** 56 comuni sardi (riforma
   del 2016) sono ricuciti sul codice nuovo da `ricuci_serie.py`; il codice vecchio non esiste più nei file, e il
   registro sta in `serie_ricucite.json`. Non ricucire le **fusioni** (stessa provincia, codice nuovo: il territorio è
