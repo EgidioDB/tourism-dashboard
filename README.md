@@ -107,6 +107,7 @@ tourism-dashboard/
 │   ├── popolazione.json                # Popolazione al 1° gennaio 2014–2024 per comune:
 │   │                                   # ricostruzione intercensuaria ISTAT fino al 2019, POSAS dopo
 │   │                                   # Rigenerabile: python3 scripts/build_popolazione.py
+│   │                                   # (scarica i file POSAS in data/fonti/, esclusa da git)
 │   ├── province.json                   # Anagrafica province
 │   ├── ricettiva.json                  # Dati strutture ricettive
 │   ├── ricettiva_index.json            # Indice strutture ricettive
@@ -122,7 +123,7 @@ tourism-dashboard/
 │   ├── fetch_eurostat.py               # Riscarica eurostat_regioni.json dall'API Eurostat
 │   ├── build_italia.py                 # Rigenera italia.json dal file XLS delle serie storiche
 │   ├── build_flag_istat.py             # Rigenera flag_istat.json dal file comunale ISTAT
-│   ├── build_popolazione.py            # Riscrive il 2014–2019 di popolazione.json
+│   ├── build_popolazione.py            # Rigenera popolazione.json e il reddito pro capite IRPEF
 │   └── build_confronti.py              # Rigenera peer_group.json e provenienza.json
 │
 └── DCSC_Occupancy_in_collective_accommodation/
@@ -320,7 +321,9 @@ Effetto sulle variazioni pre-2012 mostrate: essendo il 2004 leggermente sottosti
   - **(d)** il **2015 di Cefalù non è un dato reale**: ISTAT non l'ha ricevuto e ripete il 2014 in tutti i campi (come per altri 54 comuni, quasi tutti siciliani). Ogni grafico di Cefalù lo segna con una fascia e un ⚠, e il dettaglio del 2015 lo dice.
   - **(a)** una **rottura di serie** separa un anno dal precedente. Fiumicino, Marsala e Pescara ne hanno una nel 2023–2024 e occupano posizioni alte in classifica, Marsala è persino la Top City della Sicilia, con le notti triplicate in due anni. Non sono esclusi: sono segnati con ⚠ nella classifica, nel pannello Top City e nei box di Confronta.
 
-- **Popolazione 2014–2019** — era una retta estrapolata all'indietro dal 2019 per 7.867 comuni su 7.987. Ora è la ricostruzione intercensuaria ISTAT, che era già nel repo in `data/PIL/`. Per Cefalù il 2014 passa da 14.590 a 14.319 abitanti e coincide con quello usato dal grafico del reddito.
+- **Popolazione** — il 2014–2018 era una retta estrapolata all'indietro dal 2019 per 7.867 comuni su 7.987; ora è la ricostruzione intercensuaria ISTAT, che era già nel repo in `data/PIL/`. Il 2020–2024 veniva da un rilascio POSAS superato: ISTAT l'ha ripubblicato il 18 dicembre 2025, e per Cefalù i valori vecchi erano circa il 3% più alti (14.314 abitanti nel 2024 invece di 13.861). Il confronto con la scheda ISTAT SITUAS usata da [DoveVannoINostriSoldi](https://www.dovevannoinostrisoldi.com/enti/c_c421) ha fatto emergere la differenza. Ora la serie si raccorda senza scalino, e con lei il reddito pro capite IRPEF: la crescita 2014–2024 passa da +32% a +36%, la pressione turistica 2024 da 64,9 a 67,0 notti per abitante.
+
+- **Popup Reddito & Turismo riscritto sui dati** — diceva che reddito e presenze crescevano in parallelo fino al 2019 (+27% le presenze, +8% il reddito) e crollavano insieme nel 2020 (−62% contro −4%). Attribuiva l'accelerazione recente agli affitti brevi, che però con la cedolare secca restano fuori dal reddito imponibile IRPEF per definizione MEF. Non diceva che il reddito è nominale: +36% dal 2014, circa +11% al netto dell'inflazione.
 
 ### Valutato e scartato
 

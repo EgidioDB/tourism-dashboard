@@ -102,8 +102,15 @@ contrario del vero.** Nessun test lo intercetta.
   è una copia del 2014** (flag d, in tutti i 24 campi): non usarlo come dato vero. Il flag **a** è una rottura di
   serie: Fiumicino, Marsala e Pescara salgono in classifica anche per quella, e Marsala diventa Top City della
   Sicilia. La scelta è stata segnalare con ⚠, non escludere: `rottureDi()`, `conFlag()`, `segnoRottura()`.
-- **`popolazione.json` fino al 2019 è la ricostruzione intercensuaria**, non l'anagrafe. Prima era una retta
-  inventata. Il 2020–2024 è POSAS e non ha una fonte nel repo: fra 2019 e 2020 può esserci uno scalino.
+- **`popolazione.json`: ricostruzione intercensuaria fino al 2019, POSAS dal 2020**, entrambe al 1° gennaio.
+  Prima il 2014–2018 era una retta inventata e il 2020–2024 un rilascio POSAS superato (ISTAT l'ha ripubblicato il
+  18/12/2025): Cefalù risultava a 14.314 abitanti invece di 13.861 nel 2024, circa il 3% in più. Le due fonti ora si
+  raccordano senza scalino. `build_popolazione.py` aggiorna anche il reddito pro capite di `irpef_cefalu.json`,
+  che divide per la stessa popolazione: se ne cambi una, rigenera entrambe.
+- **Il reddito imponibile IRPEF non contiene gli affitti brevi con cedolare secca**, né i forfettari: per il MEF
+  *"reddito imponibile = reddito complessivo al netto della cedolare secca – deduzioni"*. Il reddito complessivo
+  invece li comprende. Non attribuire agli affitti brevi la crescita del reddito imponibile, e ricorda che è
+  nominale: 2014–2024 +36% nominale, +11% reale con l'IPCA Eurostat.
 - **Le chiavi dei popup si sbagliano facilmente.** Due gruppi post-COVID aprivano i testi del post-2012.
   Verifica sempre gruppo per gruppo, non solo che la chiave esista.
 
@@ -118,7 +125,7 @@ contrario del vero.** Nessun test lo intercetta.
 | Split alb/ext regionale | `data/eurostat_regioni.json` | `python3 scripts/fetch_eurostat.py` |
 | Bilancio Cefalù 2005–2024 | `data/bilancio.json` | soggiorno, spesa turismo, entrate |
 | Note ISTAT per comune-anno | `data/flag_istat.json` | `python3 scripts/build_flag_istat.py` |
-| Popolazione 2014–2024 | `data/popolazione.json` | ricostruzione ISTAT fino al 2019, POSAS dopo |
+| Popolazione 2014–2024 | `data/popolazione.json` | `python3 scripts/build_popolazione.py`, scarica POSAS in `data/fonti/` |
 
 Gli XLS ISTAT di origine sono in `DCSC_Occupancy_in_collective_accommodation/`. ISTAT pubblica per
 **circoscrizione turistica** fino al 2013 e per **comune** dal 2014: è il motivo per cui il pre-2014 comunale
