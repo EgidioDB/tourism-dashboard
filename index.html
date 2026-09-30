@@ -581,6 +581,27 @@
         }
 
         /* ── COMPARE BOXES ── */
+        /* Scheda PNRR alberghi: tre numeri di sintesi e un riquadro per struttura */
+        .pnrr-stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-bottom:16px; }
+        .pnrr-stat { border-left:3px solid #457b9d; padding:2px 0 2px 10px; }
+        .pnrr-stat-lab { font-size:0.7em; text-transform:uppercase; letter-spacing:.05em; color:var(--text-sub); font-weight:600; }
+        .pnrr-stat-val { font-size:1.35em; font-weight:800; color:var(--text-main); margin:2px 0; }
+        .pnrr-stat-nota { font-size:0.75em; color:var(--text-sub); }
+        .pnrr-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:12px; }
+        .pnrr-tile { border:1px solid var(--border); border-radius:10px; padding:14px 16px; background:var(--card-bg); cursor:help; }
+        .pnrr-top { display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin-bottom:10px; }
+        .pnrr-name { font-weight:700; font-size:0.95em; color:var(--text-main); }
+        .pnrr-impresa { font-size:0.72em; color:var(--text-sub); margin-top:2px; }
+        .pnrr-stato { font-size:0.68em; font-weight:600; padding:3px 8px; border-radius:999px; white-space:nowrap; }
+        .pnrr-stato.fatto { background:rgba(36,178,126,0.12); color:#1b8a61; }
+        .pnrr-stato.corso { background:rgba(233,196,106,0.25); color:#8a6400; }
+        .pnrr-amount { font-size:1.15em; font-weight:800; color:#457b9d; }
+        .pnrr-amount span { font-size:0.62em; font-weight:500; color:var(--text-sub); }
+        .pnrr-bar { height:6px; border-radius:3px; background:var(--border); overflow:hidden; margin:8px 0 3px; }
+        .pnrr-bar i { display:block; height:100%; background:#457b9d; }
+        .pnrr-bar-leg { display:flex; justify-content:space-between; font-size:0.68em; color:var(--text-sub); }
+        .pnrr-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:10px; }
+        .pnrr-tags span { font-size:0.68em; padding:2px 7px; border-radius:4px; background:var(--bg-color); color:var(--text-sub); border:1px solid var(--border); }
         #compareBoxes { display:grid; gap:12px; margin-top:20px; }
         #compareBoxes:empty { display:none; }
         .cbox {
@@ -3567,34 +3588,43 @@ function renderPnrrTurismo(json, serie) {
     if (!box || !json || !Array.isArray(json.progetti)) return;
     const MESI = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic'];
     const mese = d => { const [g, m, a] = String(d).split('/'); return a ? MESI[+m - 1] + ' ' + a : d; };
-    const estr = (json.estrazione || []).join(', ');
-    const P = json.progetti;
-    const cella = 'padding:6px 8px; border-bottom:1px solid rgba(0,0,0,0.08); vertical-align:top;';
-    const num = cella + ' text-align:right; white-space:nowrap;';
-    box.innerHTML = '<table style="width:100%; border-collapse:collapse; font-size:0.82em;">'
-        + '<thead><tr style="color:var(--text-sub); text-align:left;">'
-        + '<th style="' + cella + '">Intervento e impresa</th><th style="' + num + '">PNRR</th>'
-        + '<th style="' + num + '">Costo totale</th><th style="' + cella + '">Stato</th></tr></thead><tbody>'
-        + P.map(p => '<tr><td style="' + cella + '">' + p.intervento + '<br><span style="color:var(--text-sub); font-size:0.9em;">' + p.beneficiario + '</span></td>'
-            + '<td style="' + num + '">€ ' + nf(p.pnrr) + '</td><td style="' + num + '">€ ' + nf(p.totale) + '</td>'
-            + '<td style="' + cella + '">' + (p.fine_effettiva ? 'concluso, ' + mese(p.fine)
-                : 'in corso, fine prevista ' + mese(p.fine)) + '</td></tr>').join('')
-        + '</tbody></table>';
+    const esc = t => String(t).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    const P = json.progetti, it = json.submisura || {};
     const pnrr = P.reduce((a, p) => a + p.pnrr, 0), tot = P.reduce((a, p) => a + p.totale, 0);
-    const it = json.submisura || {};
-    document.getElementById('pnrr-sottotitolo').textContent =
-        'Tax credit per la riqualificazione delle strutture ricettive — stato al ' + estr;
+    const perc = v => v.toFixed(2).replace('.', ',') + '%';
     // Quota di Cefalù sui fondi nazionali della misura, accanto alla sua quota di notti alberghiere
     const iA = serie ? serie.anni.indexOf(2024) : -1;
     const albCef = iA >= 0 ? serie.pre_alb[iA] : null;
     const albIt = volumeData['Italia'] && volumeData['Italia'].post[0] ? volumeData['Italia'].post[0] * 1e6 : null;
+    const stat = (etichetta, valore, nota) => '<div class="pnrr-stat"><div class="pnrr-stat-lab">' + etichetta
+        + '</div><div class="pnrr-stat-val">' + valore + '</div><div class="pnrr-stat-nota">' + nota + '</div></div>';
+    const tile = p => {
+        const q = Math.round(p.pnrr / p.totale * 100);
+        const fonte = esc(p.intervento + ' — ' + p.beneficiario);
+        return '<div class="pnrr-tile" title="' + fonte + '">'
+            + '<div class="pnrr-top"><div><div class="pnrr-name">' + p.struttura + '</div>'
+            + '<div class="pnrr-impresa">' + p.impresa + '</div></div>'
+            + (p.fine_effettiva
+                ? '<span class="pnrr-stato fatto">Concluso · ' + mese(p.fine) + '</span>'
+                : '<span class="pnrr-stato corso">In corso · fine prevista ' + mese(p.fine) + '</span>')
+            + '</div>'
+            + '<div class="pnrr-amount">€ ' + nf(p.pnrr) + ' <span>di PNRR su € ' + nf(p.totale) + '</span></div>'
+            + '<div class="pnrr-bar"><i style="width:' + q + '%"></i></div>'
+            + '<div class="pnrr-bar-leg"><span>PNRR ' + q + '%</span><span>impresa ' + (100 - q) + '%</span></div>'
+            + '<div class="pnrr-tags">' + (p.tipi || []).map(t => '<span>' + t + '</span>').join('') + '</div>'
+            + '</div>';
+    };
+    box.innerHTML = '<div class="pnrr-stats">'
+        + stat('PNRR assegnato', '€ ' + nf(pnrr), P.length + ' strutture ricettive')
+        + stat('Costo degli interventi', '€ ' + nf(tot), Math.round(pnrr / tot * 100) + '% coperto dal PNRR')
+        + (it.pnrr_italia ? stat('Quota dei fondi in Italia', perc(pnrr / it.pnrr_italia * 100),
+            albCef && albIt ? 'contro lo ' + perc(albCef / albIt * 100) + ' delle notti alberghiere italiane' : '') : '')
+        + '</div><div class="pnrr-grid">' + P.map(tile).join('') + '</div>';
+    document.getElementById('pnrr-sottotitolo').textContent =
+        'Tax credit per la riqualificazione delle strutture ricettive — stato al ' + (json.estrazione || []).join(', ');
     document.getElementById('pnrr-kpi').innerHTML =
-        '<span>' + P.length + ' progetti · <b>€ ' + nf(pnrr) + '</b> di PNRR su € ' + nf(tot) + ' di costo ('
-        + (pnrr / tot * 100).toFixed(0) + '%)</span>'
-        + (it.pnrr_italia ? '<span>Cefalù riceve lo <b>' + (pnrr / it.pnrr_italia * 100).toFixed(2).replace('.', ',')
-            + '%</b> dei fondi della misura in Italia (' + nf(it.progetti_italia) + ' progetti)'
-            + (albCef && albIt ? ', contro lo ' + (albCef / albIt * 100).toFixed(2).replace('.', ',')
-                + '% delle notti alberghiere italiane del 2024' : '') + '</span>' : '');
+        '<span>Importi assegnati, non necessariamente già pagati · ' + nf(it.progetti_italia || 0)
+        + ' progetti della stessa misura in Italia · passa su un riquadro per il testo originale della fonte</span>';
 }
 
 // ── EXPLORER ─────────────────────────────────────────────────────────────
@@ -5038,7 +5068,10 @@ function renderPnrrTurismo(json, serie) {
             }, idx * 120);
             obs.unobserve(section);
         });
-    }, { threshold: 0.08 });
+    // Una soglia in percentuale (era 0.08) non funziona per le sezioni lunghe: su telefono la
+    // sezione Cefalù supera i 10.000 pixel, e l'8% non può mai stare tutto nello schermo, quindi
+    // restava invisibile. Si rivela appena entra per un decimo dal basso, qualunque sia l'altezza.
+    }, { threshold: 0, rootMargin: '0px 0px -10% 0px' });
     document.querySelectorAll('.section-anim').forEach(el => obs.observe(el));
 })();
 

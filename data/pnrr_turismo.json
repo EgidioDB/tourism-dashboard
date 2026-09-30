@@ -1,6 +1,6 @@
 {
  "_fonte": "Italia Domani — catalogo open data dei progetti PNRR (PNRR_Progetti.csv e PNRR_Localizzazione.csv), sottomisura M1C3I4.02.01.",
- "_nota": "pnrr = finanziamento PNRR assegnato, non necessariamente erogato; privato = parte a carico dell'impresa. Stato e date sono quelli della data di estrazione.",
+ "_nota": "pnrr = finanziamento PNRR assegnato, non necessariamente erogato; privato = parte a carico dell'impresa. Stato e date sono quelli della data di estrazione. struttura, impresa e tipi sono ricavati dal testo della fonte per leggerlo meglio; beneficiario e intervento sono il testo originale.",
  "_rigenera": "python3 scripts/build_pnrr_turismo.py",
  "_fonti": [
   {
@@ -26,6 +26,11 @@
  "progetti": [
   {
    "cup": "C65C22002210008",
+   "struttura": "Hotel Le Calette",
+   "impresa": "Mia S.r.l.",
+   "tipi": [
+    "Riqualificazione"
+   ],
    "beneficiario": "MIA S.R.L.",
    "intervento": "Riqualificazione globale dell'HOTEL LE CALETTE",
    "pnrr": 303964.79,
@@ -38,6 +43,11 @@
   },
   {
    "cup": "C65C22003860008",
+   "struttura": "Hotel Costa Verde",
+   "impresa": "I.G.A.C. – Immobiliare Grandi Alberghi Cefalù S.p.A.",
+   "tipi": [
+    "Riqualificazione"
+   ],
    "beneficiario": "I.G.A.C. - IMMOBILIARE GRANDI ALBERGHI CEFALU'  -S.P.A.-",
    "intervento": "Riqualificazione struttura Hotel Costa Verde",
    "pnrr": 286140.44,
@@ -50,6 +60,11 @@
   },
   {
    "cup": "C65C22005210008",
+   "struttura": "Hotel Alberi del Paradiso",
+   "impresa": "Medihot S.r.l.",
+   "tipi": [
+    "Riqualificazione"
+   ],
    "beneficiario": "MEDIHOT S.R.L.",
    "intervento": "Riqualificazione globale dell'HOTEL Alberi del Paradiso",
    "pnrr": 268641.71,
@@ -62,6 +77,11 @@
   },
   {
    "cup": "C65C22000990008",
+   "struttura": "Al Pescatore",
+   "impresa": "Al Pescatore S.r.l.s.",
+   "tipi": [
+    "Riqualificazione"
+   ],
    "beneficiario": "AL PESCATORE SOCIETA' A RESPONSABILITA' LIMITATA SEMPLIFICATA",
    "intervento": "Riqualificazione della struttura AL PESCATORE SRLS sita in C.da Caldura snc, Cefalù.",
    "pnrr": 230689.46,
@@ -74,6 +94,12 @@
   },
   {
    "cup": "C65C22001120008",
+   "struttura": "Barranco Group",
+   "impresa": "Barranco Group S.r.l.",
+   "tipi": [
+    "Efficienza energetica",
+    "Barriere architettoniche"
+   ],
    "beneficiario": "BARRANCO GROUP S.R.L.",
    "intervento": "Opere per l'efficientamento energetico e l'abbattimento delle barriere architettoniche",
    "pnrr": 184825.12,
@@ -86,6 +112,13 @@
   },
   {
    "cup": "C65C22001780008",
+   "struttura": "S.E.A.C.",
+   "impresa": "S.E.A.C. S.r.l. – Società Esercizi Alberghieri Cefaludesi",
+   "tipi": [
+    "Efficienza energetica",
+    "Barriere architettoniche",
+    "Digitale"
+   ],
    "beneficiario": "S.E.A.C. S.R.L. - SOCIETA' ESERCIZI ALBERGHIERI CEFALUDESI",
    "intervento": "INTERVENTI PER LELIMINAZIONE DELLE BARRIERE ARCHITETTONICHE, DI EFFICIENZA ENERGETICA E DI DIGITALI",
    "pnrr": 173551.06,
