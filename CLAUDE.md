@@ -127,6 +127,11 @@ contrario del vero.** Nessun test lo intercetta.
   perde il 39% al passaggio). Attenzione a «Valverde»: in Lombardia e in Sicilia sono due comuni diversi con anni
   complementari, un abbinamento solo per nome li unirebbe. Se ISTAT pubblica il 2025 con le province sarde del
   2025 (codici 113 e seguenti, già usati da SIOPE), la spaccatura si ripresenta: rieseguire lo script.
+- **Il gettito teorico dell'imposta non si stima con le notti ISTAT.** Nel 2024 l'accertato (1,78 milioni, 2,01 € per
+  notte di stagione) supera l'imposta teorica sulle notti ISTAT in quasi ogni scenario: si paga anche su notti che
+  ISTAT non conta (affitti brevi via Airbnb dal febbraio 2024). Analisi e fonti nel README, sezione «Analisi». Le
+  regole (1 aprile-31 ottobre, max 5 notti, esenti under 12, versamenti a bimestri entro il 15) vengono dal
+  regolamento del 10/01/2024; le tariffe per anno le fissa il Sindaco, e prima del 2024 non sono state trovate.
 - **I popup invecchiano in silenzio.** Contengono cifre, fonti e descrizioni dei grafici scritte a mano: quando
   cambi un calcolo, un dato o un grafico, cerca nell'oggetto `INFO` cosa lo cita. Il 30/09 ne sono emersi una
   ventina fuori sincrono: la mappa descriveva ancora la base 2014, il pre-2012 di Cefalù il verso di segno vecchio,

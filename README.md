@@ -297,6 +297,26 @@ Effetto sulle variazioni pre-2012 mostrate: essendo il 2004 leggermente sottosti
 
 ---
 
+## Analisi: l'imposta di soggiorno sfugge?
+
+Una stima del gettito teorico del 2024, fatta per capire se a Cefalù una parte dell'imposta non venga versata. Non è nella dashboard: le ipotesi pesano troppo per un numero da mostrare accanto ai dati.
+
+**Le regole.** Il [regolamento dell'imposta](https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/nuova_at/download_lib.php?key=0900f2308055e2ae&nome=344769_CIMUNIC-15pa24c421AM.pdf) (testo modificato con delibera del Consiglio comunale n. 3 del 10 gennaio 2024, depositato sul portale del Dipartimento delle Finanze) stabilisce che l'imposta si paga solo dal 1° aprile al 31 ottobre, per al massimo cinque notti consecutive, e che sono esenti fra gli altri i minori fino a dodici anni. Le strutture versano a bimestri, entro il 15 di giugno, agosto, ottobre e dicembre: sono i picchi del grafico mensile. Le tariffe le fissa ogni anno il Sindaco; quelle del 2024, dalla [determina di gennaio 2024](https://www.madoniepress.it/2024/01/26/tassa-di-soggiorno-lamministrazione-di-cefalu-annuncia-le-nuove-tariffe/), sono 2 € per gli alberghi fino a 3 stelle, 2,50 € per 4 stelle e RTA, 4 € e 5 € per 5 stelle e 5 stelle lusso, 2 € per extra-alberghiero e affitti brevi, 1,50 € per i campeggi. Le tariffe degli anni precedenti non sono state trovate in fonti affidabili, quindi la stima vale solo per il 2024.
+
+**Il calcolo.** Base: 885.128 notti ISTAT fra aprile e ottobre 2024 (il 95,3% dell'anno), l'82,8% in albergo. Tre cose non si conoscono e sono trattate come forbice: la ripartizione delle notti per stelle, la quota di bambini esenti (5–12%) e l'effetto del tetto delle cinque notti, che negli alberghi, con una permanenza media di 4,62 notti, può togliere dal 10 al 30% delle notti.
+
+| scenario | imposta teorica | accertato 2024 / teorico |
+|---|---|---|
+| prudente | 1,14 milioni | 156% |
+| centrale | 1,47 milioni | 121% |
+| generoso | 1,85 milioni | 96% |
+
+L'accertato 2024 è 1.783.223 €, cioè 2,01 € per ogni notte di stagione registrata da ISTAT: la tariffa base su tutte le notti, nonostante esenzioni e tetto.
+
+**Cosa se ne ricava.** Nessuna evasione visibile, ma per un motivo che limita il metodo: si paga l'imposta anche su notti che ISTAT non conta. La spiegazione più probabile sono gli affitti brevi: dal febbraio 2024 [Airbnb riscuote e versa l'imposta in tutti i comuni che la applicano](https://news.airbnb.com/airbnb-to-collect-and-remit-tourist-taxes-across-italy/), [Cefalù compresa](https://www.airbnb.com/help/article/3676). La base ISTAT è più stretta di quella reale, quindi non può misurare quanto sfugge; e chi non si registra da nessuna parte resta invisibile a entrambe. Per misurarlo servono dati del Comune — notti dichiarate per struttura sul portale dell'imposta, confrontate con l'elenco delle strutture registrate — ottenibili con un accesso civico.
+
+Un segnale diverso viene da SIOPE: l'imposta riscossa a seguito di verifica e controllo è zero dal 2020 al 2023, compare a ottobre 2024 e arriva a 95.443 € nel 2025. I recuperi sono partiti, quindi imposta non versata ce n'era; quanta ne resti non si sa.
+
 ## Stack tecnico
 
 - **Nessun build step** — HTML/CSS/JS vanilla, nessun bundler né package manager
