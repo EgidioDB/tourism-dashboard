@@ -581,27 +581,32 @@
         }
 
         /* ── COMPARE BOXES ── */
-        /* Scheda PNRR alberghi: tre numeri di sintesi e un riquadro per struttura */
-        .pnrr-stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-bottom:16px; }
-        .pnrr-stat { border-left:3px solid #457b9d; padding:2px 0 2px 10px; }
-        .pnrr-stat-lab { font-size:0.7em; text-transform:uppercase; letter-spacing:.05em; color:var(--text-sub); font-weight:600; }
-        .pnrr-stat-val { font-size:1.35em; font-weight:800; color:var(--text-main); margin:2px 0; }
-        .pnrr-stat-nota { font-size:0.75em; color:var(--text-sub); }
-        .pnrr-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:12px; }
-        .pnrr-tile { border:1px solid var(--border); border-radius:10px; padding:14px 16px; background:var(--card-bg); cursor:help; }
-        .pnrr-top { display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin-bottom:10px; }
-        .pnrr-name { font-weight:700; font-size:0.95em; color:var(--text-main); }
-        .pnrr-impresa { font-size:0.72em; color:var(--text-sub); margin-top:2px; }
-        .pnrr-stato { font-size:0.68em; font-weight:600; padding:3px 8px; border-radius:999px; white-space:nowrap; }
-        .pnrr-stato.fatto { background:rgba(36,178,126,0.12); color:#1b8a61; }
-        .pnrr-stato.corso { background:rgba(233,196,106,0.25); color:#8a6400; }
-        .pnrr-amount { font-size:1.15em; font-weight:800; color:#457b9d; }
-        .pnrr-amount span { font-size:0.62em; font-weight:500; color:var(--text-sub); }
-        .pnrr-bar { height:6px; border-radius:3px; background:var(--border); overflow:hidden; margin:8px 0 3px; }
-        .pnrr-bar i { display:block; height:100%; background:#457b9d; }
-        .pnrr-bar-leg { display:flex; justify-content:space-between; font-size:0.68em; color:var(--text-sub); }
-        .pnrr-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:10px; }
-        .pnrr-tags span { font-size:0.68em; padding:2px 7px; border-radius:4px; background:var(--bg-color); color:var(--text-sub); border:1px solid var(--border); }
+        /* Scheda PNRR alberghi: una didascalia di sintesi e un riquadro per struttura, tutti uguali.
+           Riquadri su fondo tinto, senza bordo; il colore sta solo nella barra e nell'icona dello stato. */
+        .pnrr-root { --pnrr-fill:#457b9d; --pnrr-track:#d3e0ea; --pnrr-ok:#1b8a61; --pnrr-tile:#f5f8fa; --pnrr-sub:#5f6a7e; }
+        /* Sintesi: stessa griglia dei riquadri sotto, cosi le colonne si allineano; fondo azzurro
+           (tinta del blu della barra) e cifre piu grandi per distinguerla dal dettaglio */
+        .pnrr-sintesi { display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:14px; margin-bottom:22px; }
+        .pnrr-sint { background:#e7f0f6; border-radius:12px; padding:16px 18px; }
+        .pnrr-sint-lab { font-size:0.7em; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:#4d5a70; }
+        .pnrr-sint-val { font-size:1.7em; font-weight:700; color:var(--text-main); letter-spacing:-0.01em; margin:6px 0 4px; line-height:1.1; }
+        .pnrr-sint-nota { font-size:0.76em; color:#4d5a70; }
+        .pnrr-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); grid-auto-rows:1fr; gap:14px; }
+        .pnrr-tile { background:var(--pnrr-tile); border-radius:12px; padding:16px 18px 14px; display:flex; flex-direction:column; cursor:default; }
+        .pnrr-name { font-size:0.95em; font-weight:600; color:var(--text-main); line-height:1.25; }
+        .pnrr-impresa { font-size:0.74em; color:var(--pnrr-sub); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .pnrr-tipo { font-size:0.74em; color:var(--pnrr-sub); margin-top:2px; line-height:1.35; }
+        .pnrr-cifre { margin-top:auto; padding-top:16px; }
+        .pnrr-amount { font-size:1.4em; font-weight:700; color:var(--text-main); letter-spacing:-0.01em; line-height:1.1; }
+        .pnrr-su { font-size:0.74em; color:var(--pnrr-sub); margin-top:3px; }
+        .pnrr-bar { height:6px; border-radius:3px; background:var(--pnrr-track); overflow:hidden; margin:10px 0 0; }
+        .pnrr-bar i { display:block; height:100%; background:var(--pnrr-fill); border-radius:3px; }
+        .pnrr-stato { display:flex; align-items:center; gap:6px; font-size:0.74em; color:var(--pnrr-sub); margin-top:12px; }
+        .pnrr-stato .ico { font-weight:700; }
+        .pnrr-stato .ico.ok { color:var(--pnrr-ok); }
+        .pnrr-nota { font-size:0.72em; color:var(--text-sub); margin-top:14px; }
+        /* In colonna singola l'altezza uguale non allinea nulla e lascia solo vuoti */
+        @media (max-width: 600px) { .pnrr-grid { grid-auto-rows:auto; } }
         #compareBoxes { display:grid; gap:12px; margin-top:20px; }
         #compareBoxes:empty { display:none; }
         .cbox {
@@ -3596,35 +3601,36 @@ function renderPnrrTurismo(json, serie) {
     const iA = serie ? serie.anni.indexOf(2024) : -1;
     const albCef = iA >= 0 ? serie.pre_alb[iA] : null;
     const albIt = volumeData['Italia'] && volumeData['Italia'].post[0] ? volumeData['Italia'].post[0] * 1e6 : null;
-    const stat = (etichetta, valore, nota) => '<div class="pnrr-stat"><div class="pnrr-stat-lab">' + etichetta
-        + '</div><div class="pnrr-stat-val">' + valore + '</div><div class="pnrr-stat-nota">' + nota + '</div></div>';
     const tile = p => {
         const q = Math.round(p.pnrr / p.totale * 100);
-        const fonte = esc(p.intervento + ' — ' + p.beneficiario);
-        return '<div class="pnrr-tile" title="' + fonte + '">'
-            + '<div class="pnrr-top"><div><div class="pnrr-name">' + p.struttura + '</div>'
-            + '<div class="pnrr-impresa">' + p.impresa + '</div></div>'
-            + (p.fine_effettiva
-                ? '<span class="pnrr-stato fatto">Concluso · ' + mese(p.fine) + '</span>'
-                : '<span class="pnrr-stato corso">In corso · fine prevista ' + mese(p.fine) + '</span>')
-            + '</div>'
-            + '<div class="pnrr-amount">€ ' + nf(p.pnrr) + ' <span>di PNRR su € ' + nf(p.totale) + '</span></div>'
+        const stato = p.fine_effettiva
+            ? '<span class="ico ok">✓</span>Concluso · ' + mese(p.fine)
+            : '<span class="ico">◷</span>In corso · fine prevista ' + mese(p.fine);
+        const dettaglio = esc(p.intervento + ' — ' + p.beneficiario + '. PNRR € ' + nf(p.pnrr)
+            + ', impresa € ' + nf(p.totale - p.pnrr) + ', costo € ' + nf(p.totale) + '.');
+        return '<div class="pnrr-tile" title="' + dettaglio + '">'
+            + '<div class="pnrr-name">' + p.struttura + '</div>'
+            + '<div class="pnrr-impresa">' + p.impresa + '</div>'
+            + '<div class="pnrr-tipo">' + (p.tipi || []).join(' · ') + '</div>'
+            + '<div class="pnrr-cifre"><div class="pnrr-amount">€ ' + nf(p.pnrr) + '</div>'
+            + '<div class="pnrr-su">di PNRR su € ' + nf(p.totale) + ' di costo · ' + q + '%</div>'
             + '<div class="pnrr-bar"><i style="width:' + q + '%"></i></div>'
-            + '<div class="pnrr-bar-leg"><span>PNRR ' + q + '%</span><span>impresa ' + (100 - q) + '%</span></div>'
-            + '<div class="pnrr-tags">' + (p.tipi || []).map(t => '<span>' + t + '</span>').join('') + '</div>'
+            + '<div class="pnrr-stato">' + stato + '</div></div>'
             + '</div>';
     };
-    box.innerHTML = '<div class="pnrr-stats">'
-        + stat('PNRR assegnato', '€ ' + nf(pnrr), P.length + ' strutture ricettive')
-        + stat('Costo degli interventi', '€ ' + nf(tot), Math.round(pnrr / tot * 100) + '% coperto dal PNRR')
-        + (it.pnrr_italia ? stat('Quota dei fondi in Italia', perc(pnrr / it.pnrr_italia * 100),
-            albCef && albIt ? 'contro lo ' + perc(albCef / albIt * 100) + ' delle notti alberghiere italiane' : '') : '')
-        + '</div><div class="pnrr-grid">' + P.map(tile).join('') + '</div>';
+    const sint = (lab, val, nota) => '<div class="pnrr-sint"><div class="pnrr-sint-lab">' + lab + '</div>'
+        + '<div class="pnrr-sint-val">' + val + '</div><div class="pnrr-sint-nota">' + nota + '</div></div>';
+    const sintesi = sint('PNRR assegnato', '€ ' + nf(pnrr), P.length + ' strutture ricettive')
+        + sint('Costo degli interventi', '€ ' + nf(tot), Math.round(pnrr / tot * 100) + '% coperto dal PNRR')
+        + (it.pnrr_italia ? sint('Quota dei fondi in Italia', perc(pnrr / it.pnrr_italia * 100),
+            albCef && albIt ? 'le notti alberghiere di Cefalù sono lo ' + perc(albCef / albIt * 100) : '') : '');
+    box.innerHTML = '<div class="pnrr-root"><div class="pnrr-sintesi">' + sintesi + '</div>'
+        + '<div class="pnrr-grid">' + P.map(tile).join('') + '</div>'
+        + '<div class="pnrr-nota">Importi assegnati, non necessariamente già pagati. In Italia la misura conta '
+        + nf(it.progetti_italia || 0) + ' progetti. Passa su un riquadro per il testo originale della fonte.</div></div>';
     document.getElementById('pnrr-sottotitolo').textContent =
         'Tax credit per la riqualificazione delle strutture ricettive — stato al ' + (json.estrazione || []).join(', ');
-    document.getElementById('pnrr-kpi').innerHTML =
-        '<span>Importi assegnati, non necessariamente già pagati · ' + nf(it.progetti_italia || 0)
-        + ' progetti della stessa misura in Italia · passa su un riquadro per il testo originale della fonte</span>';
+    document.getElementById('pnrr-kpi').innerHTML = '';
 }
 
 // ── EXPLORER ─────────────────────────────────────────────────────────────
