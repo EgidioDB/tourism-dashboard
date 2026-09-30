@@ -118,6 +118,12 @@ contrario del vero.** Nessun test lo intercetta.
   2019 Cefalù la registrava in «Altre imposte n.a.c.» (1.01.01.99.001) mescolata ad altro. Un anno con incassi
   «da regolarizzare» (codici `0.`) non è chiuso: nel 2026 l'estate mancava perché 2,66 milioni erano ancora lì.
   Il codice ente si cerca per codice fiscale e comparto COMUNE: lo stesso CF ha anche la gestione commissariale.
+- **Nei file SIOPE un comune assente non ha incassato zero: manca.** Nel 2023 non ci sono righe per 378 comuni,
+  quasi tutta la Sardegna. `soggiorno_comuni.json` mette `null`, e la dashboard dice «assente da SIOPE».
+- **Le serie comunali sarde sono spezzate su due codici ISTAT** (riorganizzazione delle province): Olbia è
+  `104017` per il 2014–2016 e `090047` dal 2017, lo stesso per Arzachena, Budoni, Tortolì e altri. Il collegamento
+  SIOPE ripiega sul nome. **Problema aperto:** classifica crescita e Top City leggono il 2014 e il 2024 dallo stesso
+  codice, quindi quei comuni restano senza crescita e fuori dalle classifiche.
 - **I popup invecchiano in silenzio.** Contengono cifre, fonti e descrizioni dei grafici scritte a mano: quando
   cambi un calcolo, un dato o un grafico, cerca nell'oggetto `INFO` cosa lo cita. Il 30/09 ne sono emersi una
   ventina fuori sincrono: la mappa descriveva ancora la base 2014, il pre-2012 di Cefalù il verso di segno vecchio,
@@ -136,6 +142,7 @@ contrario del vero.** Nessun test lo intercetta.
 | Bilancio Cefalù 2005–2024 | `data/bilancio.json` | soggiorno, spesa turismo, entrate |
 | Note ISTAT per comune-anno | `data/flag_istat.json` | `python3 scripts/build_flag_istat.py` |
 | Imposta di soggiorno mensile 2020–2026 | `data/soggiorno_mensile.json` | `python3 scripts/build_siope_soggiorno.py`, cassa SIOPE |
+| Imposta di soggiorno per comune 2020–2025 | `data/soggiorno_comuni.json` | stesso script; `p` è copia delle serie: rigenera se cambiano |
 | Popolazione 2014–2024 | `data/popolazione.json` | `python3 scripts/build_popolazione.py`, scarica POSAS in `data/fonti/` |
 
 Gli XLS ISTAT di origine sono in `DCSC_Occupancy_in_collective_accommodation/`. ISTAT pubblica per
