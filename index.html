@@ -586,12 +586,12 @@
         .pnrr-root { --pnrr-fill:#457b9d; --pnrr-track:#d3e0ea; --pnrr-ok:#1b8a61; --pnrr-tile:#f5f8fa; --pnrr-sub:#5f6a7e; }
         /* Sintesi: stessa griglia dei riquadri sotto, cosi le colonne si allineano; fondo azzurro
            (tinta del blu della barra) e cifre piu grandi per distinguerla dal dettaglio */
-        .pnrr-sintesi { display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:14px; margin-bottom:22px; }
+        .pnrr-sintesi { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin-bottom:22px; }
         .pnrr-sint { background:#e7f0f6; border-radius:12px; padding:16px 18px; }
         .pnrr-sint-lab { font-size:0.7em; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:#4d5a70; }
         .pnrr-sint-val { font-size:1.7em; font-weight:700; color:var(--text-main); letter-spacing:-0.01em; margin:6px 0 4px; line-height:1.1; }
         .pnrr-sint-nota { font-size:0.76em; color:#4d5a70; }
-        .pnrr-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); grid-auto-rows:1fr; gap:14px; }
+        .pnrr-grid { display:grid; grid-template-columns:repeat(3, 1fr); grid-auto-rows:1fr; gap:14px; }
         .pnrr-tile { background:var(--pnrr-tile); border-radius:12px; padding:16px 18px 14px; display:flex; flex-direction:column; cursor:default; }
         .pnrr-name { font-size:0.95em; font-weight:600; color:var(--text-main); line-height:1.25; }
         .pnrr-impresa { font-size:0.74em; color:var(--pnrr-sub); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -605,8 +605,15 @@
         .pnrr-stato .ico { font-weight:700; }
         .pnrr-stato .ico.ok { color:var(--pnrr-ok); }
         .pnrr-nota { font-size:0.72em; color:var(--text-sub); margin-top:14px; }
-        /* In colonna singola l'altezza uguale non allinea nulla e lascia solo vuoti */
-        @media (max-width: 600px) { .pnrr-grid { grid-auto-rows:auto; } }
+        /* Colonne fisse, non calcolate dalla larghezza: con auto-fill uno schermo largo faceva quattro
+           colonne, la sintesi lasciava un buco e le strutture si dividevano 4 + 2. Con sei strutture
+           tre o due colonne danno sempre file complete. In colonna singola l'altezza uguale non
+           allinea nulla e lascia solo vuoti. */
+        @media (max-width: 1000px) { .pnrr-grid { grid-template-columns:repeat(2, 1fr); } }
+        @media (max-width: 600px) {
+            .pnrr-sintesi, .pnrr-grid { grid-template-columns:1fr; }
+            .pnrr-grid { grid-auto-rows:auto; }
+        }
         #compareBoxes { display:grid; gap:12px; margin-top:20px; }
         #compareBoxes:empty { display:none; }
         .cbox {
