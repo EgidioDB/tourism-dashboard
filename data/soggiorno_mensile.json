@@ -1,0 +1,193 @@
+{
+ "_fonte": "SIOPE — incassi di cassa degli enti pubblici, RGS e Banca d'Italia (siope.it). Codici gestionali 1.01.01.41.001 e 1.01.01.41.002, imposta di soggiorno.",
+ "_nota": "Incassi di cassa, non accertamenti: il mese e quello in cui i soldi arrivano al Comune, secondo le scadenze di versamento delle strutture, non quello del soggiorno. Prima del 2020 l'imposta era registrata nella voce generica 'Altre imposte n.a.c.' e non e separabile. Un anno con mesi mancanti o con incassi ancora da regolarizzare non e confrontabile con gli anni chiusi.",
+ "_rigenera": "python3 scripts/build_siope_soggiorno.py",
+ "_fonti": [
+  {
+   "url": "https://www.siope.it/documenti/siope2/open/last/SIOPE_ANAGRAFICHE.zip",
+   "lastModified": "Thu, 24 Sep 2026 18:55:48 GMT",
+   "sha256": "df6ab3eb87517f23388398bc6a411f5a7c7d89f700894304ce80cb754421db7a",
+   "file": "anagrafiche"
+  },
+  {
+   "url": "https://www.siope.it/documenti/siope2/open/last/SIOPE_ENTRATE.2020.zip",
+   "lastModified": "Thu, 29 Dec 2022 19:50:02 GMT",
+   "sha256": "752ae610704c2fd06531f98449f49f84ab7e81345999c3276244cae3fe20b934",
+   "anno": 2020,
+   "ultimoMese": 12
+  },
+  {
+   "url": "https://www.siope.it/documenti/siope2/open/last/SIOPE_ENTRATE.2021.zip",
+   "lastModified": "Thu, 28 Dec 2023 19:55:05 GMT",
+   "sha256": "73c41eda15dd904171da13d4f8c87128614ee4b0b2aaeb4eb0d896bd6070f2b7",
+   "anno": 2021,
+   "ultimoMese": 12
+  },
+  {
+   "url": "https://www.siope.it/documenti/siope2/open/last/SIOPE_ENTRATE.2022.zip",
+   "lastModified": "Tue, 24 Dec 2024 19:53:29 GMT",
+   "sha256": "b810a9f0e84980d1ea75b4f60eb47c8695d18188fcfbae049529d1dfe0926510",
+   "anno": 2022,
+   "ultimoMese": 12
+  },
+  {
+   "url": "https://www.siope.it/documenti/siope2/open/last/SIOPE_ENTRATE.2023.zip",
+   "lastModified": "Wed, 31 Dec 2025 20:37:33 GMT",
+   "sha256": "84ff49411744e63d7876551769b921fd16dbcc30d7bfed4bb06e5356b44740c5",
+   "anno": 2023,
+   "ultimoMese": 12
+  },
+  {
+   "url": "https://www.siope.it/documenti/siope2/open/last/SIOPE_ENTRATE.2024.zip",
+   "lastModified": "Thu, 24 Sep 2026 18:55:48 GMT",
+   "sha256": "3762bfba063a422c413b3279e3940b1cfa52556a622b552cce7a8dcf3c2c0876",
+   "anno": 2024,
+   "ultimoMese": 12
+  },
+  {
+   "url": "https://www.siope.it/documenti/siope2/open/last/SIOPE_ENTRATE.2025.zip",
+   "lastModified": "Thu, 24 Sep 2026 18:55:48 GMT",
+   "sha256": "5ddc0abcc1c0d2440eb34e66aed19c9275c7f2ed5f13add565bc42dc3283607c",
+   "anno": 2025,
+   "ultimoMese": 12
+  },
+  {
+   "url": "https://www.siope.it/documenti/siope2/open/last/SIOPE_ENTRATE.2026.zip",
+   "lastModified": "Thu, 24 Sep 2026 18:55:49 GMT",
+   "sha256": "5164ce70c92492ba6de5a853914053b58684212ca60c14c7589a99795bd048a6",
+   "anno": 2026,
+   "ultimoMese": 9
+  }
+ ],
+ "ente": {
+  "codice_siope": "000012933",
+  "codice_fiscale": "00110740826"
+ },
+ "anni": [
+  2020,
+  2021,
+  2022,
+  2023,
+  2024,
+  2025,
+  2026
+ ],
+ "ultimo_mese": {
+  "2020": 12,
+  "2021": 12,
+  "2022": 12,
+  "2023": 12,
+  "2024": 12,
+  "2025": 12,
+  "2026": 9
+ },
+ "mensile": {
+  "2020": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   204.0,
+   537.5,
+   16638.5,
+   56366.0,
+   69114.1,
+   135406.86,
+   90130.5,
+   15201.0
+  ],
+  "2021": [
+   3414.94,
+   1183.2,
+   250.4,
+   4109.5,
+   76.5,
+   7536.0,
+   2244.5,
+   171672.71,
+   14272.26,
+   238320.01,
+   37305.87,
+   56882.5
+  ],
+  "2022": [
+   32071.05,
+   12958.45,
+   394.0,
+   631.09,
+   1724.65,
+   142922.56,
+   3442.0,
+   253487.7,
+   18552.51,
+   254078.06,
+   84605.38,
+   55773.5
+  ],
+  "2023": [
+   10567.39,
+   7218.33,
+   63792.29,
+   22979.52,
+   9749.98,
+   266605.54,
+   11346.61,
+   337174.15,
+   18179.2,
+   371867.25,
+   7916.6,
+   122024.03
+  ],
+  "2024": [
+   18985.24,
+   20315.29,
+   1372.07,
+   1.95,
+   1514.42,
+   348110.31,
+   12445.78,
+   539133.9,
+   12288.01,
+   498053.5,
+   148441.24,
+   186118.16
+  ],
+  "2025": [
+   6010.96,
+   758.85,
+   1400.24,
+   23713.32,
+   3984.52,
+   259909.26,
+   15503.31,
+   595597.58,
+   23599.2,
+   625811.69,
+   201286.85,
+   226114.22
+  ],
+  "2026": [
+   57440.12,
+   12665.6,
+   7115.48,
+   5981.72,
+   4278.55,
+   123781.1,
+   1711.34,
+   99499.22,
+   3036.42,
+   null,
+   null,
+   null
+  ]
+ },
+ "da_regolarizzare": {
+  "2020": 0.0,
+  "2021": 0.0,
+  "2022": 0.0,
+  "2023": 0.0,
+  "2024": 0.0,
+  "2025": 0.0,
+  "2026": 2663028.79
+ }
+}

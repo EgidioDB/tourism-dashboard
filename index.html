@@ -631,6 +631,7 @@
             <a class="nav-sub-item" data-target="chart-peer">Comuni simili</a>
             <a class="nav-sub-item" data-target="chart-pressure">Pressione turistica</a>
             <a class="nav-sub-item" data-target="chart-soggiorno">Imposta soggiorno</a>
+            <a class="nav-sub-item" data-target="chart-sog-mese">Soggiorno mese per mese</a>
             <a class="nav-sub-item" data-target="chart-gettito">Entrate comunali</a>
             <a class="nav-sub-item" data-target="box-reddito-turismo">Reddito &amp; Turismo</a>
         </div>
@@ -856,6 +857,20 @@
             </div>
             <div id="chart-soggiorno" style="height: 320px;"></div>
             <div id="soggiorno-kpi" style="display:flex; gap:16px; flex-wrap:wrap; padding:8px 4px 2px; font-size:0.78em; color:var(--text-sub);"></div>
+        </div>
+    </div>
+
+    <div class="dashboard-row" style="height: auto;">
+        <div class="main-panel" style="flex: 1;">
+            <div class="header-box" style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                <div>
+                    <h1>Imposta di Soggiorno mese per mese <button class="info-btn" onclick="showInfo('chart_sog_mese')">i</button></h1>
+                    <p style="font-size:0.75em; margin:0; color: var(--text-sub);">Incassi di cassa SIOPE: il mese in cui i soldi arrivano al Comune, non quello del soggiorno</p>
+                </div>
+                <div id="sog-mese-yr-btns" style="display:flex; gap:4px; flex-wrap:wrap; margin-top:2px;"></div>
+            </div>
+            <div id="chart-sog-mese" style="height: 320px;"></div>
+            <div id="sog-mese-kpi" style="display:flex; gap:16px; flex-wrap:wrap; padding:8px 4px 2px; font-size:0.78em; color:var(--text-sub);"></div>
         </div>
     </div>
 
@@ -2784,6 +2799,120 @@
     }
     // ── /IMPOSTA DI SOGGIORNO ───────────────────────────────────────
 
+    // ── IMPOSTA DI SOGGIORNO MESE PER MESE (SIOPE) ──────────────────
+    // Incassi di cassa da data/soggiorno_mensile.json. Il mese e quello in cui i soldi arrivano
+    // al Comune, non quello del soggiorno: le presenze mensili accanto servono a mostrare lo
+    // scarto fra le due cose, non a dividere l'una per l'altra mese per mese.
+    let SOG_MESE = null;
+    let currentSogMeseYear = null;
+    const MESI_LUNGHI = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio',
+                         'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
+
+    // Chiuso = dodici mesi pubblicati e nessun incasso ancora da attribuire a una voce.
+    // Un anno aperto non si confronta con gli altri: nel 2026 l'estate era ancora "da regolarizzare".
+    function sogMeseChiuso(a) {
+        return SOG_MESE.ultimo_mese[a] === 12 && !(SOG_MESE.da_regolarizzare[a] > 0);
+    }
+
+    function syncSoggiornoMensile(json) {
+        if (!json || !json.mensile || !Array.isArray(json.anni)) return false;
+        SOG_MESE = json;
+        // Di partenza l'ultimo anno chiuso
+        const chiusi = json.anni.filter(sogMeseChiuso);
+        currentSogMeseYear = chiusi.length ? chiusi[chiusi.length - 1] : json.anni[json.anni.length - 1];
+        const c = document.getElementById('sog-mese-yr-btns');
+        if (c) {
+            c.innerHTML = '';
+            json.anni.forEach(a => {
+                const b = document.createElement('button');
+                b.className = 'season-yr-btn';
+                b.dataset.sogMeseYr = a;
+                b.textContent = sogMeseChiuso(a) ? a : a + '*';
+                if (!sogMeseChiuso(a)) b.title = 'Anno parziale: non confrontabile con gli anni chiusi';
+                b.addEventListener('click', () => renderSoggiornoMensile(a));
+                c.appendChild(b);
+            });
+        }
+        return true;
+    }
+
+    function renderSoggiornoMensile(yr) {
+        const el = document.getElementById('chart-sog-mese');
+        if (!el || !SOG_MESE) return;
+        if (yr) currentSogMeseYear = yr;
+        const a = currentSogMeseYear, k = String(a);
+        const val = SOG_MESE.mensile[k] || [];
+        const pres = (advancedData.stagionalitaAllYears || {})[k] || null;
+        const mesi = advancedData.mesi;
+        const traces = [{
+            x: mesi, y: val, type: 'bar', name: 'Imposta incassata (€)',
+            marker: { color: '#e07b39', opacity: 0.85 }, yaxis: 'y',
+            hovertemplate: '<b>%{x} ' + a + '</b><br>Incassati: € %{y:,.0f}<extra></extra>'
+        }];
+        if (pres) traces.push({
+            x: mesi, y: pres, type: 'scatter', mode: 'lines+markers', name: 'Presenze (notti)',
+            line: { color: '#24b27e', width: 2, dash: 'dot' }, marker: { size: 5, color: '#24b27e' },
+            yaxis: 'y2', hovertemplate: '<b>%{x} ' + a + '</b><br>%{y:,.0f} notti<extra></extra>'
+        });
+        const layout = {
+            ...baseLayout,
+            xaxis: { fixedrange: true, tickpad: 8 },
+            // Entrambi gli assi partono da zero, cosi le due scale hanno la stessa base
+            yaxis: { fixedrange: true, tickformat: ',.0f', tickprefix: '€ ', rangemode: 'tozero' },
+            ...(pres ? { yaxis2: { fixedrange: true, overlaying: 'y', side: 'right', tickformat: ',.0f', showgrid: false, rangemode: 'tozero', zeroline: false } } : {}),
+            showlegend: true,
+            legend: { orientation: 'h', y: -0.18, x: 0.5, xanchor: 'center', font: { size: 11 } },
+            margin: { t: 20, r: pres ? 60 : 20, b: 55, l: 70 }
+        };
+        const cfg = { responsive: true, displayModeBar: false };
+        el.__sogMeseFigura = { traces: traces, layout: layout };
+        if (el.__plotlyInstalled) {
+            Plotly.react('chart-sog-mese', traces, layout, cfg);
+        } else if (!el.__inAttesa) {
+            // Il primo disegno aspetta che il grafico sia in vista e usa l'anno scelto in quel
+            // momento. Disegnato subito, l'animazione d'ingresso ripartirebbe coi dati iniziali
+            // anche dopo un cambio d'anno fatto prima di arrivarci.
+            el.__inAttesa = true;
+            _cefObs(el, function() {
+                el.__plotlyInstalled = true;
+                const f = el.__sogMeseFigura;
+                cefaluAnimMixed('chart-sog-mese', f.traces, f.layout, cfg, 200);
+            });
+        }
+
+        // Riepilogo: i confronti con bilancio e presenze valgono solo sugli anni chiusi
+        const chiuso = sogMeseChiuso(a);
+        const tot = val.reduce((s, v) => s + (v || 0), 0);
+        const it = n => n.toFixed(1).replace('.', ',');
+        const iAcc = SOGGIORNO_DATA.anni.indexOf(a);
+        const acc = iAcc >= 0 ? SOGGIORNO_DATA.valori[iAcc] : null;
+        const iPre = (advancedData.anni || []).indexOf(a);
+        const notti = iPre >= 0 ? advancedData.pre_tot[iPre] : null;
+        const reg = SOG_MESE.da_regolarizzare[k] || 0;
+        let html = '<span>' + a + ' incassati <b style="color:#e07b39">€ ' + nf(tot) + '</b></span>';
+        if (!chiuso) {
+            html += '<span>dati parziali, fino a ' + MESI_LUNGHI[SOG_MESE.ultimo_mese[k] - 1] + '</span>';
+            if (reg > 0) html += '<span><b>€ ' + nf(reg) + '</b> di incassi del Comune ancora da attribuire a una voce: '
+                               + 'una parte dell\'imposta può essere lì</span>';
+        } else {
+            if (acc) {
+                // Il 2023 torna al centesimo: sotto il mezzo decimale non si mostra un segno
+                const d = (tot / acc - 1) * 100;
+                html += '<span>accertati a bilancio <b>€ ' + nf(acc) + '</b> ('
+                      + (Math.abs(d) < 0.05 ? '0,0' : sgn(d).replace('.', ',')) + '%)</span>';
+            }
+            if (notti) html += '<span>€ per notte registrata <b>' + (tot / notti).toFixed(2).replace('.', ',') + '</b></span>';
+            const ord = val.map((v, i) => [v || 0, i]).sort((x, y) => y[0] - x[0]).slice(0, 3);
+            html += '<span>tre mesi più alti: ' + ord.map(o => MESI_LUNGHI[o[1]]).join(', ')
+                  + ' — <b>' + it(ord.reduce((s, o) => s + o[0], 0) / tot * 100) + '%</b> dell\'anno</span>';
+        }
+        document.getElementById('sog-mese-kpi').innerHTML = html;
+        document.querySelectorAll('#sog-mese-yr-btns .season-yr-btn').forEach(b => {
+            b.classList.toggle('active', parseInt(b.dataset.sogMeseYr) === a);
+        });
+    }
+    // ── /IMPOSTA DI SOGGIORNO MESE PER MESE ─────────────────────────
+
     // ── SPESA TURISMO vs IMPOSTA DI SOGGIORNO ──────────────────────
     // Popola SOGGIORNO_DATA e SPESA_SOG_DATA dal bilancio comunale.
     // La serie soggiorno parte dal primo anno con gettito, quella spesa da quando
@@ -3201,7 +3330,8 @@ const INFO = {
     chart_reddito_turismo: "<strong>Reddito &amp; Turismo — Cefalù</strong><p>Mette a confronto il <strong>reddito imponibile IRPEF pro capite</strong> dei residenti e le <strong>presenze turistiche</strong> (notti). Mostra se le due grandezze si muovono insieme, non se una causa l'altra.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Vista Trend (doppio asse)</h4><p>Le due curve non vanno di pari passo. Fra il 2014 e il 2019 le presenze crescono del 27% e il reddito dell'8%. Nel 2020 le presenze crollano del 62% e il reddito cala del 4%: salari e pensioni non seguono le notti vendute. Dal 2021 salgono entrambi fino ai massimi del 2024. Il 2015 delle presenze è segnato con ⚠: ISTAT non ha ricevuto il dato e ripete il 2014; il reddito di quell'anno invece è un dato vero.</p><p>Il reddito è <strong>nominale</strong>, non corretto per l'inflazione. Dal 2014 al 2024 cresce del 36%, ma nello stesso periodo i prezzi al consumo sono saliti del 22%: in termini reali la crescita è di circa l'11%. Anche l'accelerazione fra il 2021 e il 2024 è in gran parte inflazione: +23% il reddito, +16,5% i prezzi.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Vista Correlazione (scatter)</h4><p>Ogni punto è un anno. Il valore <strong>R²</strong> (in basso a destra) misura quanto la retta descrive i punti: 0 per niente, 1 perfettamente. Il valore attuale (~0,43) è moderato. Gli anni dal 2014 al 2019 stanno tutti sotto la retta e quelli dal 2020 al 2024 tutti sopra: il reddito si è spostato verso l'alto nel tempo, e la retta unisce due periodi diversi più di quanto descriva un legame con il turismo.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Cosa misura il reddito imponibile IRPEF</h4><p>È il reddito dichiarato dai contribuenti residenti, al netto delle deduzioni, diviso per tutta la popolazione residente al 1° gennaio. Non è PIL. Comprende salari, pensioni e i redditi d'impresa e da fabbricati tassati con l'IRPEF. Restano fuori i redditi con tassazione sostitutiva: gli <strong>affitti con cedolare secca, compresi gli affitti brevi</strong>, e i lavoratori autonomi in regime forfettario. Il canale più diretto fra turismo e reddito dei residenti è quindi in parte invisibile in questo dato.</p><p>Un indizio viene dal reddito complessivo, che secondo il MEF comprende i redditi a cedolare secca: a Cefalù la sua distanza dal reddito imponibile sale da circa il 4% dell'imponibile nel 2007–2012 al 10,7% nel 2024. Dentro quella distanza ci sono anche le deduzioni, quindi segnala una tendenza senza misurarla.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Copertura temporale</h4><p>Reddito IRPEF: 2007–2024 · Presenze ISTAT: 2014–2024. Il grafico mostra solo gli anni in comune (2014–2024).</p><em class='info-fonte'>Fonte reddito: MEF — Redditi e principali variabili IRPEF su base comunale, e definizione MEF delle variabili IRPEF · Presenze: ISTAT dati comunali 2014–2024 · Popolazione: ISTAT ricostruzione intercensuaria 2002–2019 + POSAS 2020–2024, al 1° gennaio · Prezzi: Eurostat, indice armonizzato dei prezzi al consumo (IPCA), media annua Italia.</em>",
 
     chart_spesa_vs_sog: "<strong>Spesa Turismo vs Imposta di Soggiorno — Cefalù</strong><p>Confronto tra quanto il Comune <em>investe</em> in attività turistiche e quanto <em>incassa</em> dall'imposta di soggiorno. Due serie su scala comune (asse €) per capire se la tassa copre o supera la spesa.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Come leggere il grafico</h4><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li><strong>Barre blu scure</strong>: spesa turismo — anni con dato disponibile</li><li><strong>Linea arancione</strong>: imposta di soggiorno — accertamenti annui</li><li><strong>Barre più chiare</strong>: dal 2016, classificazione armonizzata D.Lgs. 118/2011; le più scure sono gli anni DPR 194/96 (ante-riforma)</li></ul><h4 style='margin:10px 0 4px;font-size:0.95em;'>Nota metodologica</h4><p>Le serie derivano da due sistemi di classificazione diversi:</p><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li><strong>2007–2015</strong> (DPR 194/96): &quot;Funzioni nel campo turistico&quot; — Quadro 04 del consuntivo</li><li><strong>2024</strong> (D.Lgs. 118/2011 — armonizzato): Missione 07 Turismo — Conto del bilancio spese</li><li><strong>2016</strong>: € 0 (dissesto finanziario in corso)</li><li><strong>2017</strong>: € 50.082 · <strong>2018</strong>: € 165.729 (ripresa post-dissesto)</li><li><strong>2019–2023</strong>: Missione 07 Turismo — impegni da rendiconto certificato BDAP RGS</li></ul><p>Le due classificazioni coprono sostanzialmente la stessa voce di spesa e sono comparabili per analisi di tendenza, con una discontinuità metodologica al confine 2015/2016.</p><p style='font-size:0.9em;'><strong>Indicatore KPI</strong>: rapporto incasso/spesa per gli anni in cui entrambi i dati sono disponibili. Valore &gt; 1 = l'imposta supera la spesa turistica.</p><em class='info-fonte'>Fonte spesa 2007–2015: Consuntivi comunali (Quadro 04, DPR 194/96) · Fonte spesa 2016–2018: Certificati Consuntivi armonizzati (Quadro 6, Missione 07) — finanzalocale.interno.gov.it · Fonte spesa 2019–2023: BDAP RGS — openbdap.rgs.mef.gov.it · Fonte spesa 2024: Rendiconto 2024 allegati tecnici RAR (Missione 07) — egov.comune.cefalu.pa.it · Fonte imposta soggiorno: certificati consuntivi 2013–2014 (finanzalocale.interno.gov.it), Relazioni della Giunta al Rendiconto 2020–2024.</em>",
-    chart_soggiorno: "<strong>Imposta di Soggiorno — Cefalù 2013–2024</strong><p>Entrate <em>accertate</em> (competenza) dall'imposta di soggiorno: il totale iscritto a bilancio come credito maturato nell'esercizio, indipendentemente dal momento dell'incasso effettivo.</p><p>Le etichette percentuali indicano il peso dell'imposta sul totale delle entrate tributarie comunali dell'anno.</p><p>La linea verde tratteggiata sovrappone le presenze turistiche (notti) per visualizzare la correlazione tra flussi e gettito. Sulla linea il 2015 è segnato con ⚠: ISTAT non ha ricevuto il dato delle presenze e ripete il 2014. L'imposta di quell'anno invece è un dato vero.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Fatti chiave</h4><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li>2013–2017: gettito fra € 121.000 e € 167.000 l'anno</li><li>2018: primo scatto rilevante, +287% sul 2017. Le cause, tariffe o strutture assoggettate, non sono nelle fonti finanziarie usate: vanno cercate nelle delibere comunali</li><li>2019: picco pre-COVID a € 997.826</li><li>2020: crollo COVID -56%</li><li>2022: € 849.631 accertati, ancora sotto il 2019</li><li>2023: € 1,25M, il primo anno sopra il livello pre-COVID</li><li>2024: € 1,78M, il massimo della serie</li></ul><p style='font-size:0.9em;'><em>Nota: le tariffe applicate per categoria di struttura e per anno derivano da Delibere del Consiglio Comunale e non sono contenute nelle fonti finanziarie utilizzate.</em></p><em class='info-fonte'>Fonte: certificati consuntivi 2013–2014 (finanzalocale.interno.gov.it) · Rendiconto di gestione 2020–2022 (Relazioni Giunta, egov.comune.cefalu.pa.it) · Rendiconto 2024 — allegati tecnici (conto del bilancio entrate) · Valori 2023–2024 estratti da Relazione della Giunta al Rendiconto 2024. Metodo: accertamenti di competenza.</em>"
+    chart_sog_mese: "<strong>Imposta di Soggiorno mese per mese</strong><p>Quanto il Comune ha <strong>incassato</strong> ogni mese dall'imposta di soggiorno, secondo SIOPE: il sistema che registra, tramite il tesoriere, ogni incasso e pagamento degli enti pubblici.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Il mese è quello dell'incasso, non del soggiorno</h4><p>Le strutture raccolgono l'imposta dagli ospiti e la riversano al Comune periodicamente. Per questo gli incassi arrivano a scatti, soprattutto a giugno, agosto e ottobre, e non seguono la curva delle notti. La linea verde mette accanto le presenze dello stesso mese, disponibili dal 2022 al 2024, proprio per mostrare lo scarto: dividere l'una per l'altra mese per mese non avrebbe senso.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Come si legge il riepilogo</h4><p><em>Accertati a bilancio</em> è l'imposta di competenza dello stesso anno, quella del grafico precedente. Sugli anni chiusi i due totali tornano: il 2023 al centesimo, il 2024 dello 0,2%, il 2021 e il 2022 entro il 2%. Il 2020 fa eccezione, con la cassa sotto del 12%.</p><p><em>€ per notte registrata</em> divide l'incassato dell'anno per le presenze ISTAT. È un gettito medio, non la tariffa: eventuali esenzioni e i versamenti che scavalcano l'anno lo spostano.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Limiti</h4><p>La serie parte dal 2020. Prima Cefalù registrava l'imposta nella voce generica «Altre imposte, tasse e proventi», insieme ad altre entrate, e non si può separarla: nel 2020, quando compare il codice proprio, quella voce scende da 1,7 milioni a 174.000 euro.</p><p>Un anno con l'asterisco è parziale: mancano dei mesi, oppure una parte degli incassi è ancora «da regolarizzare», cioè arrivata al tesoriere ma non ancora attribuita a una voce. Il riepilogo dice quanto. Non va confrontato con gli anni chiusi.</p><em class='info-fonte'>Fonte: SIOPE — incassi di cassa degli enti pubblici, RGS e Banca d'Italia (siope.it), codici 1.01.01.41.001 e 1.01.01.41.002 · Presenze mensili: ISTAT dati mensili comunali 2022-2024 · Accertamenti: rendiconti del Comune.</em>",
+    chart_soggiorno: "<strong>Imposta di Soggiorno — Cefalù 2013–2024</strong><p>Entrate <em>accertate</em> (competenza) dall'imposta di soggiorno: il totale iscritto a bilancio come credito maturato nell'esercizio, indipendentemente dal momento dell'incasso effettivo.</p><p>Le etichette percentuali indicano il peso dell'imposta sul totale delle entrate tributarie comunali dell'anno.</p><p>La linea verde tratteggiata sovrappone le presenze turistiche (notti) per visualizzare la correlazione tra flussi e gettito. Sulla linea il 2015 è segnato con ⚠: ISTAT non ha ricevuto il dato delle presenze e ripete il 2014. L'imposta di quell'anno invece è un dato vero.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Fatti chiave</h4><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li>2013–2017: gettito fra € 121.000 e € 167.000 l'anno</li><li>2018: primo scatto rilevante, +287% sul 2017. Le cause, tariffe o strutture assoggettate, non sono nelle fonti finanziarie usate: vanno cercate nelle delibere comunali</li><li>2019: picco pre-COVID a € 997.826</li><li>2020: crollo COVID -56%</li><li>2022: € 849.631 accertati, ancora sotto il 2019</li><li>2023: € 1,25M, il primo anno sopra il livello pre-COVID</li><li>2024: € 1,78M, il massimo della serie</li></ul><p>Per sapere in che mese i soldi arrivano davvero al Comune c'è il grafico successivo, con gli incassi di cassa SIOPE mese per mese dal 2020.</p><p style='font-size:0.9em;'><em>Nota: le tariffe applicate per categoria di struttura e per anno derivano da Delibere del Consiglio Comunale e non sono contenute nelle fonti finanziarie utilizzate.</em></p><em class='info-fonte'>Fonte: certificati consuntivi 2013–2014 (finanzalocale.interno.gov.it) · Rendiconto di gestione 2020–2022 (Relazioni Giunta, egov.comune.cefalu.pa.it) · Rendiconto 2024 — allegati tecnici (conto del bilancio entrate) · Valori 2023–2024 estratti da Relazione della Giunta al Rendiconto 2024. Metodo: accertamenti di competenza.</em>"
 };
 
 // ── CONFRONTI AGGIUNTIVI ──────────────────────────────────────────────────
@@ -3669,8 +3799,9 @@ function renderGettito(bil, serie) {
         fetch(DATA_PATH + 'bilancio.json').then(r => r.json()).catch(() => null),
         fetch(DATA_PATH + 'peer_group.json').then(r => r.json()).catch(() => null),
         fetch(DATA_PATH + 'provenienza.json').then(r => r.json()).catch(() => null),
+        fetch(DATA_PATH + 'soggiorno_mensile.json').then(r => r.json()).catch(() => null),
         flagIstatPronto,   // i grafici di Cefalù segnano gli anni non veri: il 2015 e una copia del 2014
-    ]).then(([serie, stagData, popData, ricettivaData, ricIdx, irpefData, itaData, regData, pre12Data, euData, bilData, peerJson, provJson]) => {
+    ]).then(([serie, stagData, popData, ricettivaData, ricIdx, irpefData, itaData, regData, pre12Data, euData, bilData, peerJson, provJson, sogMeseJson]) => {
         popolazioneData = popData;
         if (ricIdx) ricettivaIndexData = ricIdx;
 
@@ -3758,6 +3889,8 @@ function renderGettito(bil, serie) {
         syncBilancioFromJson(bilData);
         renderSoggiorno();
         renderSpesaSog();
+        // Dopo bilancio e stagionalità: il riepilogo li usa per confrontare cassa e competenza
+        if (syncSoggiornoMensile(sogMeseJson)) renderSoggiornoMensile();
         // Confronti aggiuntivi
         peerData = peerJson; provData = provJson;
         renderPeer(serie);

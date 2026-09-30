@@ -111,6 +111,9 @@ tourism-dashboard/
 │   ├── province.json                   # Anagrafica province
 │   ├── ricettiva.json                  # Dati strutture ricettive
 │   ├── ricettiva_index.json            # Indice strutture ricettive
+│   ├── soggiorno_mensile.json          # Imposta di soggiorno incassata da Cefalù, mese per mese,
+│   │                                   # 2020–2026 (SIOPE, cassa). Rigenerabile:
+│   │                                   # python3 scripts/build_siope_soggiorno.py
 │   ├── bilancio.json                   # Bilancio Cefalù 2005–2024: imposta di soggiorno,
 │   │                                   # spesa turismo, entrate tributarie
 │   ├── bilancio_cefalu_armonizzato.json
@@ -124,6 +127,7 @@ tourism-dashboard/
 │   ├── build_italia.py                 # Rigenera italia.json dal file XLS delle serie storiche
 │   ├── build_flag_istat.py             # Rigenera flag_istat.json dal file comunale ISTAT
 │   ├── build_popolazione.py            # Rigenera popolazione.json e il reddito pro capite IRPEF
+│   ├── build_siope_soggiorno.py        # Rigenera soggiorno_mensile.json dai file SIOPE
 │   └── build_confronti.py              # Rigenera peer_group.json e provenienza.json
 │
 └── DCSC_Occupancy_in_collective_accommodation/
@@ -150,6 +154,7 @@ tourism-dashboard/
 | Comuni della stessa categoria turistica | ISTAT — classificazione per categoria turistica prevalente | 2014–2024 | `peer_group.json` — panel bilanciato |
 | Imposta di soggiorno e spesa turismo | Consuntivi comunali, BDAP / RGS | 2005–2024 | `bilancio.json` |
 | Note sui dati comunali | ISTAT — colonna flag del file comunale | 2014–2024 | `flag_istat.json` |
+| Imposta di soggiorno mensile | SIOPE — incassi di cassa, RGS e Banca d'Italia | 2020–2026 | `soggiorno_mensile.json` |
 | Popolazione residente al 1° gennaio | ISTAT — ricostruzione intercensuaria, poi POSAS | 2014–2024 | `popolazione.json` |
 
 L'API Eurostat espone header CORS aperti, quindi sarebbe interrogabile direttamente dal browser. Il file resta comunque versionato nel repo: così la dashboard non dipende dalla disponibilità di un servizio esterno a ogni caricamento, e i dati mostrati sono riproducibili nel tempo.
@@ -196,6 +201,7 @@ Arrivi Cefalù 2012:                     132.746
 | `reg.alb`, `reg.ext`, `reg.covid.alb/ext`, `regVolumi`, `volumeData[reg].post` | `data/eurostat_regioni.json` | `syncEurostatRegioni()` |
 | `top.*` (Top City), volumi inclusi | `data/comuni_index.json` + `data/serie/*.json` | `syncTopCity()` |
 | `SOGGIORNO_DATA`, `SPESA_SOG_DATA` | `data/bilancio.json` | `syncBilancioFromJson()` |
+| `SOG_MESE` (imposta mese per mese) | `data/soggiorno_mensile.json` | `syncSoggiornoMensile()` |
 | Classifica crescita comuni | `data/comuni_index.json` | `buildLeaderboard()` |
 
 **Top City** — la città di ogni regione è scelta con lo stesso criterio della classifica crescita: massima crescita presenze 2014–2024 fra i comuni con almeno 500.000 presenze annue; dove nessuno raggiunge la soglia (Molise) si ripiega sul comune più grande. La sua serie comunale viene scaricata al primo click sulla regione e messa in cache, poi il pannello si ridisegna.
@@ -326,6 +332,8 @@ Effetto sulle variazioni pre-2012 mostrate: essendo il 2004 leggermente sottosti
 - **Popup Reddito & Turismo riscritto sui dati** — diceva che reddito e presenze crescevano in parallelo fino al 2019 (+27% le presenze, +8% il reddito) e crollavano insieme nel 2020 (−62% contro −4%). Attribuiva l'accelerazione recente agli affitti brevi, che però con la cedolare secca restano fuori dal reddito imponibile IRPEF per definizione MEF. Non diceva che il reddito è nominale: +36% dal 2014, circa +11% al netto dell'inflazione.
 
 - **Audit dei popup** — ricontrollati tutti gli 81 testi informativi contro i dati e il codice. Una ventina erano rimasti indietro o sbagliati: la mappa descriveva ancora tre gruppi a base 2014, il pre-2012 di Cefalù spiegava il segno al contrario, due popup regionali davano come fonte i comuni aggregati, la spesa turistica descriveva al contrario la trasparenza delle barre, la capacità ricettiva una linea verde che non esiste, l'imposta di soggiorno un 2022 "sopra il picco pre-COVID" che era sotto. Ogni grafico con il 2015 segnato ora lo spiega, e le classifiche spiegano il ⚠.
+
+- **Imposta di soggiorno mese per mese** — dai file SIOPE, gli incassi di cassa di ogni ente pubblico registrati dal tesoriere. L'idea viene dal progetto [DoveVannoINostriSoldi](https://www.dovevannoinostrisoldi.com/enti/c_c421), che usa gli stessi file. Il grafico mette accanto gli incassi e le presenze dello stesso mese, e mostra che non coincidono: le notti crescono da marzo e toccano il massimo in agosto, l'imposta arriva a scatti a giugno, agosto e ottobre, secondo i versamenti delle strutture. Sugli anni chiusi la cassa torna con gli accertamenti di bilancio (2023 al centesimo, 2024 +0,2%), e aggiunge il 2025 che il bilancio non ha ancora: 1,98 milioni. La serie parte dal 2020: prima l'imposta finiva nella voce generica «Altre imposte n.a.c.» e non si può separare. Il 2026 è parziale: fino a settembre, con 2,66 milioni di incassi del Comune ancora da attribuire a una voce.
 
 ### Valutato e scartato
 

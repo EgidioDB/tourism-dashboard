@@ -113,6 +113,11 @@ contrario del vero.** Nessun test lo intercetta.
   nominale: 2014–2024 +36% nominale, +11% reale con l'IPCA Eurostat.
 - **Le chiavi dei popup si sbagliano facilmente.** Due gruppi post-COVID aprivano i testi del post-2012.
   Verifica sempre gruppo per gruppo, non solo che la chiave esista.
+- **L'imposta di soggiorno SIOPE è cassa, non competenza, e parte dal 2020.** Il mese è quello dell'incasso, che
+  segue i versamenti delle strutture, non quello del soggiorno: non dividerla mese per mese per le presenze. Fino al
+  2019 Cefalù la registrava in «Altre imposte n.a.c.» (1.01.01.99.001) mescolata ad altro. Un anno con incassi
+  «da regolarizzare» (codici `0.`) non è chiuso: nel 2026 l'estate mancava perché 2,66 milioni erano ancora lì.
+  Il codice ente si cerca per codice fiscale e comparto COMUNE: lo stesso CF ha anche la gestione commissariale.
 - **I popup invecchiano in silenzio.** Contengono cifre, fonti e descrizioni dei grafici scritte a mano: quando
   cambi un calcolo, un dato o un grafico, cerca nell'oggetto `INFO` cosa lo cita. Il 30/09 ne sono emersi una
   ventina fuori sincrono: la mappa descriveva ancora la base 2014, il pre-2012 di Cefalù il verso di segno vecchio,
@@ -130,6 +135,7 @@ contrario del vero.** Nessun test lo intercetta.
 | Split alb/ext regionale | `data/eurostat_regioni.json` | `python3 scripts/fetch_eurostat.py` |
 | Bilancio Cefalù 2005–2024 | `data/bilancio.json` | soggiorno, spesa turismo, entrate |
 | Note ISTAT per comune-anno | `data/flag_istat.json` | `python3 scripts/build_flag_istat.py` |
+| Imposta di soggiorno mensile 2020–2026 | `data/soggiorno_mensile.json` | `python3 scripts/build_siope_soggiorno.py`, cassa SIOPE |
 | Popolazione 2014–2024 | `data/popolazione.json` | `python3 scripts/build_popolazione.py`, scarica POSAS in `data/fonti/` |
 
 Gli XLS ISTAT di origine sono in `DCSC_Occupancy_in_collective_accommodation/`. ISTAT pubblica per
