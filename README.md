@@ -65,7 +65,7 @@ Due pannelli in una sezione **richiudibile, chiusa di default**: sono gli unici 
 - **Dove dormono** — le 4,2 milioni di notti provinciali per tipologia ricettiva, con la permanenza media di ciascuna
 
 ### Sezione Confronta
-- Confronto diretto tra Cefalù e qualsiasi altro comune italiano (5.324 disponibili)
+- Confronto diretto tra Cefalù e qualsiasi altro comune italiano (5.268 disponibili)
 - Radar del profilo destinazione, posizione nel ranking nazionale, heatmap di stagionalità
 - **Indice di pressione turistica** (notti per abitante) con anno selezionabile dal 2014 al 2024: presenze e popolazione dello stesso anno
 - Capacità ricettiva 2010–2024, esercizi e posti letto
@@ -91,10 +91,12 @@ tourism-dashboard/
 │   │                                   # Copre gli anni che le serie comunali non hanno
 │   ├── eurostat_regioni.json           # Split alberghiero/extra NUTS2: 2012, 2014, 2019, 2024
 │   │                                   # Rigenerabile: python3 scripts/fetch_eurostat.py
-│   ├── comuni_index.json               # Indice dei 5.324 comuni con dati
+│   ├── comuni_index.json               # Indice dei 5.268 comuni con dati
 │   │                                   # Metadati: cod_istat, nome, provincia, regione
 │   │                                   # Statistiche: max_arr, max_pre, growth_pre
-│   ├── serie/                          # 5.324 file JSON, uno per comune
+│   ├── serie_ricucite.json             # 56 comuni sardi con due codici ISTAT, prima e dopo
+│   │                                   # la riforma delle province: la serie sta sul nuovo
+│   ├── serie/                          # 5.268 file JSON, uno per comune
 │   │   └── {cod_istat}.json            # Serie 2014–2024: arr/pre × tot/alb/ext × res/nres
 │   ├── peer_group.json                 # Panel bilanciato dei comuni della stessa categoria
 │   │                                   # turistica di Cefalù, solo serie complete 2014–2024
@@ -130,6 +132,7 @@ tourism-dashboard/
 │   ├── build_flag_istat.py             # Rigenera flag_istat.json dal file comunale ISTAT
 │   ├── build_popolazione.py            # Rigenera popolazione.json e il reddito pro capite IRPEF
 │   ├── build_siope_soggiorno.py        # Rigenera soggiorno_mensile.json e soggiorno_comuni.json
+│   ├── ricuci_serie.py                 # Unisce le serie dei comuni passati di provincia
 │   └── build_confronti.py              # Rigenera peer_group.json e provenienza.json
 │
 └── DCSC_Occupancy_in_collective_accommodation/
@@ -149,7 +152,7 @@ tourism-dashboard/
 |------|-------|---------|------|
 | Presenze/Arrivi nazionali | ISTAT | 1956–2024 | `italia.json` |
 | Presenze/Arrivi regionali | ISTAT | 2008–2024 | `regioni.json` — solo totali, no split alb/ext |
-| Presenze/Arrivi comunali | ISTAT | 2014–2024 | `serie/*.json` — 5.324 comuni, split completo |
+| Presenze/Arrivi comunali | ISTAT | 2014–2024 | `serie/*.json` — 5.268 comuni, split completo |
 | Volumi regionali 2004/2012 e Cefalù pre-2014 | ISTAT `DF_BULK_DCSC_TURISAREA` | 2004–2013 | `pre2012.json` — per circoscrizione turistica |
 | Split alberghiero/extra regionale | Eurostat `tour_occ_nin2` | 2012, 2014, 2019, 2024 | `eurostat_regioni.json` — NUTS2 |
 | Provenienza e tipologia ricettiva | ISTAT — arrivi e presenze per luogo di residenza dei clienti | 2024 | `provenienza.json` — dettaglio provinciale, non comunale |
@@ -272,9 +275,9 @@ I valori 2004 coincidono **all'unità** con la somma delle circoscrizioni del fi
 
 ### Aggregare i comuni: quando si può e quando no
 
-Sommando i 5.324 file di `serie/` per regione, i **totali del 2024 tornano esatti al 100,0% in tutte le regioni** rispetto a `regioni.json`, e la somma nazionale fa 466.158.045 notti — cioè il valore di `italia.json`, che è prodotto da una fonte diversa. Il **2014** invece è scoperto, dal 79,4% del Molise al 99,9% dell'Umbria: è da lì che nascono gli indici gonfiati, non dall'aggregazione in sé.
+Sommando i 5.268 file di `serie/` per regione, i **totali del 2024 tornano esatti al 100,0% in tutte le regioni** rispetto a `regioni.json`, e la somma nazionale fa 466.158.045 notti — cioè il valore di `italia.json`, che è prodotto da una fonte diversa. Il **2014** invece è scoperto, dal 79,4% del Molise al 99,9% dell'Umbria: è da lì che nascono gli indici gonfiati, non dall'aggregazione in sé.
 
-Sullo **split alberghiero/extra** non torna nemmeno il 2024. **2.243 comuni su 5.324 hanno le presenze totali valorizzate e la ripartizione a `null`**, per segreto statistico: scatta dove le strutture sono poche. Alberghiero + extra copre quindi il 94,66% del totale nazionale, con uno scarto che va dallo 0,0% (Bolzano) al 17,2% (Piemonte).
+Sullo **split alberghiero/extra** non torna nemmeno il 2024. **1.933 delle 5.014 serie con presenze nel 2024 hanno la ripartizione a `null`**, per segreto statistico: scatta dove le strutture sono poche. Alberghiero + extra copre quindi il 94,66% del totale nazionale, con uno scarto che va dallo 0,0% (Bolzano) al 17,2% (Piemonte).
 
 | | notti 2024 | coperte dallo split | scoperto |
 |---|---|---|---|
@@ -341,8 +344,10 @@ Effetto sulle variazioni pre-2012 mostrate: essendo il 2004 leggermente sottosti
 
 - **Imposta di soggiorno per notte, fra comuni** — gli stessi file SIOPE contengono tutti i comuni: 1.532 incassano l'imposta col suo codice. In Confronta ogni comune ha l'incasso diviso le presenze ISTAT dello stesso anno, dal 2020 al 2024, accanto alla mediana dei comuni con almeno 500.000 notti. Nel 2024 Cefalù incassa 1,92 € per notte, 69ª su 161; Taormina 4,11 €, sesta; la mediana è 1,63 €. Tre cose da sapere: le tariffe le fissa ogni Comune, quindi il valore dice quanto rende una notte e non quanto sia efficiente la riscossione; chi registra l'imposta nella voce generica, come Roma, risulta senza incassi e non si può distinguere da chi non la applica; nel 2023 SIOPE non ha righe per quasi tutta la Sardegna, e quell'anno per loro manca invece di valere zero.
 
+- **Serie sarde ricucite** — con la riforma delle province del 2016 i comuni sardi hanno cambiato codice ISTAT, e le serie li trattavano come due comuni: Olbia era `104017` fino al 2016 e `090047` dopo. Senza il 2014 e il 2024 sullo stesso codice non c'era una crescita, quindi 56 comuni restavano fuori da classifica, Top City e comuni simili, fra cui 9 destinazioni oltre le 500.000 notti. `ricuci_serie.py` li unisce sul codice nuovo: 2.304 valori controllati contro il file ISTAT, nessuna differenza. Il passaggio 2016→2017 non mostra salti, +5,1% nel complesso, in linea coi comuni sardi rimasti sullo stesso codice, e ISTAT marca 51 dei nuovi codici come «modifica amministrativa». Effetti: la Top City della Sardegna diventa San Teodoro (+84,2%) al posto di Pula (+68,9%), con una discontinuità ISTAT nel 2024 che il pannello segnala; Cefalù scende dal 23° al 25° posto della classifica crescita; il gruppo dei comuni simili passa da 212 a 220. Restano separati, di proposito, le fusioni (Montalcino, Cassano Spinola: territori diversi) e i cambi di regione (Sappada, Montecopiolo: con la regione cambia chi rileva i dati, e Sappada al passaggio perde il 39% delle notti).
+
 ### Valutato e scartato
 
 - **Treemap per la ripartizione ricettiva** — provato e rimosso. Con sei voci di cui due sotto il 3%, le tessere piccole restano senza etichetta comunque le si giri, e le tre categorie extra-alberghiere condividono la stessa famiglia di colore. Una legenda esterna non risolve: se il grafico ha bisogno di una legenda per dire cose che le barre dicono da sole, sono le barre la forma giusta.
 
-- **Gruppo pre-2012 per la Top City** — ISTAT pubblica per *circoscrizione turistica* fino al 2013 e per *comune* dal 2014, come dichiara l'indice del suo stesso pacchetto. Solo 12 delle 20 Top City coincidono con una circoscrizione; le altre otto sono dentro aggregati troppo ampi per fare da proxy: Fiumicino finirebbe sommata a 119 altri comuni, Pula a 68, Monopoli a 43. Cercare il dato presso gli osservatori regionali significherebbe mettere otto fonti diverse accanto a dodici ISTAT nello stesso gruppo, rendendo le percentuali non confrontabili fra loro — che è proprio il senso di quel confronto.
+- **Gruppo pre-2012 per la Top City** — ISTAT pubblica per *circoscrizione turistica* fino al 2013 e per *comune* dal 2014, come dichiara l'indice del suo stesso pacchetto. Solo 12 delle 20 Top City coincidono con una circoscrizione; le altre otto sono dentro aggregati troppo ampi per fare da proxy: Fiumicino finirebbe sommata a 119 altri comuni, San Teodoro a 20, Monopoli a 43. Cercare il dato presso gli osservatori regionali significherebbe mettere otto fonti diverse accanto a dodici ISTAT nello stesso gruppo, rendendo le percentuali non confrontabili fra loro — che è proprio il senso di quel confronto.

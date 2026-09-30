@@ -75,8 +75,8 @@ contrario del vero.** Nessun test lo intercetta.
   2024 torna esatto: la somma di `serie/*.json` per regione fa il 100,0% di `regioni.json` in tutte le regioni,
   e la somma nazionale fa 466.158.045 notti, cioè il valore di `italia.json` costruito da un'altra fonte. È il
   **2014** a essere scoperto, dal 79% (Molise) al 99,9% (Umbria), ed è da lì che gli indici base 2014 risultano
-  gonfiati fino a 28 punti. Sullo *split* alberghiero/extra invece non torna nemmeno il 2024: **2.243 comuni su
-  5.324 hanno `pre_tot` valorizzato e `pre_alb`/`pre_ext` a null** per segreto statistico, quindi alb+ext copre
+  gonfiati fino a 28 punti. Sullo *split* alberghiero/extra invece non torna nemmeno il 2024: **1.933 delle
+  5.014 serie con presenze nel 2024 hanno `pre_alb`/`pre_ext` a null** per segreto statistico, quindi alb+ext copre
   il 94,66% del totale nazionale, con uno scarto che va dallo 0,0% (Bolzano) al 17,2% (Piemonte). Non è
   riscalabile con un fattore unico, e i comuni oscurati sono i piccoli, dove l'extra pesa più della media.
   Per le regioni usa `regioni.json` ed `eurostat_regioni.json`, mai la somma dei comuni.
@@ -120,10 +120,13 @@ contrario del vero.** Nessun test lo intercetta.
   Il codice ente si cerca per codice fiscale e comparto COMUNE: lo stesso CF ha anche la gestione commissariale.
 - **Nei file SIOPE un comune assente non ha incassato zero: manca.** Nel 2023 non ci sono righe per 378 comuni,
   quasi tutta la Sardegna. `soggiorno_comuni.json` mette `null`, e la dashboard dice «assente da SIOPE».
-- **Le serie comunali sarde sono spezzate su due codici ISTAT** (riorganizzazione delle province): Olbia è
-  `104017` per il 2014–2016 e `090047` dal 2017, lo stesso per Arzachena, Budoni, Tortolì e altri. Il collegamento
-  SIOPE ripiega sul nome. **Problema aperto:** classifica crescita e Top City leggono il 2014 e il 2024 dallo stesso
-  codice, quindi quei comuni restano senza crescita e fuori dalle classifiche.
+- **Un comune che cambia provincia cambia codice ISTAT, e le serie lo spezzavano in due.** 56 comuni sardi (riforma
+  del 2016) sono ricuciti sul codice nuovo da `ricuci_serie.py`; il codice vecchio non esiste più nei file, e il
+  registro sta in `serie_ricucite.json`. Non ricucire le **fusioni** (stessa provincia, codice nuovo: il territorio è
+  cambiato, es. Montalcino) né i **cambi di regione** (Sappada, Montecopiolo: cambia chi rileva i dati, Sappada
+  perde il 39% al passaggio). Attenzione a «Valverde»: in Lombardia e in Sicilia sono due comuni diversi con anni
+  complementari, un abbinamento solo per nome li unirebbe. Se ISTAT pubblica il 2025 con le province sarde del
+  2025 (codici 113 e seguenti, già usati da SIOPE), la spaccatura si ripresenta: rieseguire lo script.
 - **I popup invecchiano in silenzio.** Contengono cifre, fonti e descrizioni dei grafici scritte a mano: quando
   cambi un calcolo, un dato o un grafico, cerca nell'oggetto `INFO` cosa lo cita. Il 30/09 ne sono emersi una
   ventina fuori sincrono: la mappa descriveva ancora la base 2014, il pre-2012 di Cefalù il verso di segno vecchio,
@@ -136,7 +139,8 @@ contrario del vero.** Nessun test lo intercetta.
 |------|------|------|
 | Serie nazionale 1956–2024 | `data/italia.json` | valori in migliaia |
 | Serie regionali 2008–2024 | `data/regioni.json` | solo arrivi e presenze totali |
-| Serie comunali 2014–2024 | `data/serie/*.json` | 5.324 comuni, split completo |
+| Serie comunali 2014–2024 | `data/serie/*.json` | 5.268 comuni, split completo; non c'è uno script che le generi |
+| Serie ricucite (cambio di provincia) | `data/serie_ricucite.json` | `python3 scripts/ricuci_serie.py`, poi flag, confronti e SIOPE |
 | Pre-2014 regionale e Cefalù | `data/pre2012.json` | da XLS ISTAT circoscrizioni |
 | Split alb/ext regionale | `data/eurostat_regioni.json` | `python3 scripts/fetch_eurostat.py` |
 | Bilancio Cefalù 2005–2024 | `data/bilancio.json` | soggiorno, spesa turismo, entrate |

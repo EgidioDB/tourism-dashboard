@@ -92,8 +92,8 @@ def collega_comuni(anagrafiche):
     Di norma il codice coincide: provincia + comune dell'anagrafica SIOPE. Non coincide dove
     le province sono cambiate, soprattutto in Sardegna: SIOPE usa le province del 2025, le
     serie ISTAT quelle del 2017. Li si ripiega sul nome del comune dentro la stessa regione,
-    scegliendo fra i codici omonimi quello che ha presenze nel 2020-2024: nelle serie lo
-    stesso comune sardo puo comparire con due codici, uno per anni diversi."""
+    scegliendo fra i codici omonimi quello che ha presenze nel 2020-2024. Dopo ricuci_serie.py
+    ogni comune sardo ha un solo codice, ma il controllo resta per i casi non ricuciti."""
     regione_prov = {r[3]: r[2] for r in righe(anagrafiche, "ANAG_REG_PROV")}
     indice = json.load(open(os.path.join(BASE, "data", "comuni_index.json"), encoding="utf-8"))
     codici = {c["cod"] for c in indice}

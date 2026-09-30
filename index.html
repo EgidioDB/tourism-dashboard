@@ -1204,6 +1204,9 @@
                     ${(() => { const r = rottureDi(data.top.cod, 2014, 2024); return r.length
                         ? `<div class="flag-nota">⚠ ISTAT segnala una discontinuità nella serie di ${data.top.name} nel ${r.join(' e nel ')}: le variazioni che attraversano quegli anni possono dipendere da un cambio nel modo di rilevare i dati, non dal turismo.</div>`
                         : ''; })()}
+                    ${(() => { const ric = flagIstat && flagIstat.ricuciti && flagIstat.ricuciti[data.top.cod]; return ric
+                        ? `<div class="flag-nota">La serie di ${data.top.name} unisce due codici ISTAT: ${ric.vecchio} fino al ${ric.fino_al}, provincia di ${titolo(ric.provincia_vecchia)}, e ${data.top.cod} dopo, provincia di ${titolo(ric.provincia_nuova)}. È lo stesso comune, passato di provincia.</div>`
+                        : ''; })()}
                     ${flagDi(data.top.cod, ['d', 'e']).filter(x => [2014, 2019, 2024].indexOf(x.anno) > -1)
                         .map(x => `<div class="flag-nota">⚠ Nota ISTAT sul ${x.anno} di ${data.top.name}: ${x.testo}. È uno degli anni usati nei confronti qui sotto.</div>`).join('')}
                     <div class="group-label" style="font-size:0.6em; margin-top:15px;">Pre-COVID (2019 vs 2014) ${ib('top_preCovid')}</div>
@@ -1706,7 +1709,7 @@
     // teniamo una copia qui. Stessa URL, quindi la risposta arriva dalla cache del browser.
     const TOP_DATA_PATH = 'data/';
     let topComuniIndex = null;
-    fetch(TOP_DATA_PATH + 'comuni_index.json?v=2')
+    fetch(TOP_DATA_PATH + 'comuni_index.json?v=3')
         .then(r => r.json())
         .then(d => {
             topComuniIndex = d;
@@ -1766,6 +1769,9 @@
             })))
         });
     }
+
+    // OLBIA-TEMPIO → Olbia-Tempio, SUD SARDEGNA → Sud Sardegna: i nomi di provincia arrivano in maiuscolo
+    const titolo = t => String(t).toLowerCase().replace(/(^|[\s\-'])\S/g, m => m.toUpperCase());
 
     // Segno da mettere accanto al nome di un comune con rotture di serie nel 2014-2024
     function segnoRottura(cod) {
@@ -3310,7 +3316,7 @@ const INFO = {
     chart_ricettiva_est: "<strong>Capacità Ricettiva — Numero Esercizi</strong>Numero di strutture ricettive registrate nel comune di Cefalù per anno. Le barre impilate dividono il totale fra hotel e altre strutture, B&B e case vacanza in affitto gestite in forma imprenditoriale: l'altezza della colonna è il totale. Non include locazioni brevi occasionali (es. Airbnb non registrati). <em class='info-fonte'>Fonte: ISTAT — Rilevazione sulla Capacità degli Esercizi Ricettivi, 2010-2024.</em>",
     chart_ricettiva_pl: "<strong>Capacità Ricettiva — Posti Letto</strong>Numero di posti letto disponibili nelle strutture ricettive registrate a Cefalù. Le barre impilate dividono il totale fra hotel e altre strutture, B&B e case vacanza: l'altezza della colonna è il totale. La crescita delle case vacanza riflette in parte l'espansione del mercato short-term rental. <em class='info-fonte'>Fonte: ISTAT — Rilevazione sulla Capacità degli Esercizi Ricettivi, 2010-2024.</em>",
 
-    chart_peer: "<strong>Cefalù e i Comuni Simili</strong><p>Confronto con le destinazioni della stessa <strong>categoria turistica ISTAT</strong> di Cefalù: <em>comuni a vocazione marittima e con vocazione culturale, storica, artistica e paesaggistica</em>. Sono 239 in Italia, e la serie aggrega quelli con dati completi su tutti gli anni.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Perché non il confronto con l’Italia</h4><p>La media nazionale comprende Roma, Milano, le località montane e i comuni non turistici: dire che Cefalù cresce più dell’Italia significa poco. Il paragone con destinazioni dello stesso tipo, mare più patrimonio storico, misura la performance a parità di vocazione.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Come si legge</h4><p>Entrambe le serie sono variazioni percentuali rispetto al 2014, quindi partono da zero. Il divario in fondo dice di quanti punti Cefalù ha superato o mancato i suoi pari.</p><p style='font-size:0.9em;'>Il panel è bilanciato: si contano solo i comuni presenti in tutti gli anni, altrimenti l’indice risentirebbe di destinazioni che entrano ed escono dalla rilevazione. Il 2015 di Cefalù è segnato con ⚠: ISTAT non ha ricevuto il dato e ripete quello del 2014, quindi non è il 2015 reale. Lo stesso vale per 17 dei 212 comuni del gruppo, che nel 2015 ripetono anch’essi il 2014.</p><em class='info-fonte'>Fonte: ISTAT — classificazione dei comuni per categoria turistica prevalente, aggregata sulle serie comunali 2014-2024.</em>",
+    chart_peer: "<strong>Cefalù e i Comuni Simili</strong><p>Confronto con le destinazioni della stessa <strong>categoria turistica ISTAT</strong> di Cefalù: <em>comuni a vocazione marittima e con vocazione culturale, storica, artistica e paesaggistica</em>. Sono 239 in Italia, e la serie aggrega quelli con dati completi su tutti gli anni. Otto comuni sardi, fra cui Olbia e Arzachena, ci entrano solo con la serie ricucita: fino al 2016 avevano un altro codice ISTAT.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Perché non il confronto con l’Italia</h4><p>La media nazionale comprende Roma, Milano, le località montane e i comuni non turistici: dire che Cefalù cresce più dell’Italia significa poco. Il paragone con destinazioni dello stesso tipo, mare più patrimonio storico, misura la performance a parità di vocazione.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Come si legge</h4><p>Entrambe le serie sono variazioni percentuali rispetto al 2014, quindi partono da zero. Il divario in fondo dice di quanti punti Cefalù ha superato o mancato i suoi pari.</p><p style='font-size:0.9em;'>Il panel è bilanciato: si contano solo i comuni presenti in tutti gli anni, altrimenti l’indice risentirebbe di destinazioni che entrano ed escono dalla rilevazione. Il 2015 di Cefalù è segnato con ⚠: ISTAT non ha ricevuto il dato e ripete quello del 2014, quindi non è il 2015 reale. Lo stesso vale per 17 dei 220 comuni del gruppo, che nel 2015 ripetono anch’essi il 2014.</p><em class='info-fonte'>Fonte: ISTAT — classificazione dei comuni per categoria turistica prevalente, aggregata sulle serie comunali 2014-2024.</em>",
     chart_provenienza: "<strong>Da Dove Arrivano</strong><p>Composizione dei mercati di origine: i primi dodici per notti vendute, con la quota sul totale della rispettiva vista.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Attenzione al livello del dato</h4><p>ISTAT pubblica la provenienza dei clienti <strong>per provincia</strong>, non per comune. I numeri riguardano quindi tutta la provincia di Palermo e non il solo comune di Cefalù. Servono a leggere la <em>composizione</em> dei mercati, non i volumi locali.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Le due viste</h4><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li><strong>Estero</strong>: paesi di residenza dei clienti stranieri</li><li><strong>Italia</strong>: regioni di residenza dei clienti italiani</li></ul><p>Il file ISTAT le mette sulla stessa colonna, distinguendole solo perché le regioni sono scritte in maiuscolo. Qui sono separate, perché sommarle renderebbe le percentuali prive di significato.</p><em class='info-fonte'>Fonte: ISTAT — arrivi e presenze 2024 per luogo di residenza dei clienti, dettaglio provinciale.</em>",
     chart_storico: "<strong>Settant’anni di Turismo Italiano</strong><p>La serie nazionale completa, dal 1956 al 2024, divisa fra alberghiero ed extra-alberghiero. Le due aree sono impilate: l’altezza totale sono le presenze del Paese.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>La quota non è confrontabile nel tempo</h4><p>È l’avvertenza più importante. ISTAT ha cambiato tre volte cosa rientra nell’extra-alberghiero, e le linee tratteggiate sul grafico segnano quei momenti:</p><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li><strong>1986</strong> — le residenze turistiche alberghiere passano <em>dall’extra-alberghiero all’alberghiero</em>: la quota extra scende per definizione, non perché sia cambiato il turismo</li><li><strong>1996</strong> — entrano gli <strong>agriturismi</strong></li><li><strong>1999</strong> — entrano i <strong>bed and breakfast</strong></li></ul><p>Ne segue che il 39,7% del 1958 e il 39,1% di oggi sono numeri quasi identici che descrivono cose diverse. Negli anni Cinquanta l’extra-alberghiero era soprattutto campeggi, case per ferie e colonie; oggi è in larga parte affitti brevi, agriturismi e bed and breakfast, categorie che allora non erano nemmeno rilevate.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Perché in valore assoluto</h4><p>Gli altri grafici usano numeri indice con base 2012, perché servono a confrontare territori. Su settant’anni interessa la scala della trasformazione, e i totali sono solidi anche quando la ripartizione interna cambia.</p><p style='font-size:0.9em;'>Il <strong>1956 e il 1957</strong> hanno il solo alberghiero, quindi l’area verde comincia dal 1958 e da lì parte anche l’indicatore di crescita: confrontare il totale del 2024 con i soli hotel del 1956 darebbe 9 volte invece di 4,2.</p><em class='info-fonte'>Fonte: ISTAT — serie storiche nazionali del movimento nelle strutture ricettive, 1956-2024, note (a), (b) e (c) del prospetto originale.</em>",
     chart_tipologie: "<strong>Dove Dormono</strong><p>Ripartizione delle notti vendute per tipologia di struttura. È la <em>domanda</em>, cioè dove i turisti hanno effettivamente dormito, non l’offerta disponibile.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Due limiti da tenere presenti</h4><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li>Il dato è <strong>provinciale</strong>: riguarda tutta la provincia di Palermo, non il solo comune di Cefalù</li><li>È una <strong>fotografia del 2024</strong>: ISTAT pubblica questo dettaglio per un anno solo, quindi non si può vedere se la crescita sia di fascia alta o bassa</li></ul><h4 style='margin:10px 0 4px;font-size:0.95em;'>Cosa dice comunque</h4><p>La concentrazione sulle strutture di fascia alta è netta. Il confronto con la <em>Capacità Ricettiva</em> è istruttivo: lì si vede che a Cefalù gli esercizi extra-alberghieri sono numericamente la maggioranza, ma i posti letto restano in gran parte negli hotel. Molte strutture piccole, poche grandi, e le notti seguono i posti letto.</p><p style='font-size:0.9em;'>Passando sopra una barra si legge anche la permanenza media della tipologia, che varia poco fra le categorie.</p><em class='info-fonte'>Fonte: ISTAT — arrivi e presenze 2024 per tipologia ricettiva, dettaglio provinciale.</em>",
@@ -3319,7 +3325,7 @@ const INFO = {
     cbox_crescita: "<strong>Crescita complessiva 2014→2024</strong>Variazione percentuale di arrivi e presenze tra il primo e l'ultimo anno disponibile. Gli <em>arrivi</em> contano i visitatori, le <em>presenze</em> le notti trascorse. Tocca un valore per vedere i numeri assoluti di partenza e arrivo. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
     cbox_precovid: "<strong>Pre-COVID 2014→2019</strong>Crescita del periodo pre-pandemia, che rappresenta il trend strutturale del turismo locale al netto degli shock esterni. Confrontare questo dato con il Post-COVID rivela se il comune ha recuperato o superato il ritmo precedente. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
     cbox_postcovid: "<strong>Post-COVID 2019→2024</strong>Variazione dal picco pre-pandemico al 2024. Un valore positivo indica che il comune ha non solo recuperato le perdite del 2020-2021 ma ha superato i livelli pre-COVID. Un valore negativo segnala una ripresa ancora incompleta. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
-    cbox_dettaglio: "<strong>Dettaglio 2024</strong>Dati strutturali dell'anno più recente. <em>Permanenza media</em> (ALOS): rapporto presenze/arrivi — quante notti rimane mediamente ogni visitatore. <em>Quota stranieri</em>: percentuale di arrivi non residenti sul totale, indicatore di attrattività internazionale. <em>Imposta di soggiorno</em>: quanto il Comune ha incassato nel 2024 (SIOPE) per ogni notte registrata da ISTAT; il grafico «Imposta di soggiorno per notte» ne spiega i limiti. In fondo al box, <strong>⚠ Note ISTAT</strong> riporta le avvertenze della fonte: discontinuità nella serie, anni non trasmessi e ripetuti dall'anno prima, anni stimati. <em class='info-fonte'>Fonte: ISTAT dati comunali 2024 · imposta di soggiorno: SIOPE, incassi di cassa 2024.</em>",
+    cbox_dettaglio: "<strong>Dettaglio 2024</strong>Dati strutturali dell'anno più recente. <em>Permanenza media</em> (ALOS): rapporto presenze/arrivi — quante notti rimane mediamente ogni visitatore. <em>Quota stranieri</em>: percentuale di arrivi non residenti sul totale, indicatore di attrattività internazionale. <em>Imposta di soggiorno</em>: quanto il Comune ha incassato nel 2024 (SIOPE) per ogni notte registrata da ISTAT; il grafico «Imposta di soggiorno per notte» ne spiega i limiti. In fondo al box, <strong>⚠ Note sui dati</strong> riporta le avvertenze di ISTAT — discontinuità nella serie, anni non trasmessi e ripetuti dall'anno prima, anni stimati — e dice se la serie è stata ricucita da due codici ISTAT, per un comune passato di provincia. <em class='info-fonte'>Fonte: ISTAT dati comunali 2024 · imposta di soggiorno: SIOPE, incassi di cassa 2024.</em>",
     cmp_pressure: "<strong>Indice di pressione turistica</strong>Rapporto fra le presenze turistiche (notti) e la popolazione residente al 1° gennaio <strong>dello stesso anno</strong>: quante notti di turismo si generano per ogni abitante. L'anno si sceglie coi pulsanti in alto, dal <strong>2014 al 2024</strong>, e cambia entrambi i termini del rapporto. Consente di confrontare la pressione turistica tra comuni di dimensioni diverse indipendentemente dai volumi assoluti. Valori oltre 50 indicano alta pressione, oltre 100 pressione molto elevata. Per i comuni che nel box riportano il 2015 come non trasmesso, le presenze di quell'anno ripetono il 2014. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024. Popolazione: ricostruzione intercensuaria ISTAT per il 2014-2019, POSAS dal 2020.</em>",
     cmp_season: "<strong>Stagionalità — presenze mensili</strong>Distribuzione delle presenze (notti) mese per mese per ogni comune selezionato. Il colore va dal bianco (nessuna presenza) al blu scuro (picco massimo), normalizzato su ogni comune separatamente: consente di confrontare il <em>profilo stagionale</em> indipendentemente dai volumi assoluti. Seleziona l'anno (2022, 2023, 2024) per osservare variazioni interannuali. <em class='info-fonte'>Fonte: ISTAT dati mensili comunali 2022-2024.</em>",
     chart_occupancy: "<strong>Tasso di Occupazione Ricettiva</strong>Rapporto tra le presenze turistiche annuali (notti) e la capacità ricettiva teorica massima (posti letto × 365 giorni). Indica quanta parte della capacità disponibile è stata effettivamente utilizzata. Un valore del 30% significa che in media ogni posto letto ha ospitato turisti per circa 110 notti all'anno. I posti letto sono quelli censiti da ISTAT nelle strutture registrate e non includono locazioni brevi non censite. Il 2015 è segnato con ⚠: le presenze di quell'anno ripetono il 2014 perché ISTAT non ha ricevuto il dato, mentre i posti letto sono quelli del 2015. Il salto fra 2014 e 2015 viene dal calo dei posti letto censiti, non dalle presenze. <em class='info-fonte'>Fonte: ISTAT dati comunali Cefalù 2014-2024 + ISTAT Capacità Esercizi Ricettivi 2010-2024.</em>",
@@ -3919,17 +3925,23 @@ function renderGettito(bil, serie) {
     });
 
     // Carica indice comuni
-    fetch(DATA_PATH + 'comuni_index.json?v=2')
+    fetch(DATA_PATH + 'comuni_index.json?v=3')
         .then(r => r.json())
         .then(data => {
             comuniIndex = data;
             // La classifica segna i comuni con rotture di serie: aspetta le note ISTAT
-            flagIstatPronto.then(() => buildLeaderboard(data));
-            const params = new URLSearchParams(location.search);
-            const codici = (params.get('comuni') || '').split(',').filter(Boolean);
-            codici.forEach(cod => {
-                const meta = comuniIndex.find(c => c.cod === cod);
-                if (meta) addComune(meta);
+            flagIstatPronto.then(() => {
+                buildLeaderboard(data);
+                // Un link salvato prima della ricucitura puo usare il codice vecchio di un comune
+                // sardo (104017 per Olbia): lo si porta al codice nuovo, dove ora sta la serie intera
+                const vecchi = {};
+                Object.entries((flagIstat && flagIstat.ricuciti) || {}).forEach(([nuovo, r]) => { vecchi[r.vecchio] = nuovo; });
+                const params = new URLSearchParams(location.search);
+                const codici = (params.get('comuni') || '').split(',').filter(Boolean);
+                codici.forEach(cod => {
+                    const meta = comuniIndex.find(c => c.cod === (vecchi[cod] || cod));
+                    if (meta && !selected[meta.cod]) addComune(meta);
+                });
             });
         });
 
@@ -4239,15 +4251,17 @@ function renderGettito(bil, serie) {
         return v >= 0 ? 'color:#24b27e' : 'color:#e63946';
     }
 
-    // Note ISTAT che cambiano la lettura dei numeri del box: rotture di serie dentro il
-    // 2014-2024, anni non trasmessi e anni stimati
+    // Note che cambiano la lettura dei numeri del box: rotture di serie dentro il 2014-2024,
+    // anni non trasmessi o stimati (ISTAT), serie ricucite da due codici (nostre)
     function noteIstat(cod) {
         const rotture = rottureDi(cod, 2014, 2024);
         const altri = flagDi(cod, ['d', 'e']);
         const righe = [];
         if (rotture.length) righe.push(`discontinuità nella serie nel ${rotture.join(', ')}: le variazioni che attraversano quegli anni possono dipendere da un cambio di rilevazione`);
         altri.forEach(x => righe.push(`${x.anno}: ${x.testo}`));
-        return righe.length ? `<div class="flag-nota">⚠ Note ISTAT — ${righe.join('; ')}.</div>` : '';
+        const ric = flagIstat && flagIstat.ricuciti && flagIstat.ricuciti[cod];
+        if (ric) righe.push(`serie ricucita da due codici: fino al ${ric.fino_al} ${ric.vecchio}, provincia di ${titolo(ric.provincia_vecchia)}; dopo ${cod}, provincia di ${titolo(ric.provincia_nuova)}. Stesso comune, passato di provincia`);
+        return righe.length ? `<div class="flag-nota">⚠ Note sui dati — ${righe.join('; ')}.</div>` : '';
     }
 
     // Imposta di soggiorno 2024 nel box: incasso SIOPE diviso le presenze dello stesso anno

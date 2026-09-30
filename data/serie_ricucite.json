@@ -1,0 +1,903 @@
+{
+ "_fonte": "Coppie di codici ISTAT dello stesso comune, prima e dopo un cambio di provincia, ricucite da scripts/ricuci_serie.py.",
+ "_nota": "vecchio = codice fino all'ultimo anno di anni_vecchio, nuovo = codice dal primo anno di anni_nuovo. La serie unita sta sotto il codice nuovo.",
+ "_rigenera": "python3 scripts/ricuci_serie.py",
+ "coppie": [
+  {
+   "vecchio": "104001",
+   "nuovo": "090001",
+   "nome": "Aggius",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OLBIA-TEMPIO",
+   "provincia_nuova": "SASSARI",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "104002",
+   "nuovo": "090062",
+   "nome": "Aglientu",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OLBIA-TEMPIO",
+   "provincia_nuova": "SASSARI",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "106001",
+   "nuovo": "111001",
+   "nome": "Arbus",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "MEDIO CAMPIDANO",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "104004",
+   "nuovo": "090006",
+   "nome": "Arzachena",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OLBIA-TEMPIO",
+   "provincia_nuova": "SASSARI",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "104005",
+   "nuovo": "090081",
+   "nome": "Badesi",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OLBIA-TEMPIO",
+   "provincia_nuova": "SASSARI",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "105002",
+   "nuovo": "091005",
+   "nome": "Bari Sardo",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OGLIASTRA",
+   "provincia_nuova": "NUORO",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "105003",
+   "nuovo": "091006",
+   "nome": "Baunei",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OGLIASTRA",
+   "provincia_nuova": "NUORO",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "104009",
+   "nuovo": "090091",
+   "nome": "Budoni",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OLBIA-TEMPIO",
+   "provincia_nuova": "SASSARI",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "107001",
+   "nuovo": "111006",
+   "nome": "Buggerru",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CARBONIA-IGLESIAS",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "107002",
+   "nuovo": "111008",
+   "nome": "Calasetta",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CARBONIA-IGLESIAS",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "107003",
+   "nuovo": "111009",
+   "nome": "Carbonia",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CARBONIA-IGLESIAS",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "105004",
+   "nuovo": "091103",
+   "nome": "Cardedu",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OGLIASTRA",
+   "provincia_nuova": "NUORO",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "107004",
+   "nuovo": "111010",
+   "nome": "Carloforte",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CARBONIA-IGLESIAS",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "092106",
+   "nuovo": "111011",
+   "nome": "Castiadas",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CAGLIARI",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "092017",
+   "nuovo": "111014",
+   "nome": "Dolianova",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CAGLIARI",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2023,
+    2024
+   ]
+  },
+  {
+   "vecchio": "092018",
+   "nuovo": "111015",
+   "nome": "Domus de Maria",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CAGLIARI",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "107006",
+   "nuovo": "111021",
+   "nome": "Fluminimaggiore",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CARBONIA-IGLESIAS",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "104011",
+   "nuovo": "090083",
+   "nome": "Golfo Aranci",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OLBIA-TEMPIO",
+   "provincia_nuova": "SASSARI",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "107008",
+   "nuovo": "111030",
+   "nome": "Gonnesa",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CARBONIA-IGLESIAS",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "106008",
+   "nuovo": "111034",
+   "nome": "Guspini",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "MEDIO CAMPIDANO",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "107009",
+   "nuovo": "111035",
+   "nome": "Iglesias",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CARBONIA-IGLESIAS",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "104012",
+   "nuovo": "090035",
+   "nome": "La Maddalena",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OLBIA-TEMPIO",
+   "provincia_nuova": "SASSARI",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "105010",
+   "nuovo": "091037",
+   "nome": "Lanusei",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OGLIASTRA",
+   "provincia_nuova": "NUORO",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "104013",
+   "nuovo": "090084",
+   "nome": "Loiri Porto San Paolo",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OLBIA-TEMPIO",
+   "provincia_nuova": "SASSARI",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "105012",
+   "nuovo": "091042",
+   "nome": "Lotzorai",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OGLIASTRA",
+   "provincia_nuova": "NUORO",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "104014",
+   "nuovo": "090036",
+   "nome": "Luogosanto",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OLBIA-TEMPIO",
+   "provincia_nuova": "SASSARI",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "092036",
+   "nuovo": "111039",
+   "nome": "Mandas",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CAGLIARI",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "092039",
+   "nuovo": "111042",
+   "nome": "Muravera",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CAGLIARI",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "107012",
+   "nuovo": "111044",
+   "nome": "Narcao",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CARBONIA-IGLESIAS",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2023
+   ]
+  },
+  {
+   "vecchio": "104017",
+   "nuovo": "090047",
+   "nome": "Olbia",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OLBIA-TEMPIO",
+   "provincia_nuova": "SASSARI",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "092118",
+   "nuovo": "111050",
+   "nome": "Orroli",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CAGLIARI",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "104020",
+   "nuovo": "090054",
+   "nome": "Palau",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OLBIA-TEMPIO",
+   "provincia_nuova": "SASSARI",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "107016",
+   "nuovo": "111057",
+   "nome": "Portoscuso",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CARBONIA-IGLESIAS",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "107017",
+   "nuovo": "111063",
+   "nome": "San Giovanni Suergiu",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CARBONIA-IGLESIAS",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "092059",
+   "nuovo": "111065",
+   "nome": "San Sperate",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CAGLIARI",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "104023",
+   "nuovo": "090092",
+   "nome": "San Teodoro",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OLBIA-TEMPIO",
+   "provincia_nuova": "SASSARI",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "092064",
+   "nuovo": "111066",
+   "nome": "San Vito",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CAGLIARI",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "106015",
+   "nuovo": "111067",
+   "nome": "Sanluri",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "MEDIO CAMPIDANO",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "107019",
+   "nuovo": "111070",
+   "nome": "Sant'Anna Arresi",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CARBONIA-IGLESIAS",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "107020",
+   "nuovo": "111071",
+   "nome": "Sant'Antioco",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CARBONIA-IGLESIAS",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "104021",
+   "nuovo": "090085",
+   "nome": "Sant'Antonio di Gallura",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OLBIA-TEMPIO",
+   "provincia_nuova": "SASSARI",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "104022",
+   "nuovo": "090063",
+   "nome": "Santa Teresa Gallura",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OLBIA-TEMPIO",
+   "provincia_nuova": "SASSARI",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "106016",
+   "nuovo": "111072",
+   "nome": "Sardara",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "MEDIO CAMPIDANO",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "104025",
+   "nuovo": "090070",
+   "nome": "Tempio Pausania",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OLBIA-TEMPIO",
+   "provincia_nuova": "SASSARI",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "105017",
+   "nuovo": "091089",
+   "nome": "Tertenia",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OGLIASTRA",
+   "provincia_nuova": "NUORO",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2020,
+    2024
+   ]
+  },
+  {
+   "vecchio": "092084",
+   "nuovo": "111089",
+   "nome": "Teulada",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CAGLIARI",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "105018",
+   "nuovo": "091095",
+   "nome": "Tortolì",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OGLIASTRA",
+   "provincia_nuova": "NUORO",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "107021",
+   "nuovo": "111090",
+   "nome": "Tratalias",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CARBONIA-IGLESIAS",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "104026",
+   "nuovo": "090074",
+   "nome": "Trinità d'Agultu e Vignola",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OLBIA-TEMPIO",
+   "provincia_nuova": "SASSARI",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "105020",
+   "nuovo": "091098",
+   "nome": "Ulassai",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OGLIASTRA",
+   "provincia_nuova": "NUORO",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "105021",
+   "nuovo": "091099",
+   "nome": "Urzulei",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OGLIASTRA",
+   "provincia_nuova": "NUORO",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "106025",
+   "nuovo": "111096",
+   "nome": "Villacidro",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "MEDIO CAMPIDANO",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "105023",
+   "nuovo": "091101",
+   "nome": "Villagrande Strisaili",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "OGLIASTRA",
+   "provincia_nuova": "NUORO",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "107022",
+   "nuovo": "111098",
+   "nome": "Villamassargia",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CARBONIA-IGLESIAS",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2019,
+    2024
+   ]
+  },
+  {
+   "vecchio": "092097",
+   "nuovo": "111103",
+   "nome": "Villaputzu",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CAGLIARI",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  },
+  {
+   "vecchio": "092100",
+   "nuovo": "111105",
+   "nome": "Villasimius",
+   "regione": "SARDEGNA",
+   "provincia_vecchia": "CAGLIARI",
+   "provincia_nuova": "SUD SARDEGNA",
+   "anni_vecchio": [
+    2014,
+    2016
+   ],
+   "anni_nuovo": [
+    2017,
+    2024
+   ]
+  }
+ ]
+}
