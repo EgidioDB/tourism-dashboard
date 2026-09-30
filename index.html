@@ -629,6 +629,7 @@
             <a class="nav-sub-item" data-target="chart-tipologie">Dove dormono</a>
             <a class="nav-sub-item" data-target="chart-alos">Permanenza media</a>
             <a class="nav-sub-item" data-target="chart-peer">Comuni simili</a>
+            <a class="nav-sub-item" data-target="pnrr-tabella">PNRR alberghi</a>
             <a class="nav-sub-item" data-target="chart-pressure">Pressione turistica</a>
             <a class="nav-sub-item" data-target="chart-soggiorno">Imposta soggiorno</a>
             <a class="nav-sub-item" data-target="chart-sog-mese">Soggiorno mese per mese</a>
@@ -835,6 +836,17 @@
         <div class="main-panel" style="flex: 1;">
             <div class="header-box"><h1>Capacità Ricettiva — Posti Letto <button class="info-btn" onclick="showInfo('chart_ricettiva_pl')">i</button></h1></div>
             <div id="chart-ricettiva-pl" style="height: 320px;"></div>
+        </div>
+    </div>
+
+    <div class="dashboard-row" style="height: auto;">
+        <div class="main-panel" style="flex: 1;">
+            <div class="header-box">
+                <h1>PNRR per gli alberghi <button class="info-btn" onclick="showInfo('chart_pnrr_tur')">i</button></h1>
+                <p id="pnrr-sottotitolo" style="font-size:0.75em; margin:0; color: var(--text-sub);"></p>
+            </div>
+            <div id="pnrr-tabella" style="overflow-x:auto;"></div>
+            <div id="pnrr-kpi" style="display:flex; gap:16px; flex-wrap:wrap; padding:8px 4px 2px; font-size:0.78em; color:var(--text-sub);"></div>
         </div>
     </div>
 
@@ -3375,6 +3387,7 @@ const INFO = {
 
     chart_spesa_vs_sog: "<strong>Spesa Turismo vs Imposta di Soggiorno — Cefalù</strong><p>Confronto tra quanto il Comune <em>investe</em> in attività turistiche e quanto <em>incassa</em> dall'imposta di soggiorno. Due serie su scala comune (asse €) per capire se la tassa copre o supera la spesa.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Come leggere il grafico</h4><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li><strong>Barre blu scure</strong>: spesa turismo — anni con dato disponibile</li><li><strong>Linea arancione</strong>: imposta di soggiorno — accertamenti annui</li><li><strong>Barre più chiare</strong>: dal 2016, classificazione armonizzata D.Lgs. 118/2011; le più scure sono gli anni DPR 194/96 (ante-riforma)</li></ul><h4 style='margin:10px 0 4px;font-size:0.95em;'>Nota metodologica</h4><p>Le serie derivano da due sistemi di classificazione diversi:</p><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li><strong>2007–2015</strong> (DPR 194/96): &quot;Funzioni nel campo turistico&quot; — Quadro 04 del consuntivo</li><li><strong>2024</strong> (D.Lgs. 118/2011 — armonizzato): Missione 07 Turismo — Conto del bilancio spese</li><li><strong>2016</strong>: € 0 (dissesto finanziario in corso)</li><li><strong>2017</strong>: € 50.082 · <strong>2018</strong>: € 165.729 (ripresa post-dissesto)</li><li><strong>2019–2023</strong>: Missione 07 Turismo — impegni da rendiconto certificato BDAP RGS</li></ul><p>Le due classificazioni coprono sostanzialmente la stessa voce di spesa e sono comparabili per analisi di tendenza, con una discontinuità metodologica al confine 2015/2016.</p><p style='font-size:0.9em;'><strong>Indicatore KPI</strong>: rapporto incasso/spesa per gli anni in cui entrambi i dati sono disponibili. Valore &gt; 1 = l'imposta supera la spesa turistica.</p><em class='info-fonte'>Fonte spesa 2007–2015: Consuntivi comunali (Quadro 04, DPR 194/96) · Fonte spesa 2016–2018: Certificati Consuntivi armonizzati (Quadro 6, Missione 07) — finanzalocale.interno.gov.it · Fonte spesa 2019–2023: BDAP RGS — openbdap.rgs.mef.gov.it · Fonte spesa 2024: Rendiconto 2024 allegati tecnici RAR (Missione 07) — egov.comune.cefalu.pa.it · Fonte imposta soggiorno: certificati consuntivi 2013–2014 (finanzalocale.interno.gov.it), Relazioni della Giunta al Rendiconto 2020–2024.</em>",
     cmp_sog_notte: "<strong>Imposta di soggiorno per notte</strong><p>Quanto incassa il Comune dall'imposta di soggiorno per ogni notte registrata da ISTAT: l'imposta dell'anno, dagli incassi di cassa SIOPE, divisa per le presenze dello stesso anno.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Cosa misura e cosa no</h4><p>Dice quanto rende una notte al Comune, <strong>non</strong> quanto sia efficiente la riscossione. Le tariffe le decide ogni Comune, per categoria di struttura, e cambiano nel tempo: un valore alto può voler dire tariffe alte, non turisti che pagano di più a parità di tariffa.</p><p>Il denominatore sono le notti rilevate da ISTAT nelle strutture ricettive. Dove l'imposta si paga anche su affitti brevi che ISTAT non conta, per esempio quando la versano le piattaforme, il valore per notte risulta gonfiato.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Chi c'è e chi no</h4><p>Entrano solo i comuni che registrano l'imposta con il suo codice di bilancio. Un comune senza incassi con quel codice può non applicarla, oppure registrarla in una voce generica, come faceva Cefalù fino al 2019: dai dati non si distingue, e il riquadro lo dice.</p><p>La linea tratteggiata è la mediana dei comuni con almeno 500.000 notti nell'anno che incassano l'imposta, la stessa soglia della classifica di crescita. La posizione in classifica usa lo stesso gruppo.</p><p style='font-size:0.9em;'>Nel 2023 SIOPE non ha righe per quasi tutti i comuni della Sardegna: per loro quell'anno manca, non vale zero. I comuni sardi sono collegati per nome, perché SIOPE usa le province del 2025 e le serie ISTAT quelle precedenti.</p><em class='info-fonte'>Fonte: SIOPE — incassi di cassa, RGS e Banca d'Italia (siope.it), codici 1.01.01.41.001 e 1.01.01.41.002 · Presenze: ISTAT dati comunali 2020-2024.</em>",
+    chart_pnrr_tur: "<strong>PNRR per gli alberghi</strong><p>I progetti del PNRR localizzati a Cefalù nella sottomisura <em>«Miglioramento delle infrastrutture di ricettività attraverso lo strumento del Tax credit»</em>, gestita dal Ministero del Turismo: riqualificazione di strutture ricettive, efficienza energetica, eliminazione delle barriere architettoniche.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Come si legge</h4><p><em>PNRR</em> è il finanziamento pubblico assegnato al progetto, <em>costo totale</em> quanto costa l'intervento: la differenza è a carico dell'impresa. Il finanziamento assegnato non è necessariamente già pagato: il catalogo non riporta le erogazioni. Stato e date sono quelli della data di estrazione indicata sotto il titolo; un progetto «in corso» con la fine prevista già passata può essersi chiuso dopo.</p><p>La quota sui fondi nazionali si legge accanto alla quota di Cefalù sulle notti alberghiere italiane: dice se il comune ha ricevuto più o meno di quanto pesi, non se i progetti siano stati utili.</p><em class='info-fonte'>Fonte: Italia Domani — catalogo open data dei progetti PNRR, file dei progetti e delle localizzazioni · Notti alberghiere: ISTAT.</em>",
     chart_sog_mese: "<strong>Imposta di Soggiorno mese per mese</strong><p>Quanto il Comune ha <strong>incassato</strong> ogni mese dall'imposta di soggiorno, secondo SIOPE: il sistema che registra, tramite il tesoriere, ogni incasso e pagamento degli enti pubblici.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Il mese è quello dell'incasso, non del soggiorno</h4><p>Le strutture raccolgono l'imposta dagli ospiti e la versano al Comune a bimestri. Il regolamento in vigore fissa le scadenze: aprile-maggio entro il 15 giugno, giugno-luglio entro il 15 agosto, agosto-settembre entro il 15 ottobre, ottobre entro il 15 dicembre. Sono i mesi dei picchi di cassa, che per questo non seguono la curva delle notti. La linea verde mette accanto le presenze dello stesso mese, disponibili dal 2022 al 2024, proprio per mostrare lo scarto: dividere l'una per l'altra mese per mese non avrebbe senso.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Come si legge il riepilogo</h4><p><em>Accertati a bilancio</em> è l'imposta di competenza dello stesso anno, quella del grafico precedente. Sugli anni chiusi i due totali tornano: il 2023 al centesimo, il 2024 dello 0,2%, il 2021 e il 2022 entro il 2%. Il 2020 fa eccezione, con la cassa sotto del 12%.</p><p>Le barre scure sono l'imposta <strong>riscossa a seguito di verifica e controllo</strong>, un codice SIOPE a parte: soldi recuperati dal Comune su imposta non versata, spesso di anni precedenti. A Cefalù non ce n'è fino a settembre 2024; compaiono da ottobre 2024 e nel 2025 diventano continui, con 95.443 euro, il 4,8% dell'anno. È il segno che c'era imposta non versata e che sono partiti i recuperi. Non dice quanta ne sfugga ancora: per quello servirebbe il gettito teorico, tariffe per notti soggette. Il confronto con altri comuni è fragile, perché non tutti usano questo codice quando recuperano.</p><p><em>€ per notte registrata</em> divide l'incassato dell'anno per le presenze ISTAT. È un gettito medio, non la tariffa. L'imposta si paga solo dal 1° aprile al 31 ottobre, per al massimo cinque notti consecutive, e ne sono esenti fra gli altri i minori fino a dodici anni; i versamenti che scavalcano l'anno lo spostano ancora. Dal febbraio 2024 Airbnb riscuote e versa l'imposta per gli affitti brevi prenotati sulla piattaforma, anche quelli che ISTAT può non contare.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Limiti</h4><p>La serie parte dal 2020. Prima Cefalù registrava l'imposta nella voce generica «Altre imposte, tasse e proventi», insieme ad altre entrate, e non si può separarla: nel 2020, quando compare il codice proprio, quella voce scende da 1,7 milioni a 174.000 euro.</p><p>Un anno con l'asterisco è parziale: mancano dei mesi, oppure una parte degli incassi è ancora «da regolarizzare», cioè arrivata al tesoriere ma non ancora attribuita a una voce. Il riepilogo dice quanto. Non va confrontato con gli anni chiusi.</p><em class='info-fonte'>Fonte: SIOPE — incassi di cassa degli enti pubblici, RGS e Banca d'Italia (siope.it), codici 1.01.01.41.001 e 1.01.01.41.002 · Presenze mensili: ISTAT dati mensili comunali 2022-2024 · Accertamenti: rendiconti del Comune · Regole: regolamento dell'imposta di soggiorno di Cefalù, testo modificato con delibera del Consiglio comunale n. 3 del 10 gennaio 2024, depositato sul portale del Dipartimento delle Finanze.</em>",
     chart_soggiorno: "<strong>Imposta di Soggiorno — Cefalù 2013–2024</strong><p>Entrate <em>accertate</em> (competenza) dall'imposta di soggiorno: il totale iscritto a bilancio come credito maturato nell'esercizio, indipendentemente dal momento dell'incasso effettivo.</p><p>Le etichette percentuali indicano il peso dell'imposta sul totale delle entrate tributarie comunali dell'anno.</p><p>La linea verde tratteggiata sovrappone le presenze turistiche (notti) per visualizzare la correlazione tra flussi e gettito. Sulla linea il 2015 è segnato con ⚠: ISTAT non ha ricevuto il dato delle presenze e ripete il 2014. L'imposta di quell'anno invece è un dato vero.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Fatti chiave</h4><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li>2013–2017: gettito fra € 121.000 e € 167.000 l'anno</li><li>2018: primo scatto rilevante, +287% sul 2017. Le cause, tariffe o strutture assoggettate, non sono nelle fonti finanziarie usate: vanno cercate nelle delibere comunali</li><li>2019: picco pre-COVID a € 997.826</li><li>2020: crollo COVID -56%</li><li>2022: € 849.631 accertati, ancora sotto il 2019</li><li>2023: € 1,25M, il primo anno sopra il livello pre-COVID</li><li>2024: € 1,78M, il massimo della serie</li></ul><p>Per sapere in che mese i soldi arrivano davvero al Comune c'è il grafico successivo, con gli incassi di cassa SIOPE mese per mese dal 2020.</p><p style='font-size:0.9em;'><em>Nota: le tariffe applicate per categoria di struttura e per anno derivano da Delibere del Consiglio Comunale e non sono contenute nelle fonti finanziarie utilizzate.</em></p><em class='info-fonte'>Fonte: certificati consuntivi 2013–2014 (finanzalocale.interno.gov.it) · Rendiconto di gestione 2020–2022 (Relazioni Giunta, egov.comune.cefalu.pa.it) · Rendiconto 2024 — allegati tecnici (conto del bilancio entrate) · Valori 2023–2024 estratti da Relazione della Giunta al Rendiconto 2024. Metodo: accertamenti di competenza.</em>"
 };
@@ -3545,6 +3558,43 @@ function renderGettito(bil, serie) {
       + (p ? '<span>rapporto per notte <b>€ ' + (tot/p).toFixed(2).replace('.',',') + '</b></span>' : '')
       + '<span>di cui imposta di soggiorno <b>'
       + ((v(ult,'imposta_soggiorno')||0)/tot*100).toFixed(1) + '%</b></span>';
+}
+
+// Progetti PNRR per la riqualificazione degli alberghi di Cefalù, da data/pnrr_turismo.json.
+// Il finanziamento è quello assegnato: la tabella non dice quanto sia già stato pagato.
+function renderPnrrTurismo(json, serie) {
+    const box = document.getElementById('pnrr-tabella');
+    if (!box || !json || !Array.isArray(json.progetti)) return;
+    const MESI = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic'];
+    const mese = d => { const [g, m, a] = String(d).split('/'); return a ? MESI[+m - 1] + ' ' + a : d; };
+    const estr = (json.estrazione || []).join(', ');
+    const P = json.progetti;
+    const cella = 'padding:6px 8px; border-bottom:1px solid rgba(0,0,0,0.08); vertical-align:top;';
+    const num = cella + ' text-align:right; white-space:nowrap;';
+    box.innerHTML = '<table style="width:100%; border-collapse:collapse; font-size:0.82em;">'
+        + '<thead><tr style="color:var(--text-sub); text-align:left;">'
+        + '<th style="' + cella + '">Intervento e impresa</th><th style="' + num + '">PNRR</th>'
+        + '<th style="' + num + '">Costo totale</th><th style="' + cella + '">Stato</th></tr></thead><tbody>'
+        + P.map(p => '<tr><td style="' + cella + '">' + p.intervento + '<br><span style="color:var(--text-sub); font-size:0.9em;">' + p.beneficiario + '</span></td>'
+            + '<td style="' + num + '">€ ' + nf(p.pnrr) + '</td><td style="' + num + '">€ ' + nf(p.totale) + '</td>'
+            + '<td style="' + cella + '">' + (p.fine_effettiva ? 'concluso, ' + mese(p.fine)
+                : 'in corso, fine prevista ' + mese(p.fine)) + '</td></tr>').join('')
+        + '</tbody></table>';
+    const pnrr = P.reduce((a, p) => a + p.pnrr, 0), tot = P.reduce((a, p) => a + p.totale, 0);
+    const it = json.submisura || {};
+    document.getElementById('pnrr-sottotitolo').textContent =
+        'Tax credit per la riqualificazione delle strutture ricettive — stato al ' + estr;
+    // Quota di Cefalù sui fondi nazionali della misura, accanto alla sua quota di notti alberghiere
+    const iA = serie ? serie.anni.indexOf(2024) : -1;
+    const albCef = iA >= 0 ? serie.pre_alb[iA] : null;
+    const albIt = volumeData['Italia'] && volumeData['Italia'].post[0] ? volumeData['Italia'].post[0] * 1e6 : null;
+    document.getElementById('pnrr-kpi').innerHTML =
+        '<span>' + P.length + ' progetti · <b>€ ' + nf(pnrr) + '</b> di PNRR su € ' + nf(tot) + ' di costo ('
+        + (pnrr / tot * 100).toFixed(0) + '%)</span>'
+        + (it.pnrr_italia ? '<span>Cefalù riceve lo <b>' + (pnrr / it.pnrr_italia * 100).toFixed(2).replace('.', ',')
+            + '%</b> dei fondi della misura in Italia (' + nf(it.progetti_italia) + ' progetti)'
+            + (albCef && albIt ? ', contro lo ' + (albCef / albIt * 100).toFixed(2).replace('.', ',')
+                + '% delle notti alberghiere italiane del 2024' : '') + '</span>' : '');
 }
 
 // ── EXPLORER ─────────────────────────────────────────────────────────────
@@ -3847,8 +3897,9 @@ function renderGettito(bil, serie) {
         fetch(DATA_PATH + 'provenienza.json').then(r => r.json()).catch(() => null),
         fetch(DATA_PATH + 'soggiorno_mensile.json').then(r => r.json()).catch(() => null),
         fetch(DATA_PATH + 'soggiorno_comuni.json').then(r => r.json()).catch(() => null),
+        fetch(DATA_PATH + 'pnrr_turismo.json').then(r => r.json()).catch(() => null),
         flagIstatPronto,   // i grafici di Cefalù segnano gli anni non veri: il 2015 e una copia del 2014
-    ]).then(([serie, stagData, popData, ricettivaData, ricIdx, irpefData, itaData, regData, pre12Data, euData, bilData, peerJson, provJson, sogMeseJson, sogComJson]) => {
+    ]).then(([serie, stagData, popData, ricettivaData, ricIdx, irpefData, itaData, regData, pre12Data, euData, bilData, peerJson, provJson, sogMeseJson, sogComJson, pnrrJson]) => {
         popolazioneData = popData;
         sogComuniData = sogComJson;
         // I comuni scelti dall'URL possono essere arrivati prima di questo file
@@ -3948,6 +3999,7 @@ function renderGettito(bil, serie) {
         renderProvenienza();
         renderTipologie();
         renderGettito(bilData, serie);
+        renderPnrrTurismo(pnrrJson, serie);
         ['estero','italia'].forEach(function(v) {
             const b = document.getElementById('btn-prov-' + v);
             if (b) b.addEventListener('click', function() { renderProvenienza(v); });

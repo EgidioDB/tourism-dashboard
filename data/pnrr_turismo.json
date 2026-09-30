@@ -1,0 +1,100 @@
+{
+ "_fonte": "Italia Domani — catalogo open data dei progetti PNRR (PNRR_Progetti.csv e PNRR_Localizzazione.csv), sottomisura M1C3I4.02.01.",
+ "_nota": "pnrr = finanziamento PNRR assegnato, non necessariamente erogato; privato = parte a carico dell'impresa. Stato e date sono quelli della data di estrazione.",
+ "_rigenera": "python3 scripts/build_pnrr_turismo.py",
+ "_fonti": [
+  {
+   "url": "https://www.italiadomani.gov.it/content/dam/sogei-ng/opendata/PNRR_Progetti.csv",
+   "lastModified": "Wed, 02 Sep 2026 09:02:28 GMT",
+   "sha256": "0954c0fadd25d37cd99e143e025c5fd2514d5123af694dd581d1b00e69e784f1"
+  },
+  {
+   "url": "https://www.italiadomani.gov.it/content/dam/sogei-ng/opendata/PNRR_Localizzazione.csv",
+   "lastModified": "Thu, 09 Jul 2026 11:41:50 GMT",
+   "sha256": "0fae9b0252b7e0949d0c11d374c3113178c096da1077462810971a0eac07bbcd"
+  }
+ ],
+ "estrazione": [
+  "13/06/2026"
+ ],
+ "submisura": {
+  "codice": "M1C3I4.02.01",
+  "descrizione": "Miglioramento delle infrastrutture di ricettività attraverso lo strumento del Tax credit",
+  "progetti_italia": 2884,
+  "pnrr_italia": 444568849.74
+ },
+ "progetti": [
+  {
+   "cup": "C65C22002210008",
+   "beneficiario": "MIA S.R.L.",
+   "intervento": "Riqualificazione globale dell'HOTEL LE CALETTE",
+   "pnrr": 303964.79,
+   "totale": 449390.0,
+   "privato": 145425.21,
+   "stato": "Concluso",
+   "inizio": "27/06/2022",
+   "fine": "30/07/2025",
+   "fine_effettiva": true
+  },
+  {
+   "cup": "C65C22003860008",
+   "beneficiario": "I.G.A.C. - IMMOBILIARE GRANDI ALBERGHI CEFALU'  -S.P.A.-",
+   "intervento": "Riqualificazione struttura Hotel Costa Verde",
+   "pnrr": 286140.44,
+   "totale": 424823.0,
+   "privato": 138682.56,
+   "stato": "Concluso",
+   "inizio": "27/06/2022",
+   "fine": "02/12/2024",
+   "fine_effettiva": true
+  },
+  {
+   "cup": "C65C22005210008",
+   "beneficiario": "MEDIHOT S.R.L.",
+   "intervento": "Riqualificazione globale dell'HOTEL Alberi del Paradiso",
+   "pnrr": 268641.71,
+   "totale": 372600.0,
+   "privato": 103958.29,
+   "stato": "Concluso",
+   "inizio": "27/06/2022",
+   "fine": "22/07/2024",
+   "fine_effettiva": true
+  },
+  {
+   "cup": "C65C22000990008",
+   "beneficiario": "AL PESCATORE SOCIETA' A RESPONSABILITA' LIMITATA SEMPLIFICATA",
+   "intervento": "Riqualificazione della struttura AL PESCATORE SRLS sita in C.da Caldura snc, Cefalù.",
+   "pnrr": 230689.46,
+   "totale": 278650.77,
+   "privato": 47961.31,
+   "stato": "In Corso",
+   "inizio": "27/06/2022",
+   "fine": "30/06/2026",
+   "fine_effettiva": false
+  },
+  {
+   "cup": "C65C22001120008",
+   "beneficiario": "BARRANCO GROUP S.R.L.",
+   "intervento": "Opere per l'efficientamento energetico e l'abbattimento delle barriere architettoniche",
+   "pnrr": 184825.12,
+   "totale": 220517.0,
+   "privato": 35691.88,
+   "stato": "In Corso",
+   "inizio": "27/06/2022",
+   "fine": "30/06/2026",
+   "fine_effettiva": false
+  },
+  {
+   "cup": "C65C22001780008",
+   "beneficiario": "S.E.A.C. S.R.L. - SOCIETA' ESERCIZI ALBERGHIERI CEFALUDESI",
+   "intervento": "INTERVENTI PER LELIMINAZIONE DELLE BARRIERE ARCHITETTONICHE, DI EFFICIENZA ENERGETICA E DI DIGITALI",
+   "pnrr": 173551.06,
+   "totale": 205000.0,
+   "privato": 31448.94,
+   "stato": "In Corso",
+   "inizio": "27/06/2022",
+   "fine": "30/06/2026",
+   "fine_effettiva": false
+  }
+ ]
+}

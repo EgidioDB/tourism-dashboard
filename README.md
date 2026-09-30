@@ -94,6 +94,8 @@ tourism-dashboard/
 │   ├── comuni_index.json               # Indice dei 5.268 comuni con dati
 │   │                                   # Metadati: cod_istat, nome, provincia, regione
 │   │                                   # Statistiche: max_arr, max_pre, growth_pre
+│   ├── pnrr_turismo.json               # Progetti PNRR "Tax credit" per gli alberghi di Cefalù
+│   │                                   # Rigenerabile: python3 scripts/build_pnrr_turismo.py
 │   ├── serie_ricucite.json             # 56 comuni sardi con due codici ISTAT, prima e dopo
 │   │                                   # la riforma delle province: la serie sta sul nuovo
 │   ├── serie/                          # 5.268 file JSON, uno per comune
@@ -133,6 +135,7 @@ tourism-dashboard/
 │   ├── build_popolazione.py            # Rigenera popolazione.json e il reddito pro capite IRPEF
 │   ├── build_siope_soggiorno.py        # Rigenera soggiorno_mensile.json e soggiorno_comuni.json
 │   ├── ricuci_serie.py                 # Unisce le serie dei comuni passati di provincia
+│   ├── build_pnrr_turismo.py           # Estrae da Italia Domani i progetti PNRR degli alberghi
 │   └── build_confronti.py              # Rigenera peer_group.json e provenienza.json
 │
 └── DCSC_Occupancy_in_collective_accommodation/
@@ -161,6 +164,7 @@ tourism-dashboard/
 | Note sui dati comunali | ISTAT — colonna flag del file comunale | 2014–2024 | `flag_istat.json` |
 | Imposta di soggiorno mensile | SIOPE — incassi di cassa, RGS e Banca d'Italia | 2020–2026 | `soggiorno_mensile.json` |
 | Imposta di soggiorno per comune | SIOPE — incassi di cassa, con presenze ISTAT | 2020–2025 | `soggiorno_comuni.json` |
+| PNRR per gli alberghi di Cefalù | Italia Domani — catalogo open data dei progetti | al 13/06/2026 | `pnrr_turismo.json` |
 | Popolazione residente al 1° gennaio | ISTAT — ricostruzione intercensuaria, poi POSAS | 2014–2024 | `popolazione.json` |
 
 L'API Eurostat espone header CORS aperti, quindi sarebbe interrogabile direttamente dal browser. Il file resta comunque versionato nel repo: così la dashboard non dipende dalla disponibilità di un servizio esterno a ogni caricamento, e i dati mostrati sono riproducibili nel tempo.
@@ -209,6 +213,7 @@ Arrivi Cefalù 2012:                     132.746
 | `SOGGIORNO_DATA`, `SPESA_SOG_DATA` | `data/bilancio.json` | `syncBilancioFromJson()` |
 | `SOG_MESE` (imposta mese per mese) | `data/soggiorno_mensile.json` | `syncSoggiornoMensile()` |
 | `sogComuniData` (imposta per notte, Confronta) | `data/soggiorno_comuni.json` | `renderSogCompare()`, `sogRiga()` |
+| Scheda PNRR alberghi | `data/pnrr_turismo.json` | `renderPnrrTurismo()` |
 | Classifica crescita comuni | `data/comuni_index.json` | `buildLeaderboard()` |
 
 **Top City** — la città di ogni regione è scelta con lo stesso criterio della classifica crescita: massima crescita presenze 2014–2024 fra i comuni con almeno 500.000 presenze annue; dove nessuno raggiunge la soglia (Molise) si ripiega sul comune più grande. La sua serie comunale viene scaricata al primo click sulla regione e messa in cache, poi il pannello si ridisegna.
@@ -365,6 +370,8 @@ Un segnale diverso viene da SIOPE: l'imposta riscossa a seguito di verifica e co
 - **Imposta di soggiorno per notte, fra comuni** — gli stessi file SIOPE contengono tutti i comuni: 1.532 incassano l'imposta col suo codice. In Confronta ogni comune ha l'incasso diviso le presenze ISTAT dello stesso anno, dal 2020 al 2024, accanto alla mediana dei comuni con almeno 500.000 notti. Nel 2024 Cefalù incassa 1,92 € per notte, 69ª su 161; Taormina 4,11 €, sesta; la mediana è 1,63 €. Tre cose da sapere: le tariffe le fissa ogni Comune, quindi il valore dice quanto rende una notte e non quanto sia efficiente la riscossione; chi registra l'imposta nella voce generica, come Roma, risulta senza incassi e non si può distinguere da chi non la applica; nel 2023 SIOPE non ha righe per quasi tutta la Sardegna, e quell'anno per loro manca invece di valere zero.
 
 - **Serie sarde ricucite** — con la riforma delle province del 2016 i comuni sardi hanno cambiato codice ISTAT, e le serie li trattavano come due comuni: Olbia era `104017` fino al 2016 e `090047` dopo. Senza il 2014 e il 2024 sullo stesso codice non c'era una crescita, quindi 56 comuni restavano fuori da classifica, Top City e comuni simili, fra cui 9 destinazioni oltre le 500.000 notti. `ricuci_serie.py` li unisce sul codice nuovo: 2.304 valori controllati contro il file ISTAT, nessuna differenza. Il passaggio 2016→2017 non mostra salti, +5,1% nel complesso, in linea coi comuni sardi rimasti sullo stesso codice, e ISTAT marca 51 dei nuovi codici come «modifica amministrativa». Effetti: la Top City della Sardegna diventa San Teodoro (+84,2%) al posto di Pula (+68,9%), con una discontinuità ISTAT nel 2024 che il pannello segnala; Cefalù scende dal 23° al 25° posto della classifica crescita; il gruppo dei comuni simili passa da 212 a 220. Restano separati, di proposito, le fusioni (Montalcino, Cassano Spinola: territori diversi) e i cambi di regione (Sappada, Montecopiolo: con la regione cambia chi rileva i dati, e Sappada al passaggio perde il 39% delle notti).
+
+- **PNRR per gli alberghi** — dal catalogo open data di Italia Domani, i progetti localizzati a Cefalù della sottomisura M1C3I4.02.01, *«Miglioramento delle infrastrutture di ricettività attraverso lo strumento del Tax credit»*. Sono sei riqualificazioni di strutture ricettive (Le Calette, Costa Verde, Alberi del Paradiso, Al Pescatore e altre due), per 1.447.813 € di PNRR su 1.950.981 € di costo; tre concluse e tre in corso al 13 giugno 2026, data di estrazione del catalogo. Cefalù riceve lo 0,33% dei fondi nazionali della misura (2.884 progetti, 444,6 milioni) e fa lo 0,27% delle notti alberghiere italiane. Il finanziamento è quello assegnato: il catalogo non riporta le erogazioni. L'idea viene dalla scheda di Cefalù su DoveVannoINostriSoldi, che però mostra solo il PNRR per gli asili.
 
 ### Valutato e scartato
 

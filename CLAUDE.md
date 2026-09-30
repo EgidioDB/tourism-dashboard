@@ -145,6 +145,7 @@ contrario del vero.** Nessun test lo intercetta.
 | Serie nazionale 1956–2024 | `data/italia.json` | valori in migliaia |
 | Serie regionali 2008–2024 | `data/regioni.json` | solo arrivi e presenze totali |
 | Serie comunali 2014–2024 | `data/serie/*.json` | 5.268 comuni, split completo; non c'è uno script che le generi |
+| PNRR alberghi di Cefalù | `data/pnrr_turismo.json` | `python3 scripts/build_pnrr_turismo.py`, Italia Domani; importi assegnati, non pagati |
 | Serie ricucite (cambio di provincia) | `data/serie_ricucite.json` | `python3 scripts/ricuci_serie.py`, poi flag, confronti e SIOPE |
 | Pre-2014 regionale e Cefalù | `data/pre2012.json` | da XLS ISTAT circoscrizioni |
 | Split alb/ext regionale | `data/eurostat_regioni.json` | `python3 scripts/fetch_eurostat.py` |
