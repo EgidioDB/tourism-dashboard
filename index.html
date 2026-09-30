@@ -4866,12 +4866,18 @@ function renderGettito(bil, serie) {
         // Solo gli anni che hanno le presenze: senza denominatore non c'e un valore per notte
         const idx = anni.map((_, i) => i).filter(i => Object.values(sogComuniData.comuni).some(c => c.p[i]));
         const x = idx.map(i => anni[i]);
-        const traces = entries.map((d, k) => ({
-            x: x, y: idx.map(i => sogPerNotte(d.meta.cod, i)), name: d.meta.nome,
-            type: 'scatter', mode: 'lines+markers', connectgaps: false,
-            line: { color: COLORS[k % COLORS.length], width: 2.5 }, marker: { size: 6 },
-            hovertemplate: '<b>' + d.meta.nome + ' %{x}</b><br>€ %{y:.2f} per notte<extra></extra>'
-        })).filter(t => t.y.some(v => v != null));
+        // Nel tooltip anche incasso e notti dell'anno: il valore per notte si ricostruisce a mano
+        const traces = entries.map((d, k) => {
+            const c = sogComuniData.comuni[d.meta.cod];
+            return {
+                x: x, y: idx.map(i => sogPerNotte(d.meta.cod, i)), name: d.meta.nome,
+                customdata: idx.map(i => c && c.e[i] != null && c.p[i] ? ['€ ' + nf(c.e[i]), nf(c.p[i])] : ['', '']),
+                type: 'scatter', mode: 'lines+markers', connectgaps: false,
+                line: { color: COLORS[k % COLORS.length], width: 2.5 }, marker: { size: 6 },
+                hovertemplate: '<b>' + d.meta.nome + ' %{x}</b>: € %{y:.2f} per notte<br>'
+                    + '%{customdata[0]} incassati · %{customdata[1]} notti<extra></extra>'
+            };
+        }).filter(t => t.y.some(v => v != null));
         traces.push({
             x: x, y: idx.map(i => mediana(sogGruppo(i).map(g => g.v))), name: 'Mediana ≥ 500.000 notti',
             type: 'scatter', mode: 'lines', line: { color: '#99aab5', width: 2, dash: 'dash' },
