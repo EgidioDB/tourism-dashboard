@@ -1850,7 +1850,9 @@
     const clr = v => ((typeof v === 'string' ? v.trim().charAt(0) !== '-' : v >= 0)
         ? 'var(--accent)' : '#c0392b');
     const ib  = key => `<button class="info-btn" onclick="event.stopPropagation();showInfo('${key}')">i</button>`;
-    const nf = n => Math.round(n).toLocaleString('it-IT');
+    // useGrouping 'always': in italiano il browser non raggruppa le quattro cifre, e "3557"
+    // accanto a "95.443" nella stessa riga si legge male
+    const nf = n => Math.round(n).toLocaleString('it-IT', { useGrouping: 'always' });
     function toggleNominal(row) {
         const sib = row.nextElementSibling;
         if (sib && sib.classList.contains('nominal-row')) {
@@ -2855,13 +2857,23 @@
         if (yr) currentSogMeseYear = yr;
         const a = currentSogMeseYear, k = String(a);
         const val = SOG_MESE.mensile[k] || [];
+        // La parte riscossa a seguito di verifica e controllo sta sopra, in un altro colore:
+        // a Cefalù compare da ottobre 2024, e senza separarla il salto non si vedrebbe
+        const ctr = (SOG_MESE.mensile_controlli || {})[k] || val.map(v => v == null ? null : 0);
+        const ord = val.map((v, i) => v == null ? null : v - (ctr[i] || 0));
+        const haCtr = ctr.some(v => v > 0);
         const pres = (advancedData.stagionalitaAllYears || {})[k] || null;
         const mesi = advancedData.mesi;
         const traces = [{
-            x: mesi, y: val, type: 'bar', name: 'Imposta incassata (€)',
+            x: mesi, y: ord, type: 'bar', name: haCtr ? 'Riscossione ordinaria (€)' : 'Imposta incassata (€)',
             marker: { color: '#e07b39', opacity: 0.85 }, yaxis: 'y',
-            hovertemplate: '<b>%{x} ' + a + '</b><br>Incassati: € %{y:,.0f}<extra></extra>'
+            hovertemplate: '<b>%{x} ' + a + '</b><br>' + (haCtr ? 'Riscossione ordinaria' : 'Incassati') + ': € %{y:,.0f}<extra></extra>'
         }];
+        if (haCtr) traces.push({
+            x: mesi, y: ctr, type: 'bar', name: 'Da verifiche e controlli (€)',
+            marker: { color: '#1d3557', opacity: 0.9 }, yaxis: 'y',
+            hovertemplate: '<b>%{x} ' + a + '</b><br>Da verifiche e controlli: € %{y:,.0f}<extra></extra>'
+        });
         if (pres) traces.push({
             x: mesi, y: pres, type: 'scatter', mode: 'lines+markers', name: 'Presenze (notti)',
             line: { color: '#24b27e', width: 2, dash: 'dot' }, marker: { size: 5, color: '#24b27e' },
@@ -2869,6 +2881,7 @@
         });
         const layout = {
             ...baseLayout,
+            barmode: 'stack',
             xaxis: { fixedrange: true, tickpad: 8 },
             // Entrambi gli assi partono da zero, cosi le due scale hanno la stessa base
             yaxis: { fixedrange: true, tickformat: ',.0f', tickprefix: '€ ', rangemode: 'tozero' },
@@ -2915,9 +2928,27 @@
                       + (Math.abs(d) < 0.05 ? '0,0' : sgn(d).replace('.', ',')) + '%)</span>';
             }
             if (notti) html += '<span>€ per notte registrata <b>' + (tot / notti).toFixed(2).replace('.', ',') + '</b></span>';
-            const ord = val.map((v, i) => [v || 0, i]).sort((x, y) => y[0] - x[0]).slice(0, 3);
-            html += '<span>tre mesi più alti: ' + ord.map(o => MESI_LUNGHI[o[1]]).join(', ')
-                  + ' — <b>' + it(ord.reduce((s, o) => s + o[0], 0) / tot * 100) + '%</b> dell\'anno</span>';
+            const top3 = val.map((v, i) => [v || 0, i]).sort((x, y) => y[0] - x[0]).slice(0, 3);
+            html += '<span>tre mesi più alti: ' + top3.map(o => MESI_LUNGHI[o[1]]).join(', ')
+                  + ' — <b>' + it(top3.reduce((s, o) => s + o[0], 0) / tot * 100) + '%</b> dell\'anno</span>';
+        }
+        // Quanto arriva da verifiche e controlli, e com'era negli anni chiusi precedenti.
+        // Si mostra da quando i controlli compaiono: prima sarebbe solo una fila di zeri.
+        const ctrAnno = y => ((SOG_MESE.mensile_controlli || {})[y] || []).reduce((s, v) => s + (v || 0), 0);
+        if (SOG_MESE.mensile_controlli && SOG_MESE.anni.some(y => y <= a && ctrAnno(y) > 0)) {
+            const totCtr = ctr.reduce((s, v) => s + (v || 0), 0);
+            // Gli anni consecutivi a zero si raggruppano: "2020–2023: € 0, 2024: € 3.557"
+            const prima = [];
+            SOG_MESE.anni.filter(y => y < a && sogMeseChiuso(y)).forEach(y => {
+                const v = Math.round((SOG_MESE.mensile_controlli[y] || []).reduce((s, x) => s + (x || 0), 0));
+                const ult = prima[prima.length - 1];
+                if (ult && v === 0 && ult.v === 0 && ult.a === y - 1) ult.a = y;
+                else prima.push({ da: y, a: y, v: v });
+            });
+            const primaTxt = prima.map(p => (p.da === p.a ? p.da : p.da + '–' + p.a) + ': € ' + nf(p.v));
+            html += '<span>da verifiche e controlli <b style="color:#1d3557">€ ' + nf(totCtr) + '</b>'
+                  + (tot ? ' (' + it(totCtr / tot * 100) + '%)' : '')
+                  + (primaTxt.length ? ' — anni prima ' + primaTxt.join(', ') : '') + '</span>';
         }
         document.getElementById('sog-mese-kpi').innerHTML = html;
         document.querySelectorAll('#sog-mese-yr-btns .season-yr-btn').forEach(b => {
@@ -3344,7 +3375,7 @@ const INFO = {
 
     chart_spesa_vs_sog: "<strong>Spesa Turismo vs Imposta di Soggiorno — Cefalù</strong><p>Confronto tra quanto il Comune <em>investe</em> in attività turistiche e quanto <em>incassa</em> dall'imposta di soggiorno. Due serie su scala comune (asse €) per capire se la tassa copre o supera la spesa.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Come leggere il grafico</h4><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li><strong>Barre blu scure</strong>: spesa turismo — anni con dato disponibile</li><li><strong>Linea arancione</strong>: imposta di soggiorno — accertamenti annui</li><li><strong>Barre più chiare</strong>: dal 2016, classificazione armonizzata D.Lgs. 118/2011; le più scure sono gli anni DPR 194/96 (ante-riforma)</li></ul><h4 style='margin:10px 0 4px;font-size:0.95em;'>Nota metodologica</h4><p>Le serie derivano da due sistemi di classificazione diversi:</p><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li><strong>2007–2015</strong> (DPR 194/96): &quot;Funzioni nel campo turistico&quot; — Quadro 04 del consuntivo</li><li><strong>2024</strong> (D.Lgs. 118/2011 — armonizzato): Missione 07 Turismo — Conto del bilancio spese</li><li><strong>2016</strong>: € 0 (dissesto finanziario in corso)</li><li><strong>2017</strong>: € 50.082 · <strong>2018</strong>: € 165.729 (ripresa post-dissesto)</li><li><strong>2019–2023</strong>: Missione 07 Turismo — impegni da rendiconto certificato BDAP RGS</li></ul><p>Le due classificazioni coprono sostanzialmente la stessa voce di spesa e sono comparabili per analisi di tendenza, con una discontinuità metodologica al confine 2015/2016.</p><p style='font-size:0.9em;'><strong>Indicatore KPI</strong>: rapporto incasso/spesa per gli anni in cui entrambi i dati sono disponibili. Valore &gt; 1 = l'imposta supera la spesa turistica.</p><em class='info-fonte'>Fonte spesa 2007–2015: Consuntivi comunali (Quadro 04, DPR 194/96) · Fonte spesa 2016–2018: Certificati Consuntivi armonizzati (Quadro 6, Missione 07) — finanzalocale.interno.gov.it · Fonte spesa 2019–2023: BDAP RGS — openbdap.rgs.mef.gov.it · Fonte spesa 2024: Rendiconto 2024 allegati tecnici RAR (Missione 07) — egov.comune.cefalu.pa.it · Fonte imposta soggiorno: certificati consuntivi 2013–2014 (finanzalocale.interno.gov.it), Relazioni della Giunta al Rendiconto 2020–2024.</em>",
     cmp_sog_notte: "<strong>Imposta di soggiorno per notte</strong><p>Quanto incassa il Comune dall'imposta di soggiorno per ogni notte registrata da ISTAT: l'imposta dell'anno, dagli incassi di cassa SIOPE, divisa per le presenze dello stesso anno.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Cosa misura e cosa no</h4><p>Dice quanto rende una notte al Comune, <strong>non</strong> quanto sia efficiente la riscossione. Le tariffe le decide ogni Comune, per categoria di struttura, e cambiano nel tempo: un valore alto può voler dire tariffe alte, non turisti che pagano di più a parità di tariffa.</p><p>Il denominatore sono le notti rilevate da ISTAT nelle strutture ricettive. Dove l'imposta si paga anche su affitti brevi che ISTAT non conta, per esempio quando la versano le piattaforme, il valore per notte risulta gonfiato.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Chi c'è e chi no</h4><p>Entrano solo i comuni che registrano l'imposta con il suo codice di bilancio. Un comune senza incassi con quel codice può non applicarla, oppure registrarla in una voce generica, come faceva Cefalù fino al 2019: dai dati non si distingue, e il riquadro lo dice.</p><p>La linea tratteggiata è la mediana dei comuni con almeno 500.000 notti nell'anno che incassano l'imposta, la stessa soglia della classifica di crescita. La posizione in classifica usa lo stesso gruppo.</p><p style='font-size:0.9em;'>Nel 2023 SIOPE non ha righe per quasi tutti i comuni della Sardegna: per loro quell'anno manca, non vale zero. I comuni sardi sono collegati per nome, perché SIOPE usa le province del 2025 e le serie ISTAT quelle precedenti.</p><em class='info-fonte'>Fonte: SIOPE — incassi di cassa, RGS e Banca d'Italia (siope.it), codici 1.01.01.41.001 e 1.01.01.41.002 · Presenze: ISTAT dati comunali 2020-2024.</em>",
-    chart_sog_mese: "<strong>Imposta di Soggiorno mese per mese</strong><p>Quanto il Comune ha <strong>incassato</strong> ogni mese dall'imposta di soggiorno, secondo SIOPE: il sistema che registra, tramite il tesoriere, ogni incasso e pagamento degli enti pubblici.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Il mese è quello dell'incasso, non del soggiorno</h4><p>Le strutture raccolgono l'imposta dagli ospiti e la riversano al Comune periodicamente. Per questo gli incassi arrivano a scatti, soprattutto a giugno, agosto e ottobre, e non seguono la curva delle notti. La linea verde mette accanto le presenze dello stesso mese, disponibili dal 2022 al 2024, proprio per mostrare lo scarto: dividere l'una per l'altra mese per mese non avrebbe senso.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Come si legge il riepilogo</h4><p><em>Accertati a bilancio</em> è l'imposta di competenza dello stesso anno, quella del grafico precedente. Sugli anni chiusi i due totali tornano: il 2023 al centesimo, il 2024 dello 0,2%, il 2021 e il 2022 entro il 2%. Il 2020 fa eccezione, con la cassa sotto del 12%.</p><p><em>€ per notte registrata</em> divide l'incassato dell'anno per le presenze ISTAT. È un gettito medio, non la tariffa: eventuali esenzioni e i versamenti che scavalcano l'anno lo spostano.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Limiti</h4><p>La serie parte dal 2020. Prima Cefalù registrava l'imposta nella voce generica «Altre imposte, tasse e proventi», insieme ad altre entrate, e non si può separarla: nel 2020, quando compare il codice proprio, quella voce scende da 1,7 milioni a 174.000 euro.</p><p>Un anno con l'asterisco è parziale: mancano dei mesi, oppure una parte degli incassi è ancora «da regolarizzare», cioè arrivata al tesoriere ma non ancora attribuita a una voce. Il riepilogo dice quanto. Non va confrontato con gli anni chiusi.</p><em class='info-fonte'>Fonte: SIOPE — incassi di cassa degli enti pubblici, RGS e Banca d'Italia (siope.it), codici 1.01.01.41.001 e 1.01.01.41.002 · Presenze mensili: ISTAT dati mensili comunali 2022-2024 · Accertamenti: rendiconti del Comune.</em>",
+    chart_sog_mese: "<strong>Imposta di Soggiorno mese per mese</strong><p>Quanto il Comune ha <strong>incassato</strong> ogni mese dall'imposta di soggiorno, secondo SIOPE: il sistema che registra, tramite il tesoriere, ogni incasso e pagamento degli enti pubblici.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Il mese è quello dell'incasso, non del soggiorno</h4><p>Le strutture raccolgono l'imposta dagli ospiti e la riversano al Comune periodicamente. Per questo gli incassi arrivano a scatti, soprattutto a giugno, agosto e ottobre, e non seguono la curva delle notti. La linea verde mette accanto le presenze dello stesso mese, disponibili dal 2022 al 2024, proprio per mostrare lo scarto: dividere l'una per l'altra mese per mese non avrebbe senso.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Come si legge il riepilogo</h4><p><em>Accertati a bilancio</em> è l'imposta di competenza dello stesso anno, quella del grafico precedente. Sugli anni chiusi i due totali tornano: il 2023 al centesimo, il 2024 dello 0,2%, il 2021 e il 2022 entro il 2%. Il 2020 fa eccezione, con la cassa sotto del 12%.</p><p>Le barre scure sono l'imposta <strong>riscossa a seguito di verifica e controllo</strong>, un codice SIOPE a parte: soldi recuperati dal Comune su imposta non versata, spesso di anni precedenti. A Cefalù non ce n'è fino a settembre 2024; compaiono da ottobre 2024 e nel 2025 diventano continui, con 95.443 euro, il 4,8% dell'anno. È il segno che c'era imposta non versata e che sono partiti i recuperi. Non dice quanta ne sfugga ancora: per quello servirebbe il gettito teorico, tariffe per notti soggette. Il confronto con altri comuni è fragile, perché non tutti usano questo codice quando recuperano.</p><p><em>€ per notte registrata</em> divide l'incassato dell'anno per le presenze ISTAT. È un gettito medio, non la tariffa: eventuali esenzioni e i versamenti che scavalcano l'anno lo spostano.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Limiti</h4><p>La serie parte dal 2020. Prima Cefalù registrava l'imposta nella voce generica «Altre imposte, tasse e proventi», insieme ad altre entrate, e non si può separarla: nel 2020, quando compare il codice proprio, quella voce scende da 1,7 milioni a 174.000 euro.</p><p>Un anno con l'asterisco è parziale: mancano dei mesi, oppure una parte degli incassi è ancora «da regolarizzare», cioè arrivata al tesoriere ma non ancora attribuita a una voce. Il riepilogo dice quanto. Non va confrontato con gli anni chiusi.</p><em class='info-fonte'>Fonte: SIOPE — incassi di cassa degli enti pubblici, RGS e Banca d'Italia (siope.it), codici 1.01.01.41.001 e 1.01.01.41.002 · Presenze mensili: ISTAT dati mensili comunali 2022-2024 · Accertamenti: rendiconti del Comune.</em>",
     chart_soggiorno: "<strong>Imposta di Soggiorno — Cefalù 2013–2024</strong><p>Entrate <em>accertate</em> (competenza) dall'imposta di soggiorno: il totale iscritto a bilancio come credito maturato nell'esercizio, indipendentemente dal momento dell'incasso effettivo.</p><p>Le etichette percentuali indicano il peso dell'imposta sul totale delle entrate tributarie comunali dell'anno.</p><p>La linea verde tratteggiata sovrappone le presenze turistiche (notti) per visualizzare la correlazione tra flussi e gettito. Sulla linea il 2015 è segnato con ⚠: ISTAT non ha ricevuto il dato delle presenze e ripete il 2014. L'imposta di quell'anno invece è un dato vero.</p><h4 style='margin:10px 0 4px;font-size:0.95em;'>Fatti chiave</h4><ul style='margin:0 0 8px;padding-left:18px;line-height:1.7;'><li>2013–2017: gettito fra € 121.000 e € 167.000 l'anno</li><li>2018: primo scatto rilevante, +287% sul 2017. Le cause, tariffe o strutture assoggettate, non sono nelle fonti finanziarie usate: vanno cercate nelle delibere comunali</li><li>2019: picco pre-COVID a € 997.826</li><li>2020: crollo COVID -56%</li><li>2022: € 849.631 accertati, ancora sotto il 2019</li><li>2023: € 1,25M, il primo anno sopra il livello pre-COVID</li><li>2024: € 1,78M, il massimo della serie</li></ul><p>Per sapere in che mese i soldi arrivano davvero al Comune c'è il grafico successivo, con gli incassi di cassa SIOPE mese per mese dal 2020.</p><p style='font-size:0.9em;'><em>Nota: le tariffe applicate per categoria di struttura e per anno derivano da Delibere del Consiglio Comunale e non sono contenute nelle fonti finanziarie utilizzate.</em></p><em class='info-fonte'>Fonte: certificati consuntivi 2013–2014 (finanzalocale.interno.gov.it) · Rendiconto di gestione 2020–2022 (Relazioni Giunta, egov.comune.cefalu.pa.it) · Rendiconto 2024 — allegati tecnici (conto del bilancio entrate) · Valori 2023–2024 estratti da Relazione della Giunta al Rendiconto 2024. Metodo: accertamenti di competenza.</em>"
 };
 

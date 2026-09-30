@@ -128,12 +128,13 @@ def main():
     anag, meta_anag = scarica("SIOPE_ANAGRAFICHE.zip")
     ente = codice_ente(anag)
     ente_cod, modo = collega_comuni(anag)
-    fonti, mensile, da_regolarizzare, ultimo_mese = [], {}, {}, {}
+    fonti, mensile, controlli, da_regolarizzare, ultimo_mese = [], {}, {}, {}, {}
     per_comune = {}   # codice ISTAT -> {anno: centesimi}
     presenti = {}     # anno -> enti con almeno una riga, di qualunque voce
     for anno in ANNI:
         path, meta = scarica("SIOPE_ENTRATE.%d.zip" % anno)
         cent = [0] * 12
+        cent_c = [0] * 12   # di cui riscossa a seguito di verifica e controllo (.002)
         visti, reg, mesi_file = set(), 0, set()
         presenti[anno] = set()
         for codice, a, mese, gestionale, importo in righe(path, "ENTRATE_%d" % anno):
@@ -154,12 +155,15 @@ def main():
             visti.add(chiave)
             if gestionale in CODICI:
                 cent[m - 1] += int(importo)
+                if gestionale == "1.01.01.41.002":
+                    cent_c[m - 1] += int(importo)
             elif gestionale.startswith("0."):
                 reg += int(importo)
         ultimo = max(mesi_file)
         ultimo_mese[anno] = ultimo
         # I mesi non ancora pubblicati restano vuoti: zero vorrebbe dire "nessun incasso"
         mensile[anno] = [round(c / 100, 2) if i < ultimo else None for i, c in enumerate(cent)]
+        controlli[anno] = [round(c / 100, 2) if i < ultimo else None for i, c in enumerate(cent_c)]
         da_regolarizzare[anno] = round(reg / 100, 2)
         fonti.append(dict(meta, anno=anno, ultimoMese=ultimo))
 
@@ -170,13 +174,15 @@ def main():
                  "Comune, secondo le scadenze di versamento delle strutture, non quello del soggiorno. "
                  "Prima del 2020 l'imposta era registrata nella voce generica 'Altre imposte n.a.c.' "
                  "e non e separabile. Un anno con mesi mancanti o con incassi ancora da regolarizzare "
-                 "non e confrontabile con gli anni chiusi.",
+                 "non e confrontabile con gli anni chiusi. mensile e il totale dei due codici; "
+                 "mensile_controlli ne e la parte riscossa a seguito di verifica e controllo (.002).",
         "_rigenera": "python3 scripts/build_siope_soggiorno.py",
         "_fonti": [dict(meta_anag, file="anagrafiche")] + fonti,
         "ente": {"codice_siope": ente, "codice_fiscale": CF_CEFALU},
         "anni": ANNI,
         "ultimo_mese": {str(a): m for a, m in ultimo_mese.items()},
         "mensile": {str(a): v for a, v in mensile.items()},
+        "mensile_controlli": {str(a): v for a, v in controlli.items()},
         "da_regolarizzare": {str(a): v for a, v in da_regolarizzare.items()},
     }
     json.dump(out, open(DEST, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
@@ -184,8 +190,9 @@ def main():
     scrivi_comuni(per_comune, presenti, ente_cod, modo, [dict(meta_anag, file="anagrafiche")] + fonti)
     for a in ANNI:
         tot = sum(v for v in mensile[a] if v is not None)
-        print("  %d: %12s euro, mesi 1-%d, da regolarizzare %s" % (a, "{:,.2f}".format(tot), ultimo_mese[a],
-                                                                    "{:,.2f}".format(da_regolarizzare[a])))
+        ctr = sum(v for v in controlli[a] if v is not None)
+        print("  %d: %12s euro, di cui da controlli %10s, mesi 1-%d, da regolarizzare %s" % (
+            a, "{:,.2f}".format(tot), "{:,.2f}".format(ctr), ultimo_mese[a], "{:,.2f}".format(da_regolarizzare[a])))
 
 
 
