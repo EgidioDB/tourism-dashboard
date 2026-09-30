@@ -62,6 +62,10 @@ contrario del vero.** Nessun test lo intercetta.
   una scorciatoia sbagliata per il verso opposto. Per il pre-2012 usa `pre12()`, cioè `100/indice − 1`.
 - **`showYearlyReport` è l'eccezione voluta**: mostra un anno rispetto alla base, che è una posizione e non una
   variazione. Lì `indice − 100` è la lettura giusta.
+- **Arrotonda solo per mostrare.** Le ciambelle arrotondavano i volumi a 0,1 milioni e poi ne calcolavano la
+  variazione: il Molise usciva allo 0,0% invece di −15,5%. Il post-COVID derivato da indici già passati per `r1()`
+  sbagliava l'ultima cifra. `volumeData`, `itBenchmark` e l'indice della Top City restano non arrotondati.
+- **Un gap fra due indici è in punti, non in %.**
 - **`itBenchmark` è base 2014, non 2012**, perché serve solo al gap con la Top City che è indicizzata al 2014.
   Non "correggerlo" a `rawData.it*[20]`: è già successo e falsava il gap.
 
@@ -94,6 +98,12 @@ contrario del vero.** Nessun test lo intercetta.
   pre/post-2012: le etichette dicevano il contrario e la prima ciambella sommava le notti dei due anni
   chiamando totale il risultato. Ora è `2012 VS 2024` con la variazione. Il pre-2012 vero non è ricostruibile:
   le serie comunali partono dal 2014 e per le regioni esistono solo i punti 2004 e 2012.
+- **Le serie comunali perdono la colonna flag di ISTAT**, che sta in `data/flag_istat.json`. Il **2015 di Cefalù
+  è una copia del 2014** (flag d, in tutti i 24 campi): non usarlo come dato vero. Il flag **a** è una rottura di
+  serie: Fiumicino, Marsala e Pescara salgono in classifica anche per quella, e Marsala diventa Top City della
+  Sicilia. La scelta è stata segnalare con ⚠, non escludere: `rottureDi()`, `conFlag()`, `segnoRottura()`.
+- **`popolazione.json` fino al 2019 è la ricostruzione intercensuaria**, non l'anagrafe. Prima era una retta
+  inventata. Il 2020–2024 è POSAS e non ha una fonte nel repo: fra 2019 e 2020 può esserci uno scalino.
 - **Le chiavi dei popup si sbagliano facilmente.** Due gruppi post-COVID aprivano i testi del post-2012.
   Verifica sempre gruppo per gruppo, non solo che la chiave esista.
 
@@ -107,6 +117,8 @@ contrario del vero.** Nessun test lo intercetta.
 | Pre-2014 regionale e Cefalù | `data/pre2012.json` | da XLS ISTAT circoscrizioni |
 | Split alb/ext regionale | `data/eurostat_regioni.json` | `python3 scripts/fetch_eurostat.py` |
 | Bilancio Cefalù 2005–2024 | `data/bilancio.json` | soggiorno, spesa turismo, entrate |
+| Note ISTAT per comune-anno | `data/flag_istat.json` | `python3 scripts/build_flag_istat.py` |
+| Popolazione 2014–2024 | `data/popolazione.json` | ricostruzione ISTAT fino al 2019, POSAS dopo |
 
 Gli XLS ISTAT di origine sono in `DCSC_Occupancy_in_collective_accommodation/`. ISTAT pubblica per
 **circoscrizione turistica** fino al 2013 e per **comune** dal 2014: è il motivo per cui il pre-2014 comunale

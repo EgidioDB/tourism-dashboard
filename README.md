@@ -100,8 +100,13 @@ tourism-dashboard/
 │   │                                   # turistica di Cefalù, solo serie complete 2014–2024
 │   ├── provenienza.json                # Provincia di Palermo 2024: 48 paesi esteri,
 │   │                                   # 21 regioni italiane, 6 tipologie ricettive
+│   ├── flag_istat.json                 # Note ISTAT per comune-anno: (a) rottura di serie,
+│   │                                   # (d) 2015 non trasmesso, (e) stimato, (b), (c)
+│   │                                   # Rigenerabile: python3 scripts/build_flag_istat.py
 │   ├── stagionalita.json               # Dati di stagionalità
-│   ├── popolazione.json                # Dati popolazione comunale
+│   ├── popolazione.json                # Popolazione al 1° gennaio 2014–2024 per comune:
+│   │                                   # ricostruzione intercensuaria ISTAT fino al 2019, POSAS dopo
+│   │                                   # Rigenerabile: python3 scripts/build_popolazione.py
 │   ├── province.json                   # Anagrafica province
 │   ├── ricettiva.json                  # Dati strutture ricettive
 │   ├── ricettiva_index.json            # Indice strutture ricettive
@@ -116,6 +121,8 @@ tourism-dashboard/
 ├── scripts/
 │   ├── fetch_eurostat.py               # Riscarica eurostat_regioni.json dall'API Eurostat
 │   ├── build_italia.py                 # Rigenera italia.json dal file XLS delle serie storiche
+│   ├── build_flag_istat.py             # Rigenera flag_istat.json dal file comunale ISTAT
+│   ├── build_popolazione.py            # Riscrive il 2014–2019 di popolazione.json
 │   └── build_confronti.py              # Rigenera peer_group.json e provenienza.json
 │
 └── DCSC_Occupancy_in_collective_accommodation/
@@ -141,6 +148,8 @@ tourism-dashboard/
 | Provenienza e tipologia ricettiva | ISTAT — arrivi e presenze per luogo di residenza dei clienti | 2024 | `provenienza.json` — dettaglio provinciale, non comunale |
 | Comuni della stessa categoria turistica | ISTAT — classificazione per categoria turistica prevalente | 2014–2024 | `peer_group.json` — panel bilanciato |
 | Imposta di soggiorno e spesa turismo | Consuntivi comunali, BDAP / RGS | 2005–2024 | `bilancio.json` |
+| Note sui dati comunali | ISTAT — colonna flag del file comunale | 2014–2024 | `flag_istat.json` |
+| Popolazione residente al 1° gennaio | ISTAT — ricostruzione intercensuaria, poi POSAS | 2014–2024 | `popolazione.json` |
 
 L'API Eurostat espone header CORS aperti, quindi sarebbe interrogabile direttamente dal browser. Il file resta comunque versionato nel repo: così la dashboard non dipende dalla disponibilità di un servizio esterno a ogni caricamento, e i dati mostrati sono riproducibili nel tempo.
 
@@ -298,6 +307,20 @@ Effetto sulle variazioni pre-2012 mostrate: essendo il 2004 leggermente sottosti
 - **Vista storica lunga** — realizzata: vedi *Settant'anni di turismo italiano*. I **tre anni che sembravano mancanti** — 1986, 1996, 1999 — non mancavano affatto: nel file XLS sono scritti `1986(a)`, `1996(b)`, `1999(c)` e un parser che cerca quattro cifre pulite li scarta. Sono esattamente le tre note metodologiche di ISTAT sui cambi di definizione dell'extra-alberghiero. `italia.json` è passato da 66 a 69 anni senza buchi.
 
 - **Etichette dei donut** — dicevano *pre-2012* e *post-2012*, ma sono due singole annate: il 2012 e il 2024. La prima ciambella sommava le notti dei due anni e chiamava totale il risultato. Ora sono `2012 VS 2024` con la variazione, `Dettaglio 2012` e `Dettaglio 2024`. Un vero pre-2012 non è ricostruibile: le serie comunali partono dal 2014 e per le regioni esistono solo i punti 2004 e 2012.
+
+- **Audit dei calcoli** — ogni numero dei pannelli Italia, Cefalù, delle 20 regioni e delle Top City è stato ricalcolato in modo indipendente dai JSON. Quattro errori trovati e corretti:
+  - le ciambelle arrotondavano i volumi a 0,1 milioni *prima* di calcolare la variazione: il Molise risultava fermo allo 0,0% invece di calare del 15,5%;
+  - il badge della classifica in Confronta era rovesciato, il primo comune leggeva "Top 100%";
+  - il post-COVID regionale e della Top City partiva da indici già arrotondati e sbagliava l'ultima cifra in un valore su tre;
+  - il KPI dell'imposta di soggiorno diceva 2013–2022 su un calcolo 2013–2024.
+
+  I gap con la media nazionale sono differenze fra indici, quindi ora sono in **punti** e non in %, con segno e colore presi dal valore.
+
+- **Le note ISTAT sui comuni** — il file comunale ha una colonna *flag* che le serie JSON perdevano. Ora è in `flag_istat.json` e la dashboard la usa:
+  - **(d)** il **2015 di Cefalù non è un dato reale**: ISTAT non l'ha ricevuto e ripete il 2014 in tutti i campi (come per altri 54 comuni, quasi tutti siciliani). Ogni grafico di Cefalù lo segna con una fascia e un ⚠, e il dettaglio del 2015 lo dice.
+  - **(a)** una **rottura di serie** separa un anno dal precedente. Fiumicino, Marsala e Pescara ne hanno una nel 2023–2024 e occupano posizioni alte in classifica, Marsala è persino la Top City della Sicilia, con le notti triplicate in due anni. Non sono esclusi: sono segnati con ⚠ nella classifica, nel pannello Top City e nei box di Confronta.
+
+- **Popolazione 2014–2019** — era una retta estrapolata all'indietro dal 2019 per 7.867 comuni su 7.987. Ora è la ricostruzione intercensuaria ISTAT, che era già nel repo in `data/PIL/`. Per Cefalù il 2014 passa da 14.590 a 14.319 abitanti e coincide con quello usato dal grafico del reddito.
 
 ### Valutato e scartato
 

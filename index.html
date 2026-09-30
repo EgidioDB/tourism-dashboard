@@ -62,6 +62,9 @@
         
         .report-title { font-size: 1.1em; font-weight: 700; margin-bottom: 15px; border-bottom: 2px solid var(--bg-color); padding-bottom: 8px; }
         .data-group { margin-bottom: 12px; padding: 10px; background: #f8fafc; border-radius: 8px; }
+        /* Note ISTAT sui dati di un comune: rotture di serie, anni non trasmessi o stimati */
+        .flag-nota { font-size: 0.78em; line-height: 1.45; color: var(--text-sub); background: rgba(233,196,106,0.15); border-left: 3px solid #e9c46a; border-radius: 4px; padding: 6px 8px; margin: 6px 0 4px; }
+        .flag-rottura { color: #b8860b; cursor: help; font-size: 0.85em; }
         .group-label { font-size: 0.7em; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; color: var(--text-sub); }
         .data-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.82em; }
         .value { font-weight: 700; color: var(--text-main); }
@@ -992,6 +995,8 @@
 
     // --- 1. VOLUMI ASSOLUTI (Milioni di notti) ---
     // pre = presenze 2012 [alb, ext] · post = presenze 2024 [alb, ext].
+    // Non arrotondati: si arrotonda solo per mostrarli. Arrotondati a 0,1 milioni prima di
+    // calcolare la variazione, il Molise (0,54 → 0,46 milioni) risultava fermo allo 0,0%.
     // L'Italia la calcola syncItaliaDerived() dalle basi ISTAT; le 20 regioni arrivano
     // da data/pre2012.json (2012, ISTAT) e data/eurostat_regioni.json (2024, Eurostat).
     const volumeData = {
@@ -1011,6 +1016,7 @@
     // Struttura vuota: ogni valore arriva dai JSON in data/.
     //   reg.arr/pre e reg.covid.arr/pre      <- regioni.json
     //   reg.alb/ext e reg.covid.alb/ext      <- eurostat_regioni.json
+    //   reg.postCovid.arr/pre | .alb/ext     <- regioni.json | eurostat_regioni.json
     //   reg.preArr/prePre/preAlb/preExt      <- pre2012.json, via preAbs
     //   top.*                                <- comuni_index.json + serie/<cod>.json
     const REGIONI = [
@@ -1021,12 +1027,13 @@
         "Trentino", "Umbria", "Valle d'Aosta", "Veneto"
     ];
     const regionalDataFull = {};
-    REGIONI.forEach(n => { regionalDataFull[n] = { reg: { covid: {} }, top: {} }; });
+    REGIONI.forEach(n => { regionalDataFull[n] = { reg: { covid: {}, postCovid: {} }, top: {} }; });
 
     // --- 3. FORMATTAZIONE NUMERI ---
     function formatNotti(val) {
-        if (val >= 1000) return `${val.toLocaleString('it-IT')} Milioni (${(val/1000).toFixed(2).replace('.',',')} Miliardi)`;
-        return `${val.toLocaleString('it-IT')} Milioni`;
+        const m = val.toLocaleString('it-IT', { maximumFractionDigits: 1 });
+        if (val >= 1000) return `${m} Milioni (${(val/1000).toFixed(2).replace('.',',')} Miliardi)`;
+        return `${m} Milioni`;
     }
     // Per i nominali regionali: numero per esteso (val in Milioni → notti intere)
     function fmtNotti(val) {
@@ -1067,18 +1074,21 @@
         Plotly.react('donut-total', [{
             values: [sumPre, sumPost], labels: [String(annoBase), String(annoUlt)],
             type: 'pie', hole: .6, marker: { colors: ['#99aab5', '#457b9d'] },
+            hovertemplate: '%{label}: %{value:,.1f} milioni di notti<br>%{percent}<extra></extra>',
             title: { text: `<br><br><b>${annoBase} VS ${annoUlt}</b><br><span style="font-size:10px">${segnoVar}</span>`, position: 'bottom center' }
         }], layoutBase);
 
         Plotly.react('donut-pre', [{
             values: data.pre, labels: ['Alberghiero', 'Extra-Alb'],
             type: 'pie', hole: .6, marker: { colors: ['#5b6b7a', '#7a8a99'] },
+            hovertemplate: '%{label}: %{value:,.1f} milioni di notti<br>%{percent}<extra></extra>',
             title: { text: `<br><br><b>DETTAGLIO ${annoBase}</b><br><span style="font-size:10px">${formatNotti(sumPre)}</span>`, position: 'bottom center' }
         }], layoutBase);
 
         Plotly.react('donut-post', [{
             values: data.post, labels: ['Alberghiero', 'Extra-Alb'],
             type: 'pie', hole: .6, marker: { colors: ['#457b9d', '#24b27e'] },
+            hovertemplate: '%{label}: %{value:,.1f} milioni di notti<br>%{percent}<extra></extra>',
             title: { text: `<br><br><b>DETTAGLIO ${annoUlt}</b><br><span style="font-size:10px">${formatNotti(sumPost)}</span>`, position: 'bottom center' }
         }], layoutBase);
     }
@@ -1100,13 +1110,15 @@
                 return;
             }
             const hasTop = data.top.arr !== undefined && data.top.name;
-            const gapArr = hasTop ? (data.top.arr - itBenchmark.arr).toFixed(1) : null;
-            const gapPre = hasTop ? (data.top.pre - itBenchmark.pre).toFixed(1) : null;
-            // Post-COVID regione: deriva 2019 dal covid (% vs 2014) e 2024 già disponibile
-            const pcRegArr = sgn((data.reg.arr / (100 + data.reg.covid.arr) - 1) * 100);
-            const pcRegPre = sgn((data.reg.pre / (100 + data.reg.covid.pre) - 1) * 100);
-            const pcRegAlb = sgn((data.reg.alb / (100 + data.reg.covid.alb) - 1) * 100);
-            const pcRegExt = sgn((data.reg.ext / (100 + data.reg.covid.ext) - 1) * 100);
+            // Differenza fra due indici base 2014: punti, non percentuali
+            const gapArr = hasTop ? sgn(data.top.arr - itBenchmark.arr) : null;
+            const gapPre = hasTop ? sgn(data.top.pre - itBenchmark.pre) : null;
+            // Post-COVID regione: variazione 2024 vs 2019 calcolata dai volumi al caricamento
+            const pcN = v => v === undefined || v === null ? 'n/d' : sgn(v);
+            const pcRegArr = pcN(data.reg.postCovid.arr);
+            const pcRegPre = pcN(data.reg.postCovid.pre);
+            const pcRegAlb = pcN(data.reg.postCovid.alb);
+            const pcRegExt = pcN(data.reg.postCovid.ext);
             // Valori assoluti per i nominali (Milioni di notti). Sono i dati Eurostat veri
             // per 2014, 2019 e 2024: prima il 2019 veniva stimato dagli indici e il 2014
             // usava per errore i volumi 2012 di volumeData.pre.
@@ -1126,10 +1138,10 @@
                 ` onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>${l1}</span><b>${tN(a1,k)}</b></div><div class='nom-r'><span>${l2}</span><b>${tN(a2,k)}</b></div>"`;
             // Post-COVID Top City
             const topHasPreCovid = hasTop && data.top.covidArr !== null;
-            const pcTopArr = topHasPreCovid ? sgn((data.top.arr / (100 + data.top.covidArr) - 1) * 100) : null;
-            const pcTopPre = topHasPreCovid ? sgn((data.top.pre / (100 + data.top.covidPre) - 1) * 100) : null;
-            const pcTopAlb = (topHasPreCovid && data.top.covidAlb !== null && data.top.alb !== null) ? sgn((data.top.alb / (100 + data.top.covidAlb) - 1) * 100) : null;
-            const pcTopExt = topHasPreCovid ? sgn((data.top.ext / (100 + data.top.covidExt) - 1) * 100) : null;
+            const pcTopArr = topHasPreCovid && data.top.pcArr !== null ? sgn(data.top.pcArr) : null;
+            const pcTopPre = topHasPreCovid && data.top.pcPre !== null ? sgn(data.top.pcPre) : null;
+            const pcTopAlb = topHasPreCovid && data.top.pcAlb !== null ? sgn(data.top.pcAlb) : null;
+            const pcTopExt = topHasPreCovid && data.top.pcExt !== null ? sgn(data.top.pcExt) : null;
 
             document.getElementById('regionReportContent').innerHTML = `
                 <div class="report-title">${name}</div>
@@ -1167,6 +1179,9 @@
                 </div>` : `
                 <div class="data-group" style="border-left: 4px solid #457b9d; background: #f0f7ff;">
                     <div class="group-label" style="color:#457b9d">Top City: ${data.top.name}</div>
+                    ${(() => { const r = rottureDi(data.top.cod, 2014, 2024); return r.length
+                        ? `<div class="flag-nota">⚠ ISTAT segnala una discontinuità nella serie di ${data.top.name} nel ${r.join(' e nel ')}: le variazioni che attraversano quegli anni possono dipendere da un cambio nel modo di rilevare i dati, non dal turismo.</div>`
+                        : ''; })()}
                     <div class="group-label" style="font-size:0.6em; margin-top:15px;">Pre-COVID (2019 vs 2014) ${ib('top_preCovid')}</div>
                     ${data.top.covidArr === null
                         ? `<div class="data-row"><span style="color:var(--text-sub);font-style:italic;font-size:0.9em">Dati non disponibili per il 2019</span></div>`
@@ -1187,8 +1202,8 @@
                     ${data.top.alb === null ? '' : `<div class="data-row"${tNom(2014,2024,'alb','2014 (base)','2024')}><span>Alb</span><span class="value" style="color:${clr(fmt(data.top.alb))}">${fmt(data.top.alb)}%</span></div>`}
                     <div class="data-row"${tNom(2014,2024,'ext','2014 (base)','2024')}><span>Extra-Alb</span><span class="value" style="color:${clr(fmt(data.top.ext))}">${fmt(data.top.ext)}%</span></div>
                     <div class="group-label" style="font-size:0.6em; margin-top:15px;">Gap vs IT (2024) ${ib('top_gap')}</div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>Top City (indice 2024)</span><b>${data.top.arr.toFixed(1)}</b></div><div class='nom-r'><span>Media IT (indice 2024)</span><b>${itBenchmark.arr}</b></div>"><span>Gap Arrivi</span><span class="value" style="color:${gapArr > 0 ? 'var(--accent)' : '#c0392b'}">${gapArr > 0 ? '+' : ''}${gapArr}%</span></div>
-                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>Top City (indice 2024)</span><b>${data.top.pre.toFixed(1)}</b></div><div class='nom-r'><span>Media IT (indice 2024)</span><b>${itBenchmark.pre}</b></div>"><span>Gap Presenze</span><span class="value" style="color:${gapPre > 0 ? 'var(--accent)' : '#c0392b'}">${gapPre > 0 ? '+' : ''}${gapPre}%</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>Top City (indice 2024)</span><b>${data.top.arr.toFixed(1)}</b></div><div class='nom-r'><span>Media IT (indice 2024)</span><b>${itBenchmark.arr.toFixed(1)}</b></div>"><span>Gap Arrivi</span><span class="value" style="color:${clr(gapArr)}">${gapArr} punti</span></div>
+                    <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>Top City (indice 2024)</span><b>${data.top.pre.toFixed(1)}</b></div><div class='nom-r'><span>Media IT (indice 2024)</span><b>${itBenchmark.pre.toFixed(1)}</b></div>"><span>Gap Presenze</span><span class="value" style="color:${clr(gapPre)}">${gapPre} punti</span></div>
                 </div>`}`;
             updateDonuts(name);
     }
@@ -1300,11 +1315,11 @@
                 
                 currentRegionName = name;
                 // La Top City può non essere ancora calcolabile (indice comuni in caricamento):
-                // il pannello si disegna comunque con i valori di fallback e viene ridipinto
-                // appena la serie comunale arriva.
+                // il pannello si disegna comunque, con "Caricamento serie comunale…" al posto
+                // della Top City, e viene ridipinto appena la serie comunale arriva.
                 try {
                     syncTopCity(name, () => { if (currentRegionName === name) renderRegionPanel(name); });
-                } catch (e) { /* fallback ai valori nel literal */ }
+                } catch (e) { /* la Top City resta in caricamento, il resto del pannello si disegna */ }
                 renderRegionPanel(name);
             }
         });
@@ -1349,16 +1364,20 @@
         let html = '';
         top6.forEach((c, i) => {
             html += `<div class="data-row lb-anim" style="font-size:1.05em;margin-bottom:6px;animation-delay:${i*60}ms;padding:6px 8px;border-bottom:1px solid var(--border);">
-                <span>${i+1}. ${shortName(c.nome)}</span>
+                <span>${i+1}. ${shortName(c.nome)}${segnoRottura(c.cod)}</span>
                 <span class="value" style="color:var(--text-sub);">${fmtG(c.growth_pre)}</span>
             </div>`;
         });
         if (cefEntry && cefPos >= 6) {
             html += `<div style="text-align:center;color:#aab7c4;margin:4px 0;font-size:1.2em;">...</div>`;
             html += `<div class="data-row lb-anim" style="font-size:1.05em;margin-bottom:6px;animation-delay:${6*60}ms;background:rgba(36,178,126,0.1);padding:8px;border-radius:4px;border-left:4px solid var(--accent);font-weight:bold;">
-                <span>${cefPos+1}. Cefalù</span>
+                <span>${cefPos+1}. Cefalù${segnoRottura(cefEntry.cod)}</span>
                 <span class="value" style="color:var(--accent);">${fmtG(cefEntry.growth_pre)}</span>
             </div>`;
+        }
+        const conRotture = top6.concat(cefEntry ? [cefEntry] : []).filter(c => rottureDi(c.cod, 2014, 2024).length);
+        if (conRotture.length) {
+            html += `<div class="flag-nota">⚠ ISTAT segnala una discontinuità nella serie di ${conRotture.map(c => c.nome).join(', ')}: la crescita può dipendere in parte da un cambio nel modo di rilevare i dati. Passa sul simbolo per vedere gli anni.</div>`;
         }
         document.getElementById('leaderboard-content').innerHTML = html;
         var rows = document.querySelectorAll('#leaderboard-content .lb-anim');
@@ -1401,11 +1420,11 @@
         });
         // Base 2014, non 2012: serve a confrontarsi con la Top City, che e indicizzata al
         // 2014. Usare l'indice base 2012 mescolerebbe due basi diverse nello stesso gap.
-        itBenchmark.arr = rawData.itArr[10] ? r1(rawData.itArr[20] / rawData.itArr[10] * 100) : 0;
-        itBenchmark.pre = rawData.itPre[10] ? r1(rawData.itPre[20] / rawData.itPre[10] * 100) : 0;
-        itBenchmark.ext = rawData.itExt[10] ? r1(rawData.itExt[20] / rawData.itExt[10] * 100) : 0;
-        volumeData["Italia"].pre  = [r1(IT_ALB_BASE / 1e6), r1(IT_EXT_BASE / 1e6)];
-        volumeData["Italia"].post = [r1(IT_ALB_BASE * itAlb[20] / 100 / 1e6), r1(IT_EXT_BASE * rawData.itExt[20] / 100 / 1e6)];
+        itBenchmark.arr = rawData.itArr[10] ? rawData.itArr[20] / rawData.itArr[10] * 100 : 0;
+        itBenchmark.pre = rawData.itPre[10] ? rawData.itPre[20] / rawData.itPre[10] * 100 : 0;
+        itBenchmark.ext = rawData.itExt[10] ? rawData.itExt[20] / rawData.itExt[10] * 100 : 0;
+        volumeData["Italia"].pre  = [IT_ALB_BASE / 1e6, IT_EXT_BASE / 1e6];
+        volumeData["Italia"].post = [IT_ALB_BASE * itAlb[20] / 100 / 1e6, IT_EXT_BASE * rawData.itExt[20] / 100 / 1e6];
     }
     // Vero quando rawData è popolato: i report e i grafici che ne dipendono si disegnano
     // solo da quel momento. La chiamano syncItaliaFromJson e il patch della serie di Cefalù.
@@ -1437,7 +1456,7 @@
                 preAbs[nome] = [a.arr, a.pre, a.alb, a.ext, b.arr, b.pre, b.alb, b.ext];
                 // I volumi del donut "pre-2012" sono le presenze 2012 per tipologia
                 if (!volumeData[nome]) volumeData[nome] = { pre: [0, 0], post: [0, 0] };
-                volumeData[nome].pre = [r1(b.alb / 1e6), r1(b.ext / 1e6)];
+                volumeData[nome].pre = [b.alb / 1e6, b.ext / 1e6];
             });
             syncPre2012FromAbs();
         }
@@ -1481,9 +1500,11 @@
             if (b) {
                 reg.covid.alb = r1((b.alb / z.alb - 1) * 100);
                 reg.covid.ext = r1((b.ext / z.ext - 1) * 100);
+                if (b.alb) reg.postCovid.alb = r1((c.alb / b.alb - 1) * 100);
+                if (b.ext) reg.postCovid.ext = r1((c.ext / b.ext - 1) * 100);
             }
             if (!volumeData[nome]) volumeData[nome] = { pre: [0, 0], post: [0, 0] };
-            volumeData[nome].post = [r1(c.alb / 1e6), r1(c.ext / 1e6)];
+            volumeData[nome].post = [c.alb / 1e6, c.ext / 1e6];
         });
         return true;
     }
@@ -1556,8 +1577,8 @@
                  + '<span style="opacity:.75"> — perimetri diversi, vedi nota</span></span>' : '');
     }
 
-    // Riallinea rawData.it* (2004-2024, base 2012=100) alla serie nazionale del JSON.
-    // I valori hardcoded sono il fallback se il fetch fallisce.
+    // Riempie rawData.it* (2004-2024, base 2012=100) dalla serie nazionale del JSON.
+    // Se il fetch fallisce restituisce false, dataReady resta falso e i report restano vuoti.
     function syncItaliaFromJson(itJson) {
         if (!itJson || !Array.isArray(itJson.anni)) return false;
         const i12 = itJson.anni.indexOf(2012);
@@ -1620,6 +1641,10 @@
             if (d.pre[i12] && d.pre[i24] != null) reg.pre = r1(d.pre[i24] / d.pre[i12] * 100);
             if (d.arr[i12] && d.arr[i19] != null) reg.covid.arr = r1((d.arr[i19] / d.arr[i12] - 1) * 100);
             if (d.pre[i12] && d.pre[i19] != null) reg.covid.pre = r1((d.pre[i19] / d.pre[i12] - 1) * 100);
+            // Post-COVID dai volumi 2019 e 2024, non dagli indici gia arrotondati: passando
+            // da quelli l'ultima cifra usciva sbagliata in un valore su tre.
+            if (d.arr[i19] && d.arr[i24] != null) reg.postCovid.arr = r1((d.arr[i24] / d.arr[i19] - 1) * 100);
+            if (d.pre[i19] && d.pre[i24] != null) reg.postCovid.pre = r1((d.pre[i24] / d.pre[i19] - 1) * 100);
         });
         return true;
     }
@@ -1669,6 +1694,63 @@
         })
         .catch(() => {});
 
+    // --- NOTE ISTAT SUI SINGOLI COMUNI-ANNO (data/flag_istat.json) ---
+    // Le serie comunali portano solo i numeri. Senza queste note un 2015 copiato dal 2014
+    // (flag d) o un cambio nel modo di rilevare (flag a) si leggerebbero come dati veri.
+    // Condiviso dai due blocchi <script>: chi disegna aspetta flagIstatPronto.
+    let flagIstat = null;
+    const flagIstatPronto = fetch(TOP_DATA_PATH + 'flag_istat.json')
+        .then(r => r.json())
+        .then(j => {
+            flagIstat = j;
+            if (currentRegionName) renderRegionPanel(currentRegionName);
+            return j;
+        })
+        .catch(() => null);
+
+    // Flag di un comune, in ordine di anno, eventualmente solo alcune lettere
+    function flagDi(cod, lettere) {
+        const d = flagIstat && flagIstat.comuni && flagIstat.comuni[cod];
+        if (!d) return [];
+        return Object.keys(d).map(Number).sort((a, b) => a - b)
+            .filter(a => !lettere || lettere.indexOf(d[a]) > -1)
+            .map(a => ({ anno: a, flag: d[a], testo: (flagIstat.legenda || {})[d[a]] || '' }));
+    }
+
+    // Rotture di serie (flag a) che cadono dentro un confronto da..a. Una rottura nel primo
+    // anno non conta: separa quell'anno dal precedente, che nel confronto non c'e.
+    function rottureDi(cod, da, a) {
+        return flagDi(cod, ['a']).filter(x => x.anno > da && x.anno <= a).map(x => x.anno);
+    }
+
+    // Aggiunge al layout Plotly di un grafico annuale una fascia sugli anni il cui dato non
+    // e quello vero (d: non trasmesso e ripetuto, e: stimato) e un ⚠ che lo spiega.
+    function conFlag(layout, cod) {
+        const f = flagDi(cod || '082027', ['d', 'e']);
+        if (!f.length) return layout;
+        return Object.assign({}, layout, {
+            shapes: (layout.shapes || []).concat(f.map(x => ({
+                type: 'rect', xref: 'x', yref: 'paper', x0: x.anno - 0.5, x1: x.anno + 0.5,
+                y0: 0, y1: 1, fillcolor: 'rgba(233,196,106,0.22)', line: { width: 0 }, layer: 'below'
+            }))),
+            annotations: (layout.annotations || []).concat(f.map(x => ({
+                x: x.anno, y: 1, xref: 'x', yref: 'paper', text: '⚠', showarrow: false,
+                yanchor: 'top', font: { size: 12, color: '#b8860b' },
+                // Il flag riguarda arrivi e presenze: nei grafici di bilancio o reddito le altre
+                // grandezze dello stesso anno sono dati veri, e il testo lo deve dire
+                hovertext: 'Presenze ' + x.anno + ': ' + x.testo, captureevents: true
+            })))
+        });
+    }
+
+    // Segno da mettere accanto al nome di un comune con rotture di serie nel 2014-2024
+    function segnoRottura(cod) {
+        const r = rottureDi(cod, 2014, 2024);
+        return r.length
+            ? ` <span class="flag-rottura" title="Discontinuità ISTAT nel ${r.join(', ')}: la crescita può dipendere da un cambio di rilevazione">⚠</span>`
+            : '';
+    }
+
     function pickTopCity(nome) {
         const keys = REG_ISTAT_MAP[nome];
         if (!keys || !Array.isArray(topComuniIndex)) return null;
@@ -1685,8 +1767,11 @@
         if (!s || !Array.isArray(s.anni)) return null;
         const i14 = s.anni.indexOf(2014), i19 = s.anni.indexOf(2019), i24 = s.anni.indexOf(2024);
         if (i14 < 0 || i19 < 0 || i24 < 0) return null;
-        const idx = k => (s[k] && s[k][i14]) ? r1(s[k][i24] / s[k][i14] * 100) : null;
-        const vpc = k => (s[k] && s[k][i14]) ? r1((s[k][i19] / s[k][i14] - 1) * 100) : null;
+        // L'indice resta non arrotondato: serve anche al gap con itBenchmark, e sottrarre due
+        // valori gia arrotondati spostava l'ultima cifra. Lo arrotonda chi lo mostra.
+        const idx = k => (s[k] && s[k][i14] && s[k][i24] != null) ? s[k][i24] / s[k][i14] * 100 : null;
+        const vpc = k => (s[k] && s[k][i14] && s[k][i19] != null) ? r1((s[k][i19] / s[k][i14] - 1) * 100) : null;
+        const vpc24 = k => (s[k] && s[k][i19] && s[k][i24] != null) ? r1((s[k][i24] / s[k][i19] - 1) * 100) : null;
         // vol conserva i valori assoluti dei tre anni, per i nominali del pannello
         const vol = {};
         [[2014,i14],[2019,i19],[2024,i24]].forEach(([y,ix]) => {
@@ -1695,12 +1780,14 @@
         return {
             arr: idx('arr_tot'), pre: idx('pre_tot'), alb: idx('pre_alb'), ext: idx('pre_ext'),
             covidArr: vpc('arr_tot'), covidPre: vpc('pre_tot'), covidAlb: vpc('pre_alb'), covidExt: vpc('pre_ext'),
+            pcArr: vpc24('arr_tot'), pcPre: vpc24('pre_tot'), pcAlb: vpc24('pre_alb'), pcExt: vpc24('pre_ext'),
             vol: vol
         };
     }
 
     // Applica la Top City calcolata; se la serie non è ancora in cache la scarica e
-    // richiama onReady per ridisegnare il pannello. I valori nel literal sono il fallback.
+    // richiama onReady per ridisegnare il pannello. Finché non arriva, top resta vuoto e il
+    // pannello mostra "Caricamento serie comunale…".
     function syncTopCity(nome, onReady) {
         const pick = pickTopCity(nome);
         const top = regionalDataFull[nome] && regionalDataFull[nome].top;
@@ -1709,6 +1796,7 @@
             const v = topFromSerie(s);
             if (!v) return false;
             top.name = pick.nome;
+            top.cod = pick.cod;
             Object.keys(v).forEach(k => { top[k] = v[k]; });
             return true;
         };
@@ -1769,10 +1857,12 @@
         // questa funzione appena i JSON sono arrivati.
         if (!dataReady) return;
         currentHighlightYear = null;
-        const gA = (rawData.cefArr[20] - rawData.itArr[20]).toFixed(1);
-        const gP = (rawData.cefPre[20] - rawData.itPre[20]).toFixed(1);
-        const gE = (rawData.cefExt[20] - rawData.itExt[20]).toFixed(1);
-        const gAlb = (cefAlb[20] - itAlb[20]).toFixed(1);
+        // Differenze fra due indici base 2012: sono punti, non percentuali. Segno e colore
+        // vengono dal valore, cosi un gap negativo non esce come "+-5%" in verde.
+        const gA = sgn(rawData.cefArr[20] - rawData.itArr[20]);
+        const gP = sgn(rawData.cefPre[20] - rawData.itPre[20]);
+        const gE = sgn(rawData.cefExt[20] - rawData.itExt[20]);
+        const gAlb = sgn(cefAlb[20] - itAlb[20]);
         // Valori assoluti Cefalù per anni chiave (presenze/ext/alb hanno base nota)
         const c04 = { pre: Math.round(rawData.cefPre[0]/100*CEF_PRE_BASE), ext: Math.round(rawData.cefExt[0]/100*CEF_EXT_BASE) };
         c04.alb = c04.pre - c04.ext;
@@ -1812,10 +1902,10 @@
             </div>
             <div class="data-group">
                 <div class="group-label">Confronto Media Nazionale<br>al 2024 ${ib('gap_nat')}</div>
-                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>Cefalù (indice 2024)</span><b>${rawData.cefArr[20].toFixed(1)}</b></div><div class='nom-r'><span>Media IT (indice 2024)</span><b>${rawData.itArr[20].toFixed(1)}</b></div>"><span>Arrivi ${ib('arr_gap_nat')}</span><span class="value" style="color:var(--accent)">+${gA}%</span></div>
-                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>Cefalù 2024</span><b>${nf(c24.pre)} notti</b></div><div class='nom-r'><span>Cefalù indice</span><b>${rawData.cefPre[20].toFixed(1)}</b></div><div class='nom-r'><span>Media IT indice</span><b>${rawData.itPre[20].toFixed(1)}</b></div>"><span>Presenze</span><span class="value" style="color:var(--accent)">+${gP}%</span></div>
-                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>Cefalù 2024</span><b>${nf(c24.alb)} notti</b></div><div class='nom-r'><span>Cefalù indice</span><b>${cefAlb[20].toFixed(1)}</b></div><div class='nom-r'><span>Media IT indice</span><b>${itAlb[20].toFixed(1)}</b></div>"><span>Alb ${ib('alb_gap_nat')}</span><span class="value" style="color:var(--accent)">${sgn(parseFloat(gAlb))}%</span></div>
-                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>Cefalù 2024</span><b>${nf(c24.ext)} notti</b></div><div class='nom-r'><span>Cefalù indice</span><b>${rawData.cefExt[20].toFixed(1)}</b></div><div class='nom-r'><span>Media IT indice</span><b>${rawData.itExt[20].toFixed(1)}</b></div>"><span>Extra-Alb</span><span class="value" style="color:var(--accent)">+${gE}%</span></div>
+                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>Cefalù (indice 2024)</span><b>${rawData.cefArr[20].toFixed(1)}</b></div><div class='nom-r'><span>Media IT (indice 2024)</span><b>${rawData.itArr[20].toFixed(1)}</b></div>"><span>Arrivi ${ib('arr_gap_nat')}</span><span class="value" style="color:${clr(gA)}">${gA} punti</span></div>
+                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>Cefalù 2024</span><b>${nf(c24.pre)} notti</b></div><div class='nom-r'><span>Cefalù indice</span><b>${rawData.cefPre[20].toFixed(1)}</b></div><div class='nom-r'><span>Media IT indice</span><b>${rawData.itPre[20].toFixed(1)}</b></div>"><span>Presenze</span><span class="value" style="color:${clr(gP)}">${gP} punti</span></div>
+                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>Cefalù 2024</span><b>${nf(c24.alb)} notti</b></div><div class='nom-r'><span>Cefalù indice</span><b>${cefAlb[20].toFixed(1)}</b></div><div class='nom-r'><span>Media IT indice</span><b>${itAlb[20].toFixed(1)}</b></div>"><span>Alb ${ib('alb_gap_nat')}</span><span class="value" style="color:${clr(gAlb)}">${gAlb} punti</span></div>
+                <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>Cefalù 2024</span><b>${nf(c24.ext)} notti</b></div><div class='nom-r'><span>Cefalù indice</span><b>${rawData.cefExt[20].toFixed(1)}</b></div><div class='nom-r'><span>Media IT indice</span><b>${rawData.itExt[20].toFixed(1)}</b></div>"><span>Extra-Alb</span><span class="value" style="color:${clr(gE)}">${gE} punti</span></div>
             </div>`;
         updateShapes();
     }
@@ -1839,6 +1929,8 @@
                 <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>${anno}</span><b>${nf(cy.pre)} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(CEF_PRE_BASE)} notti</b></div>"><span>Presenze</span><span class="value" style="color:${clr(fmt(rawData.cefPre[idx]))}">${fmt(rawData.cefPre[idx])}%</span></div>
                 <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>${anno}</span><b>${nf(cy.alb)} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(CEF_ALB_BASE)} notti</b></div>"><span>Alb ${ib('alb_year_cef')}</span><span class="value" style="color:${clr(fmt(cefAlb[idx]))}">${fmt(cefAlb[idx])}%</span></div>
                 <div class="data-row" onclick="toggleNominal(this)" data-nominal="<div class='nom-r'><span>${anno}</span><b>${nf(cy.ext)} notti</b></div><div class='nom-r'><span>2012 (base)</span><b>${nf(CEF_EXT_BASE)} notti</b></div>"><span>Extra-Alb</span><span class="value" style="color:${clr(fmt(rawData.cefExt[idx]))}">${fmt(rawData.cefExt[idx])}%</span></div>
+                ${flagDi('082027', ['d', 'e']).filter(x => x.anno === anno).map(x =>
+                    `<div class="flag-nota">⚠ Nota ISTAT sul ${anno}: ${x.testo}.${x.flag === 'd' ? ' Questi valori sono quelli del ' + (anno - 1) + ', non il ' + anno + ' reale.' : ''}</div>`).join('')}
             </div>
             <div class="data-group" style="border-left: 4px solid #99aab5;">
                 <div class="group-label" style="color:#697386">Italia ${ib('year_it')}</div>
@@ -1983,6 +2075,22 @@
 
                 // Larghezza di mezzo anno in pixel (per il rettangolo highlight)
                 const halfW = Math.abs(x.getPixelForValue(2013) - x.getPixelForValue(2012)) / 2;
+
+                // Anni con dato non reale (il 2015 di Cefalù ripete il 2014): fascia gialla e ⚠
+                flagDi('082027', ['d', 'e']).forEach(function(f) {
+                    const px = x.getPixelForValue(f.anno);
+                    if (px < ca.left - halfW || px > ca.right + halfW) return;
+                    const l = Math.max(px - halfW, ca.left), r = Math.min(px + halfW, ca.right);
+                    ctx.save();
+                    ctx.fillStyle = 'rgba(233,196,106,0.22)';
+                    ctx.fillRect(l, ca.top, r - l, ca.bottom - ca.top);
+                    ctx.fillStyle = '#b8860b';
+                    ctx.font = '12px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'top';
+                    ctx.fillText('⚠', px, ca.top + 2);
+                    ctx.restore();
+                });
 
                 // Colonna anno selezionato
                 if (_selectedYear !== null) {
@@ -2598,7 +2706,7 @@
             }] : [])
         ];
 
-        const layout = {
+        const layout = conFlag({
             ...baseLayout,
             xaxis: { fixedrange: true, tickmode: 'array', tickvals: anni, ticktext: anni.map(String) },
             yaxis: { fixedrange: true, tickformat: ',.0f', tickprefix: '€ ', title: '' },
@@ -2606,7 +2714,7 @@
             showlegend: hasPre,
             legend: { orientation: 'h', y: -0.18, x: 0.5, xanchor: 'center', font: { size: 11 } },
             margin: { t: 28, r: hasPre ? 60 : 20, b: hasPre ? 55 : 50, l: 65 }
-        };
+        });
 
         const el = document.getElementById('chart-soggiorno');
         if (!el) return;
@@ -2628,7 +2736,7 @@
                 const peakIdx = valori.indexOf(Math.max(...valori));
                 const media = Math.round(totale / valori.length);
                 kpiEl.innerHTML = `
-                    <span>2013–2022 &nbsp;crescita: <b style="color:#24b27e">+${crescita}%</b></span>
+                    <span>${anni[0]}–${anni[anni.length-1]} &nbsp;crescita: <b style="color:${clr(crescita)}">${crescita >= 0 ? '+' : ''}${crescita}%</b></span>
                     <span>record: <b style="color:#e07b39">${anni[peakIdx]}</b> &nbsp;€ ${valori[peakIdx].toLocaleString('it-IT')}</span>
                     <span>media annua: € <b style="color:var(--text)">${media.toLocaleString('it-IT')}</b></span>
                     <span style="margin-left:auto;color:var(--text-sub)">Fonte: Relazioni Giunta Municipale</span>
@@ -2801,7 +2909,7 @@
                     <span>record spesa: <b style="color:#1d3557">${maxSpesaAnno}</b> &nbsp;€ ${maxSpesa.toLocaleString('it-IT',{maximumFractionDigits:0})}</span>
                     <span>record imposta: <b style="color:#e07b39">${maxSogAnno}</b> &nbsp;€ ${maxSog.toLocaleString('it-IT',{maximumFractionDigits:0})}</span>
                     <span>miglior rapporto: <b style="color:#24b27e">${bestRatioAnno}</b> &nbsp;${bestRatio.toFixed(2)}× incasso/spesa</span>
-                    <span>saldo 2024: <b style="color:${saldo24>=0?'#24b27e':'#e63946'}">+ € ${saldo24.toLocaleString('it-IT',{maximumFractionDigits:0})}</b></span>
+                    <span>saldo 2024: <b style="color:${saldo24>=0?'#24b27e':'#e63946'}">${saldo24 >= 0 ? '+' : '−'} € ${Math.abs(saldo24).toLocaleString('it-IT',{maximumFractionDigits:0})}</b></span>
                 `;
             } else {
                 const i = anni.indexOf(sel);
@@ -2879,7 +2987,7 @@
         Plotly.newPlot('chart-origin', [
             { x: advancedData.anni, y: advancedData.stranieri, name: 'Stranieri', fill: 'tozeroy', type: 'scatter', mode: 'none', fillcolor: '#24b27e' },
             { x: advancedData.anni, y: advancedData.residenti, name: 'Italiani', fill: 'tozeroy', type: 'scatter', mode: 'none', fillcolor: '#e63946' }
-        ], { ...baseLayout, xaxis: { fixedrange: true, dtick: 2, tickpad: 8 }, yaxis: { fixedrange: true }, showlegend: true, legend: { orientation: 'h', y: -0.15, x: 0.5, xanchor: 'center' } }, { responsive: true, displayModeBar: false });
+        ], conFlag({ ...baseLayout, xaxis: { fixedrange: true, dtick: 2, tickpad: 8 }, yaxis: { fixedrange: true }, showlegend: true, legend: { orientation: 'h', y: -0.15, x: 0.5, xanchor: 'center' } }), { responsive: true, displayModeBar: false });
     }
 
     // C. Permanenza Media (Line Chart)
@@ -2887,7 +2995,7 @@
         cefaluAnimLinesOverlay('chart-alos');
         Plotly.newPlot('chart-alos', [{
             x: advancedData.anni, y: advancedData.permanenza, type: 'scatter', mode: 'lines+markers', line: { color: '#f72585', width: 3 }
-        }], { ...baseLayout, xaxis: { fixedrange: true, dtick: 2, tickpad: 8 }, yaxis: { fixedrange: true, range: [2, 5] } }, { responsive: true, displayModeBar: false });
+        }], conFlag({ ...baseLayout, xaxis: { fixedrange: true, dtick: 2, tickpad: 8 }, yaxis: { fixedrange: true, range: [2, 5] } }), { responsive: true, displayModeBar: false });
     }
 
     // E. Tasso di Occupazione Ricettiva
@@ -2907,12 +3015,12 @@
             line: { color: '#e9c46a', width: 3 },
             marker: { size: 6 },
             hovertemplate: '%{x}: %{y:.1f}%<extra></extra>',
-        }], {
+        }], conFlag({
             ...baseLayout,
             xaxis: { fixedrange: true, dtick: 2, tickpad: 8 },
             yaxis: { fixedrange: true, ticksuffix: '%', title: { text: '% posti letto × 365gg', font: { size: 10 }, standoff: 8 } },
             margin: { l: 70, r: 15, t: 15, b: 45 },
-        }, { responsive: true, displayModeBar: false });
+        }), { responsive: true, displayModeBar: false });
     }
 
 
@@ -2958,7 +3066,7 @@ const INFO = {
 
     postCovid_cef: "<strong>Post-COVID — Cefalù (2024 vs 2019)</strong>Variazione % dal 2019 al 2024. Un valore positivo indica che Cefalù ha superato i livelli pre-pandemia, segnale di domanda turistica in crescita strutturale. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
 
-    gap_nat: "<strong>Confronto Media Nazionale al 2024</strong>Differenza in punti indice tra Cefalù e l'Italia nel 2024 (entrambi base 2012=100). Es: +44pp arrivi significa che Cefalù ha quasi raddoppiato la crescita media italiana nello stesso periodo. Permette di capire se Cefalù guadagni o perda posizione sul mercato turistico nazionale. <em class='info-fonte'>Fonte: ISTAT Serie Storiche + dati comunali.</em>",
+    gap_nat: "<strong>Confronto Media Nazionale al 2024</strong>Differenza in punti indice tra Cefalù e l'Italia nel 2024 (entrambi base 2012=100). Es: +44 punti negli arrivi vuol dire che Cefalù è cresciuta di 44 punti percentuali in più dell'Italia nello stesso periodo. Permette di capire se Cefalù guadagni o perda posizione sul mercato turistico nazionale. <em class='info-fonte'>Fonte: ISTAT Serie Storiche + dati comunali.</em>",
 
 
     arr_pre2012_nat: "<strong>Italia — Arrivi pre-2012 (2004 vs 2012)</strong>Variazione % arrivi nazionali tra il 2004 e il 2012. Contesto di sistema: se anche l'Italia era in calo verso il 2012, il dato locale va letto in quel quadro. Il dettaglio mostra gli arrivi in valore assoluto. <em class='info-fonte'>Fonte: ISTAT Serie Storiche nazionali 1956-2024.</em>",
@@ -2992,7 +3100,7 @@ const INFO = {
 
     arr_postCovid_cef: "<strong>Cefalù — Arrivi post-COVID (2024 vs 2019)</strong>Variazione % arrivi tra il 2019 e il 2024. Valore positivo = gli arrivi hanno non solo recuperato ma superato il picco pre-pandemia. Segnale di domanda turistica strutturalmente in crescita. Clicca la riga per gli arrivi in valore assoluto. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
 
-    arr_gap_nat: "<strong>Confronto Arrivi — Cefalù vs Italia 2024</strong>Differenza in punti indice tra la crescita arrivi di Cefalù e quella nazionale (entrambi base 2012=100). Es: +44pp significa che Cefalù ha quasi raddoppiato la crescita media italiana in termini di flusso visitatori. Clicca la riga per gli arrivi in valore assoluto. <em class='info-fonte'>Fonte: ISTAT Serie Storiche + dati comunali.</em>",
+    arr_gap_nat: "<strong>Confronto Arrivi — Cefalù vs Italia 2024</strong>Differenza in punti indice tra la crescita arrivi di Cefalù e quella nazionale (entrambi base 2012=100). Es: +44 punti vuol dire che gli arrivi di Cefalù sono cresciuti di 44 punti percentuali in più di quelli italiani. Clicca la riga per gli arrivi in valore assoluto. <em class='info-fonte'>Fonte: ISTAT Serie Storiche + dati comunali.</em>",
 
     arr_year_cef: "<strong>Cefalù — Arrivi nell'anno selezionato</strong>Indice base 2012=100: es. 178 = +78% di visitatori rispetto al 2012. Il dato Italia accanto permette di distinguere performance specifica di Cefalù da andamento generale del settore. Clicca la riga per gli arrivi in valore assoluto. <em class='info-fonte'>Fonte: ISTAT Circoscrizioni Turistiche 2004-2013 + dati comunali 2014-2024.</em>",
 
@@ -3059,7 +3167,7 @@ const INFO = {
 
     chart_origin: "<strong>Origine Turisti — Evoluzione 2014–2024</strong>Composizione delle presenze per provenienza (italiani vs stranieri) anno per anno. Un aumento della quota stranieri indica crescente attrattività internazionale di Cefalù. <em class='info-fonte'>Fonte: ISTAT dati comunali Cefalù 2014-2024.</em>",
 
-    chart_pressure: "<strong>Indice di Pressione Turistica</strong>Rapporto tra le presenze turistiche annuali (notti) e la popolazione residente al 1° gennaio: quante notti di turismo si generano per ogni abitante. Un valore di 90 significa che ogni residente 'ospita' in media 90 notti di turisti nel corso dell'anno. Indicatore chiave per misurare il carico turistico su una comunità locale: valori oltre 50 indicano alta pressione, oltre 100 pressione molto elevata (tipica di Venezia, Rimini, mete balneari di punta). <em class='info-fonte'>Fonte: ISTAT dati comunali Cefalù 2014-2024 + ISTAT Anagrafe comunale POSAS (dati reali 2019-2024; 2014-2018 estrapolati dalla trend 2019-2024).</em>",
+    chart_pressure: "<strong>Indice di Pressione Turistica</strong>Rapporto tra le presenze turistiche annuali (notti) e la popolazione residente al 1° gennaio: quante notti di turismo si generano per ogni abitante. Un valore di 90 significa che ogni residente 'ospita' in media 90 notti di turisti nel corso dell'anno. Indicatore chiave per misurare il carico turistico su una comunità locale: valori oltre 50 indicano alta pressione, oltre 100 pressione molto elevata (tipica di Venezia, Rimini, mete balneari di punta). Il 2015 di Cefalù non è un dato reale: ISTAT non lo ha ricevuto e ripete le presenze del 2014, per questo è segnato con ⚠. <em class='info-fonte'>Fonte: ISTAT dati comunali Cefalù 2014-2024. Popolazione: ricostruzione intercensuaria ISTAT per il 2014-2019, POSAS dal 2020; fra il 2019 e il 2020 può esserci un piccolo scalino dovuto al cambio di fonte.</em>",
     chart_alos: "<strong>Permanenza Media (ALOS — Average Length of Stay)</strong>Rapporto presenze/arrivi per ogni anno: quante notti trascorre in media ogni visitatore a Cefalù. Un calo indica soggiorni più brevi (tendenza nazionale legata a mobilità e multi-destinazione); un aumento indica maggiore fidelizzazione o turismo di lunga permanenza. <em class='info-fonte'>Fonte: ISTAT dati comunali Cefalù 2014-2024.</em>",
     chart_ricettiva_est: "<strong>Capacità Ricettiva — Numero Esercizi</strong>Numero totale di strutture ricettive registrate nel comune di Cefalù per anno. La linea verde mostra il totale; le barre mostrano la composizione per B&B e case vacanza in affitto gestite in forma imprenditoriale. Non include locazioni brevi occasionali (es. Airbnb non registrati). <em class='info-fonte'>Fonte: ISTAT — Rilevazione sulla Capacità degli Esercizi Ricettivi, 2010-2024.</em>",
     chart_ricettiva_pl: "<strong>Capacità Ricettiva — Posti Letto</strong>Numero totale di posti letto disponibili nelle strutture ricettive registrate a Cefalù. La linea verde indica il totale complessivo; le barre la composizione tra B&B e case vacanza. La crescita delle case vacanza riflette in parte l'espansione del mercato short-term rental. <em class='info-fonte'>Fonte: ISTAT — Rilevazione sulla Capacità degli Esercizi Ricettivi, 2010-2024.</em>",
@@ -3074,9 +3182,9 @@ const INFO = {
     cbox_precovid: "<strong>Pre-COVID 2014→2019</strong>Crescita del periodo pre-pandemia, che rappresenta il trend strutturale del turismo locale al netto degli shock esterni. Confrontare questo dato con il Post-COVID rivela se il comune ha recuperato o superato il ritmo precedente. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
     cbox_postcovid: "<strong>Post-COVID 2019→2024</strong>Variazione dal picco pre-pandemico al 2024. Un valore positivo indica che il comune ha non solo recuperato le perdite del 2020-2021 ma ha superato i livelli pre-COVID. Un valore negativo segnala una ripresa ancora incompleta. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
     cbox_dettaglio: "<strong>Dettaglio 2024</strong>Dati strutturali dell'anno più recente. <em>Permanenza media</em> (ALOS): rapporto presenze/arrivi — quante notti rimane mediamente ogni visitatore. <em>Quota stranieri</em>: percentuale di arrivi non residenti sul totale, indicatore di attrattività internazionale. <em class='info-fonte'>Fonte: ISTAT dati comunali 2024.</em>",
-    cmp_pressure: "<strong>Indice di pressione turistica</strong>Rapporto fra le presenze turistiche (notti) e la popolazione residente al 1° gennaio <strong>dello stesso anno</strong>: quante notti di turismo si generano per ogni abitante. L'anno si sceglie coi pulsanti in alto, dal <strong>2014 al 2024</strong>, e cambia entrambi i termini del rapporto. Consente di confrontare la pressione turistica tra comuni di dimensioni diverse indipendentemente dai volumi assoluti. Valori oltre 50 indicano alta pressione, oltre 100 pressione molto elevata. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024 + ISTAT Anagrafe comunale (POSAS 2019-2024; 2014-2018 estrapolati).</em>",
+    cmp_pressure: "<strong>Indice di pressione turistica</strong>Rapporto fra le presenze turistiche (notti) e la popolazione residente al 1° gennaio <strong>dello stesso anno</strong>: quante notti di turismo si generano per ogni abitante. L'anno si sceglie coi pulsanti in alto, dal <strong>2014 al 2024</strong>, e cambia entrambi i termini del rapporto. Consente di confrontare la pressione turistica tra comuni di dimensioni diverse indipendentemente dai volumi assoluti. Valori oltre 50 indicano alta pressione, oltre 100 pressione molto elevata. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024. Popolazione: ricostruzione intercensuaria ISTAT per il 2014-2019, POSAS dal 2020.</em>",
     cmp_season: "<strong>Stagionalità — presenze mensili</strong>Distribuzione delle presenze (notti) mese per mese per ogni comune selezionato. Il colore va dal bianco (nessuna presenza) al blu scuro (picco massimo), normalizzato su ogni comune separatamente: consente di confrontare il <em>profilo stagionale</em> indipendentemente dai volumi assoluti. Seleziona l'anno (2022, 2023, 2024) per osservare variazioni interannuali. <em class='info-fonte'>Fonte: ISTAT dati mensili comunali 2022-2024.</em>",
-    chart_occupancy: "<strong>Tasso di Occupazione Ricettiva</strong>Rapporto tra le presenze turistiche annuali (notti) e la capacità ricettiva teorica massima (posti letto × 365 giorni). Indica quanta parte della capacità disponibile è stata effettivamente utilizzata. Un valore del 30% significa che in media ogni posto letto ha ospitato turisti per circa 110 notti all'anno. I posti letto sono quelli censiti da ISTAT nelle strutture registrate e non includono locazioni brevi non censite. <em class='info-fonte'>Fonte: ISTAT dati comunali Cefalù 2014-2024 + ISTAT Capacità Esercizi Ricettivi 2010-2024.</em>",
+    chart_occupancy: "<strong>Tasso di Occupazione Ricettiva</strong>Rapporto tra le presenze turistiche annuali (notti) e la capacità ricettiva teorica massima (posti letto × 365 giorni). Indica quanta parte della capacità disponibile è stata effettivamente utilizzata. Un valore del 30% significa che in media ogni posto letto ha ospitato turisti per circa 110 notti all'anno. I posti letto sono quelli censiti da ISTAT nelle strutture registrate e non includono locazioni brevi non censite. Il 2015 è segnato con ⚠: le presenze di quell'anno ripetono il 2014 perché ISTAT non ha ricevuto il dato, mentre i posti letto sono quelli del 2015. Il salto fra 2014 e 2015 viene dal calo dei posti letto censiti, non dalle presenze. <em class='info-fonte'>Fonte: ISTAT dati comunali Cefalù 2014-2024 + ISTAT Capacità Esercizi Ricettivi 2010-2024.</em>",
     cmp_radar: "<strong>Radar — Profilo destinazione</strong>Confronto multidimensionale su 5 assi: <em>Crescita totale</em> (presenze 2014→2024), <em>Pre-COVID</em> (2014→2019), <em>Post-COVID</em> (2019→2024), <em>Permanenza media</em> (notti/arrivo 2024), <em>Stranieri%</em> (quota arrivi non residenti 2024). I valori sono normalizzati sul massimo tra i comuni selezionati: il radar mostra differenze relative, non assolute. Aggiungere o rimuovere comuni cambia la scala. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
     cmp_ranking: "<strong>Posizione nel ranking nazionale</strong>Graduatoria dei comuni italiani (solo quelli con dati disponibili per entrambi gli anni) ordinata per crescita delle presenze 2014→2024. Per ogni comune selezionato vengono mostrati i comuni immediatamente vicini in classifica (2 sopra e sotto con 1 comune selezionato, 1 sopra e sotto con 2 o più). Il badge <em>Top X%</em> indica il percentile nella distribuzione nazionale. <em class='info-fonte'>Fonte: ISTAT dati comunali 2014-2024.</em>",
     cmp_ricettiva_est: "<strong>Capacità ricettiva — Numero esercizi</strong>Evoluzione del numero totale di strutture ricettive registrate (alberghi, B&amp;B, case vacanza, campeggi, ostelli ecc.) nei comuni selezionati dal 2010 al 2024. Permette di confrontare la crescita o contrazione dell'offerta ricettiva nel tempo tra destinazioni diverse. <em class='info-fonte'>Fonte: ISTAT — Rilevazione sulla Capacità degli Esercizi Ricettivi, 2010-2024.</em>",
@@ -3117,10 +3225,10 @@ function renderPeer(serie) {
         { x: A, y: yPeer, name: 'Comuni simili', type: 'scatter', mode: 'lines+markers',
           line: { color: '#457b9d', width: 2.5, dash: 'dot' }, marker: { size: 5 },
           hovertemplate: '<b>%{x}</b><br>Comuni simili: %{y:+.1f}%<extra></extra>' }
-    ], Object.assign({}, baseLayout, { height: 340, showlegend: true,
+    ], conFlag(Object.assign({}, baseLayout, { height: 340, showlegend: true,
         legend: { orientation: 'h', y: -0.18, x: 0 },
         xaxis: { fixedrange: true, dtick: 2, tickformat: 'd', tickpad: 8 },
-        yaxis: { fixedrange: true, ticksuffix: '%' } }),
+        yaxis: { fixedrange: true, ticksuffix: '%' } })),
         { responsive: true, displayModeBar: false });
     const last = A.length - 1;
     const gap = yCef[last] - yPeer[last];
@@ -3246,11 +3354,11 @@ function renderGettito(bil, serie) {
         { x: anni, y: pre, name: 'Presenze', type: 'scatter', mode: 'lines+markers',
           yaxis: 'y2', line: { color: '#e63946', width: 2.5 }, marker: { size: 5 },
           hovertemplate: '<b>%{x}</b><br>Presenze: %{y:,.0f} notti<extra></extra>' }
-    ], Object.assign({}, baseLayout, { height: 340, barmode: 'group', showlegend: true,
+    ], conFlag(Object.assign({}, baseLayout, { height: 340, barmode: 'group', showlegend: true,
         legend: { orientation: 'h', y: -0.18, x: 0 },
         xaxis: { fixedrange: true, dtick: 2, tickformat: 'd', tickpad: 8 },
         yaxis: { fixedrange: true },
-        yaxis2: { fixedrange: true, overlaying: 'y', side: 'right', showgrid: false } }),
+        yaxis2: { fixedrange: true, overlaying: 'y', side: 'right', showgrid: false } })),
         { responsive: true, displayModeBar: false });
     const ult = anni[anni.length - 1];
     const tot = (v(ult,'tari')||0) + (v(ult,'imu')||0) + (v(ult,'imposta_soggiorno')||0);
@@ -3313,7 +3421,7 @@ function renderGettito(bil, serie) {
 
         const pressTraces = [{ x: ANNI, y: index, type: 'bar', marker: { color: colors }, hovertemplate: '<b>%{x}</b><br>%{y:.1f} notti/abitante<extra></extra>', text: index.map(v => v ? v.toFixed(1) : ''), textposition: 'outside', textfont: { size: 11 } }];
         const pressLayout = { paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)', font: { family: 'inherit' }, xaxis: { fixedrange: true, dtick: 1, tickangle: -45 }, yaxis: { fixedrange: true, range: [0, maxVal * 1.18], title: { text: 'notti/abitante', font: { size: 11 } } }, margin: { t: 36, r: 16, b: 60, l: 50 } };
-        cefaluAnimBars('chart-pressure', pressTraces, pressLayout, { responsive: true, displayModeBar: false });
+        cefaluAnimBars('chart-pressure', pressTraces, conFlag(pressLayout), { responsive: true, displayModeBar: false });
 
     }
 
@@ -3461,7 +3569,7 @@ function renderGettito(bil, serie) {
         const el = document.getElementById('chart-reddito-trend');
         el.style.opacity = '0';
         el.style.transition = 'opacity 0.6s ease';
-        Plotly.newPlot(el, [traccePresenze, tracceRpc], layout, { responsive: true, displayModeBar: false });
+        Plotly.newPlot(el, [traccePresenze, tracceRpc], conFlag(layout), { responsive: true, displayModeBar: false });
         _cefObs(el, function() { requestAnimationFrame(function() { el.style.opacity = '1'; }); });
     }
 
@@ -3559,11 +3667,12 @@ function renderGettito(bil, serie) {
         fetch(DATA_PATH + 'bilancio.json').then(r => r.json()).catch(() => null),
         fetch(DATA_PATH + 'peer_group.json').then(r => r.json()).catch(() => null),
         fetch(DATA_PATH + 'provenienza.json').then(r => r.json()).catch(() => null),
+        flagIstatPronto,   // i grafici di Cefalù segnano gli anni non veri: il 2015 e una copia del 2014
     ]).then(([serie, stagData, popData, ricettivaData, ricIdx, irpefData, itaData, regData, pre12Data, euData, bilData, peerJson, provJson]) => {
         popolazioneData = popData;
         if (ricIdx) ricettivaIndexData = ricIdx;
 
-        // Riallinea gli indici nazionali e regionali ai JSON (i valori hardcoded sono fallback)
+        // Riempie gli indici nazionali e regionali dai JSON: nel codice non ci sono valori di riserva
         const itaSynced = syncItaliaFromJson(itaData);
         renderStorico(itaData);
         syncRegionaliFromJson(regData);
@@ -3594,6 +3703,13 @@ function renderGettito(bil, serie) {
         });
         // Da qui in poi rawData è popolato: i report possono disegnarsi.
         dataReady = itaSynced && pre12Synced && rawData.cefPre.length === 21;
+        // Anni di Cefalù il cui dato non è quello reale (il 2015 ripete il 2014): una fascia
+        // fissa sotto l'evidenziazione dell'anno, e un ⚠ che lo spiega al passaggio del mouse.
+        const segniCef = conFlag({}, '082027');
+        if (segniCef.shapes) {
+            baseShapes.push(...segniCef.shapes);
+            Plotly.relayout(chartDiv, { annotations: segniCef.annotations });
+        }
         // Aggiorna solo i dati y del grafico evoluzione storica (restyle preserva layout/interazioni).
         // Tracce 0-3 = Cefalù, 4-7 = Italia; queste ultime solo se il JSON nazionale è arrivato.
         const yData = [
@@ -3658,7 +3774,8 @@ function renderGettito(bil, serie) {
         .then(r => r.json())
         .then(data => {
             comuniIndex = data;
-            buildLeaderboard(data);
+            // La classifica segna i comuni con rotture di serie: aspetta le note ISTAT
+            flagIstatPronto.then(() => buildLeaderboard(data));
             const params = new URLSearchParams(location.search);
             const codici = (params.get('comuni') || '').split(',').filter(Boolean);
             codici.forEach(cod => {
@@ -3973,6 +4090,17 @@ function renderGettito(bil, serie) {
         return v >= 0 ? 'color:#24b27e' : 'color:#e63946';
     }
 
+    // Note ISTAT che cambiano la lettura dei numeri del box: rotture di serie dentro il
+    // 2014-2024, anni non trasmessi e anni stimati
+    function noteIstat(cod) {
+        const rotture = rottureDi(cod, 2014, 2024);
+        const altri = flagDi(cod, ['d', 'e']);
+        const righe = [];
+        if (rotture.length) righe.push(`discontinuità nella serie nel ${rotture.join(', ')}: le variazioni che attraversano quegli anni possono dipendere da un cambio di rilevazione`);
+        altri.forEach(x => righe.push(`${x.anno}: ${x.testo}`));
+        return righe.length ? `<div class="flag-nota">⚠ Note ISTAT — ${righe.join('; ')}.</div>` : '';
+    }
+
     function renderBoxes() {
         const entries = Object.values(selected).filter(d => d.serie);
         if (!entries.length) { boxesEl.innerHTML = ''; return; }
@@ -4034,6 +4162,7 @@ function renderGettito(bil, serie) {
                 ${aExt24 ? `<div class="data-row"><span>Extra-alb arrivi</span><span class="value">${fmtN(aExt24)}</span></div>` : ''}
                 ${alos24 ? `<div class="data-row"><span>Permanenza media</span><span class="value">${alos24} notti</span></div>` : ''}
                 ${pctStr ? `<div class="data-row"><span>Quota stranieri</span><span class="value">${pctStr}</span></div>` : ''}
+                ${noteIstat(d.meta.cod)}
             </div>`;
         }).join('');
     }
@@ -4454,18 +4583,20 @@ function renderGettito(bil, serie) {
         const neighborRow = (c, rankNum, isHL, col) => {
             const sign = c.growth_pre >= 0 ? '+' : '';
             if (isHL) {
-                const percentile = Math.ceil((1 - rankNum / total) * 100);
+                // Quota di comuni che stanno sopra o alla pari: il primo e nel Top 1%, l'ultimo
+                // nel Top 100%. Era calcolata al contrario (1 - rank/total) e il primo leggeva 100%.
+                const percentile = Math.max(1, Math.ceil(rankNum / total * 100));
                 const badge = `<span class="percentile-badge" style="background:${col}22;color:${col}">Top ${percentile}%</span>`;
                 return `<div class="rank-highlight" style="border-color:${col}">
                     <span class="rank-pos-hl" style="color:${col}">#${rankNum}</span>
-                    <span class="rank-name">${c.nome} <span class="rank-prov">(${c.provincia.slice(0,2).toUpperCase()})</span></span>
+                    <span class="rank-name">${c.nome} <span class="rank-prov">(${c.provincia.slice(0,2).toUpperCase()})</span>${segnoRottura(c.cod)}</span>
                     <span class="rank-growth" style="color:${col}">${fmtG(c.growth_pre)}</span>
                     ${badge}
                 </div>`;
             }
             return `<div class="rank-neighbor">
                 <span class="rank-pos">#${rankNum}</span>
-                <span class="rank-name">${c.nome} <span class="rank-prov">(${c.provincia.slice(0,2).toUpperCase()})</span></span>
+                <span class="rank-name">${c.nome} <span class="rank-prov">(${c.provincia.slice(0,2).toUpperCase()})</span>${segnoRottura(c.cod)}</span>
                 <span class="rank-growth">${fmtG(c.growth_pre)}</span>
             </div>`;
         };
@@ -4523,6 +4654,15 @@ function renderGettito(bil, serie) {
         const pressTraces2 = [{ x: nomi, y: valori, type: 'bar', marker: { color: colors }, hovertemplate: '<b>%{x}</b><br>%{y:.1f} notti/abitante<extra></extra>' }];
         cefaluAnimBars('pressureCompareChart', pressTraces2, pressLayout2, { responsive: true, displayModeBar: false });
     }
+
+    // Se i comuni sono arrivati dall'URL prima delle note ISTAT, box e classifica si
+    // ridisegnano appena le note ci sono, cosi le rotture di serie non restano senza segno
+    flagIstatPronto.then(() => {
+        const entries = Object.values(selected).filter(d => d.serie);
+        if (!entries.length) return;
+        renderBoxes();
+        renderRanking(entries);
+    });
 
     window.explorerRemove = removeComune;
 })();
