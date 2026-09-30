@@ -12,8 +12,22 @@ Serve un webserver.
 python3 -m http.server 8000
 ```
 
+Nel pannello browser dell'app il server avviato da `.claude/launch.json` può fallire con
+`PermissionError` su `os.getcwd()`: macOS non dà a quel processo l'accesso alla Scrivania, dove sta il
+progetto. Il terminale invece ce l'ha. In quel caso avviare il server dal terminale e agganciare il pannello
+con la configurazione `dashboard-esistente`, che apre `http://localhost:8000` senza avviare nulla. La
+soluzione definitiva è dare all'app l'accesso alla Scrivania in Impostazioni di sistema → Privacy e
+sicurezza → File e cartelle: è una scelta dell'utente.
+
 Verificare sempre a dashboard servita, non solo con `node --check`. La sintassi valida non dice nulla
 sul comportamento: il 29 luglio un'eccezione a runtime ha azzerato metà pagina passando il check.
+
+**Ogni scheda nuova va guardata anche su telefono (375 pixel), non solo su desktop.** Il 30 settembre la
+scheda PNRR ha portato la sezione Cefalù a 10.325 pixel di altezza su mobile: le sezioni si rivelavano
+quando ne era visibile l'8%, e 812 pixel di schermo su 10.325 sono il 7,9%, quindi da telefono la sezione
+non compariva più. Su desktop era tutto a posto. Ora la rivelazione non dipende dall'altezza (`rootMargin`
+invece di una soglia in percentuale), ma il controllo su telefono resta: le sezioni animate si vedono solo
+dopo uno scroll vero, non con `scrollIntoView`.
 
 Controllo di sintassi sui blocchi inline, utile ma non sufficiente:
 
